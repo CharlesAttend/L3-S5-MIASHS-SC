@@ -1,0 +1,273 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[french]{babel}
+
+\usepackage[default,scale=0.95]{opensans}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb} %math
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{systeme} %use with \system*{eq1, eq2}
+\usepackage{bbm}
+\usepackage{tikz-cd}
+
+\usepackage{import}
+\usepackage{xifthen}
+\usepackage{pdfpages}
+\usepackage{transparent}
+
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+}
+\urlstyle{same} %\href{url}{Text}
+
+\theoremstyle{plain}% default
+\newtheorem{thm}{Théorème}[section]
+\newtheorem{lem}[thm]{Lemme}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem*{cor}{Corollaire}
+%\newtheorem*{KL}{Klein’s Lemma}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Définition}[section]
+\newtheorem{exmp}{Exemple}[section]
+%\newtheorem{xca}[exmp]{Exercise}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remarque}
+\newtheorem*{note}{Note}
+%\newtheorem{case}{Case}
+
+
+\title{Espace vectoriels normés}
+\author{Charles Vin}
+\date{2021}
+
+\begin{document}
+\maketitle
+
+\section{Normes}
+Cadre : $(E, +, \cdot )$ est un espace vectoriels (e.v.) sur $ \mathbb{R} $.
+\begin{exmp}[]
+	\begin{itemize}
+		\item $E = \mathbb{R}^n $
+		\item $ E = \{f: \mathbb{R} \to \mathbb{R} fonctions\} $ 
+		\item $ E = \mathcal{C}^0 ([a,b], \mathbb{R}) $ 
+		\item $ E =  $ ensemble des suites à valeur dans $ \mathbb{R} $  
+	\end{itemize}
+\end{exmp}
+
+\begin{defn}[]
+	Une \textbf{norme} sur l'e.v $ E $ est une application
+	\begin{align*}
+		\left\| \cdot  \right\|  :& E \to [0;+ \infty [ \\
+								& x \mapsto \left\| x \right\| 
+	\end{align*}
+	telle que $ \forall x,y,z \in E $ et $ \lambda \in \mathbb{R} $ 
+	\begin{itemize}
+		\item $ \left\| x \right\| = 0 \Leftrightarrow x=0 $ 
+		\item $ \left\| \lambda x \right\| = \left| \lambda  \right| \left\| x \right\|  $ 
+		\item $ \left\| x+y \right\| \leq \left\| x \right\| + \left\| y \right\|  $ (inégalité triangulaire)
+	\end{itemize}
+	$ (E, \left\|  \right\| ) $ est un espace vectoriel normé (e.v.n.)
+\end{defn}
+\textbf{Conséquence:} Un e.v.n. $ (E, \left\|  \right\| ) $ est un espace métrique pour la distance $ E \times E \to [0;+\infty [, (x,y) \mapsto d(x,y) = \left\| x_y \right\| $. En particulier $ \left| \left\| x \right\| - \left\| y \right\|  \right| \leq \left\| x_y \right\|  $ 
+
+\begin{exmp}[]
+	\begin{itemize}
+		\item $ x \mapsto \left| x \right|  $ norme sur $ \mathbb{R} \to $ distance usuelle
+		\item Sur $ \mathbb{R}^n $ 
+		\begin{itemize}
+			\item $ \left\| x \right\| _p = (\sum_{i=1}^{n} \left| p \right| ^p)^{1/p}$ norme pour $ p \geq 1 $ (distance $ d_p $ )
+			\item $ \left\| x \right\| _\infty = \max \{\left| x_1 \right| , \dots, \left| x_n \right| \} $ norme (distance $ d_\infty $ )
+		\end{itemize} 
+		\item Sur $ C^0 ([a,b], \mathbb{R}) $ e.v des fonctions continues de $ [a,b] $ dans $ \mathbb{R} $  
+		\begin{itemize}
+			\item $ \left\| f \right\| _p = (\int_{[a,b]} \left| f(x) \right| ^p d \lambda (x)) ^{1/p}$ norme $ L^p $ pour $ p \geq 1 $ 
+			\item $ \left\| f \right\| _\infty = \max \{ \left| f(x) \right|, x \in [a,b]\} $ norme de la convergence uniforme
+		\end{itemize}
+	\end{itemize}
+\end{exmp}
+\textbf{Attention : } même sur un e.v. il y a des distances qui ne viennent pas d'une norme. Par exemple sur $ E=\mathbb{R}^2 $ la distance grossière $ d(x,y) = \mathbbm{1}_{x \neq y} $ 
+
+\begin{defn}[normes équivalente]
+	Les normes $ \left\| \cdot  \right\|  $ et $ \left\| \cdot  \right\| ^\prime  $ sont \textbf{équivalente} s'il existe des constantes strictement positives $ a $ et $ b $ telles que 
+	\[
+		\forall x \in E, a \left\| x \right\| \leq \left\| x \right\| ^\prime \leq b \left\| x \right\| 
+	.\]
+	ou (moins important mais ce retrouve rapidement)
+	\[
+		\forall x \in E, \frac{1}{b} \left\| x \right\| ^\prime \leq \left\| x \right\| \leq \frac{1}{a} \left\| x \right\| ^\prime 
+	.\]
+\end{defn}
+
+\begin{note}[]
+	Les normes peuvent être vu comme des temps de déplacement. On peut aller 2 fois plus vite, cela donne deux normes différente, mais avec les mêmes propriétés, il peut même aller entre a et b fois plus vite, ce qui redonne l'inégalité ici. 
+\end{note}
+
+\begin{prop}[]
+	Deux normes équivalentes induisent sur $ E $ deux distances qui donnent les mêmes voisinages, les mêmes voisinages, les mêmes fermés, les mêmes intérieurs et adhérences, les mêmes bornés, les mêmes suites convergences.
+
+	\begin{proof}[Idée de preuve : ]
+		$ \left\| x-y \right\| < r \Rightarrow \left\| x - y \right\|^\prime < b_r $ donc $ B_{\left\|  \right\| } (x,r) \subset B_{\left\|  \right\| ^\prime } (x,b_r) $ \\
+		$ \left\| x-y \right\| ^\prime  < r^\prime  \Rightarrow \left\| x - y \right\| < \frac{1}{a}r^\prime  $ donc $ B_{\left\|  \right\|^\prime  } (x,r^\prime ) \subset B_{\left\|  \right\| } (x,\frac{r^\prime }{a}) $ \\
+		donc si $ A $ est voisinage de $ x $ pour l'une des normes il l'est pour l'autre.
+	\end{proof}
+\end{prop}
+
+\begin{thm}[(admis)]
+	Si $ E $ est un e.v.n de dimension finie 
+	\begin{itemize}
+		\item Toutes les normes sur $ E $ sont équivalentes
+		\item Toutes les parties fermées bornées de $ E $ sont compactes
+	\end{itemize}
+\end{thm}
+
+\section{Espaces de Banach}
+
+\begin{defn}[Espace de Banach]
+	Un \textbf{espace de Banach} est un e.v.n complet. (toutes les suites de Cauchy convergent, pour la distance induite par la normes)
+\end{defn}
+
+\begin{exmp}[d'espace de Banach (admis)]
+	.\\
+	\begin{itemize}
+		\item $ (\mathbb{R}^n, \left\|  \right\| ) $ (pour n'importe quelle norme...)
+		\item $ C^0 ([a,b], \mathbb{R}) $ est un Banach pour $ \left\|  \right\| _\infty  $ (mais pas pour $ \left\|  \right\| _p $ )
+	\end{itemize}
+\end{exmp}
+
+
+\subsection{Pourquoi les Banach sont confortables ?}
+
+Dans un Banach la convergence normale (convergence absolue pour la norme) implique la convergence : 
+\begin{align*}
+	\text{Si } \sum_{k=1}^{+\infty } \left\| x_k \right\| (\in \mathbb{R}) < + \infty \text{ alors } \sum_{k=1}^{+\infty} x_k (\in E)\text{ existe }
+\end{align*}
+
+\begin{proof}[Preuve: ]
+	\begin{align*}
+		\sum_{k=0}^{+\infty } \left\| x_k \right\| < + \infty \Rightarrow \forall \epsilon > 0, &\exists n_\epsilon \in \mathbb{N}, \forall n,m \geq n_\epsilon, \sum_{k=n+1}^{m} \left\| x_k \right\| < \epsilon \\
+		& \left\| S_m - S_n \right\| \leq \left\| \sum_{k=n+1}^{m}x_k \right\| \leq \sum_{k=n+1}^{m} \left\| x_k \right\| < \epsilon
+	\end{align*}
+	$ (S_n)_n $ est de Cauchy donc $ (S_n)_n $ converge car $ (E, \left\|  \right\| ) $ est complet.
+\end{proof}
+
+\section{Produit scalaire, espace de Hilbert}
+
+\begin{defn}[Produit scalaire]
+	Un \textbf{produit scalaire} sur l'e.v. $ E $ est une application 
+	\begin{align*}
+		< \cdot , \cdot > : E \times E \to \mathbb{R} \\
+			& (x,y) \mapsto < \cdot , \cdot >
+	\end{align*}
+	Propriétés : 
+	\begin{itemize}
+		\item Bilinéaire : 
+		\begin{align*}
+			& \forall x \in E, y \mapsto < x , y > \text{ linéaire}
+			& \forall y \in E, x \mapsto < x , y > \text{ linéaire}
+		\end{align*}
+		\item Symétrie : $ \forall x,y \in E, < x , y > = < y, x > $ 
+		\item Définie positives : $ \forall x \in E, <x,x> \geq 0 et <x,x>=0 \Leftrightarrow x=0 $ 
+	\end{itemize}
+\end{defn}
+
+\subsection{Inégalité de Cauchu-Schawarz}
+\begin{defn}[Inégalité de Cauchu-Schawarz]
+	Si $ (E, < \cdot , \cdot >) $ est un espace préhilbertien
+	\begin{align*}
+		&\forall x,y \in E, \left| <x,y> \right| \leq \sqrt[]{<x,x>}\sqrt[]{<y,y>} \\
+		& \text{avec égalité si x et y sont liés } (\Leftrightarrow \exists \alpha , \beta \in \mathbb{R} \setminus \{(0,0)\}, \alpha x + \beta y = 0 ) 
+	\end{align*}
+
+	\begin{proof}[Preuve: ]
+		\[
+			0 \leq < x+\lambda y, x+ \lambda y > = <x,x> + 2 \lambda <x,y> + \lambda ^2 <y,y> 
+		.\]
+		Equation du second degrés de discriminant négatif (car équation positive) : $ 4 <x,y>^2 - 4<x,x><y,y> \leq 0 $ 
+	\end{proof}
+\end{defn}
+
+\begin{cor}[]
+	Tout espace préhilbertien est un e.v.n pour la norme $ \left\| x \right\| = \sqrt[]{<x,x>} $ (et on retrouve la forme habituelle de l'inégalité de Cauchy-Schwarz) 
+
+	\begin{proof}[Preuve: ]
+		A faire seul, pas trop dur, il faut utiliser Cauchy-Schwarz pour l'inégalité triangulaire.
+	\end{proof}
+\end{cor}
+
+\begin{defn}[Espace de Hilbert]
+	Un \textbf{espace de Hilbert} est un espace préhilbertien $ (E, <\cdot , \cdot >) $ qui est complet pour la norme $ \left\| \cdot  \right\| = \sqrt[]{<\cdot , \cdot >} $ (i.e. qui est un Banach)
+\end{defn}
+
+\textbf{Résumé de tous nos espaces} \\
+\begin{align*}
+	& (E, d) \text{ espace métrique } &\rightarrow \text{Si les suite de cauchy convergent } &\rightarrow (E,d) \text{ Espace métrique complet} \\
+	& \Downarrow d(x,y) = \left\| x-y \right\|  \\
+	& (E, \left\| \cdot  \right\| )  \text{ e.v.n } &\rightarrow \text{Si les suite de cauchy convergent} &\rightarrow \text{Espace de Banach}  \\
+	& \Downarrow \left\| x \right\| = \sqrt[]{<x,x>} \\
+	& (E, <\cdot , \cdot >)  \text{ préhilbertien } &\rightarrow \text{Si les suite de cauchy convergent} &\rightarrow \text{Espace de Hilbert} \\
+\end{align*}
+
+\section{Application linéaires}
+
+\textbf{Rappel:} $ f $ linéaire de l'e.v. $ E $ vers l'e.v $ E^\prime  $ si 
+\begin{align*}
+	&\forall x,y \in E, f(x+y) = f(x) + f(y) \\
+	&\forall x \in E, \forall \lambda \in \mathbb{R} f(\lambda x) = \lambda f(x)
+\end{align*}
+
+\begin{prop}[]
+	Pour $ f $ linéaire de $ E $ vers $ (E^\prime  , \left\|  \right\| ^\prime ) $ les propriétés suivantes sont équivalentes
+	\begin{enumerate}
+		\item $ f $ est continue sur $ E $ 
+		\item $ f $ est continue en un point $ x $ de $ E $ 
+		\item $ f $ est bornée sur la boule unité fermée $ \bar{B}_{\left\|  \right\| } (0,1)$ 
+		\item Il existe une constante $ K $ telle que $ \forall x \in E, \left\| f(x) \right\| ^\prime  \leq K \left\| x \right\| $ 
+		\item $ f $ est lipschitzienne
+	\end{enumerate}
+	\begin{proof}[Idée de preuve: ]
+		$ 1 \Rightarrow 2 \Rightarrow 3 \Rightarrow 4 \Rightarrow 5 \Rightarrow 1 $
+		\begin{align*}
+			\left\| f(x) - f(y) \right\| ^\prime = \left\| f(x-y) \right\| ^\prime &= \left\| \left\| x-y \right\| f(\frac{x-y}{\left\| x-y \right\| }) \right\| ^\prime  \text{ car } x-y = \left\| x-y \right\| \frac{x-y}{\left\| x-y \right\| } (=1) \\
+				& \left| \left\| x-y \right\|  \right| \left\| f(\frac{x-y}{\left\| x-y \right\| }) \right\| ^\prime \\
+				&\leq \left\| x-y \right\| \sup \{\left\| f(u) \right\| ^\prime , u \in E \text{ tel que } \left\| u \right\| \leq 1\} \\
+				&\leq \left\| x-y \right\| \sup_{\bar{B}_{\left\|  \right\| } (0,1) \left\| f \right\| ^\prime } (\text{ le sup = constante de lipschitz})
+		\end{align*}
+	\end{proof}
+\end{prop}
+
+\begin{cor}[]
+	Si $ f $ est une application linéaire sur un e.v.n. de dimension finie, alors $ f $ est continue
+
+	\begin{proof}[Preuve: ]
+		$ f(x) = \sum_{i=1}^{n}x_i f(e_i) $ où $ (e_1, \dots, e_n) $ base de l'e.v. et $ x = \sum_{i=1}^{n}x_i e_i $ 
+		\begin{align*}
+			\left\| f(x) \right\| ^\prime \leq \sum_{i=1}^{n}\left| x_i \right| \left\| f(e_i) \right\| ^\prime  \leq \left\| x \right\| _\infty \sum_{i=1}^{n}\left\| f(e_i) \right\| ^\prime (\text{ la somme représente la constante de lipschitz})
+		\end{align*}
+	\end{proof}
+\end{cor}
+
+\begin{thm}[de Riesz (admis)]
+	Si $ (E, <\cdot , \cdot >) $ est un espace de Hilbert, toute forme (application à valeur dans $ \mathbb{R} $ ) linéaire continue sur $ E $ est le produit scalaire avec un vecteur de $ E $ fixé : 
+	\begin{align*}
+		\forall f : E \to \mathbb{R} \text{ linéaire continue}, \exists x_f \in E, f: &E \to \mathbb{R} \\
+		& y \mapsto f(y) = <x_f, y>m
+	\end{align*}
+	i.e. \begin{align*}
+		&E \to E^* = \{f:E \to \mathbb{R} \text{ linéaire continues}\}\\
+		&x \mapsto \binom{E \to \mathbb{R}}{y \mapsto <x,y>}  
+	\end{align*}
+	est une bijection.
+\end{thm}
+
+
+
+\end{document}

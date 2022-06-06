@@ -1,0 +1,9 @@
+{
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": false,
+        "strings": false
+    },
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 10000
+}

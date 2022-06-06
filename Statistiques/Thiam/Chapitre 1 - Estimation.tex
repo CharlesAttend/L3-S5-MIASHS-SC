@@ -1,0 +1,674 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[french]{babel}
+
+\usepackage[default,scale=0.95]{opensans}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb} %math
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{systeme} %use with \system*{eq1, eq2}
+\usepackage{bbm}
+
+\usepackage{import}
+\usepackage{xifthen}
+\usepackage{pdfpages}
+\usepackage{transparent}
+
+
+
+\newcommand{\incfig}[2][1]{%
+    \def\svgwidth{#1\columnwidth}
+    \import{./figures/}{#2.pdf_tex}
+}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+}
+\urlstyle{same} %\href{url}{Text}
+
+\theoremstyle{plain}% default
+\newtheorem{thm}{Théorème}[section]
+\newtheorem{lem}[thm]{Lemme}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem*{cor}{Corollaire}
+%\newtheorem*{KL}{Klein’s Lemma}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Définition}[section]
+\newtheorem{exmp}{Exemple}[section]
+%\newtheorem{xca}[exmp]{Exercise}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remarque}
+\newtheorem*{note}{Note}
+%\newtheorem{case}{Case}
+
+\title{Estimation ponctuelle}
+\author{Charles Vin}
+\date{Date}
+
+\begin{document}
+\maketitle
+
+
+\section{Introduction}
+Diapo osef un peu 
+
+\section{Modèle Statistique}
+\begin{itemize}
+    \item On collecte les données:
+    \item On note $ x_1, x_2,\dots ,x_n $ les réalisations 
+    \item des variables aléatoire $ X_1, X_2, ..., X_n $ 
+    \item $ x_1 = X_1, ..., x _{n} =X_n  $ 
+\end{itemize}
+\textbf{Hypothèse} : On suppose $ X_1, ... , X _{n}  $  indépendante et de même loi $ P $ (on dit "i.i.d.")\\
+\textbf{Objectif} : Estimer $ P $ (difficile) à partir de $X_1, ... X_n$
+
+\begin{defn}[Modèle statistique]
+    On appelle modèle statistique la donnée du triplet $ (\Omega , F, P_{\theta }) $ ($\theta$ est un paramètre.) où $ \Omega  $ = espace des observations, $ F $ tribu sur $ \Omega  $, $ P_{\theta \in \Theta } $ est une famille de probabilité définie sur $ (\Omega , F) $, $ \theta  $ = espace des paramètres.
+\end{defn}
+
+\begin{exmp}[]
+    On souhaite tester l'efficacité d'un médicament. On traite $ n $ patients (individus statistique). A l'issue de l'étude 72 patients sont guéris. \\
+    Modélisation Statistique : On note $ x_i = \systeme*{1, 0} $ Si guéris ou non. $ x_i $ est une réalisation d'une VA de Bernouilli $ \mathcal{B}(p), p \in ]0,1[, \Omega = \{0,1\}, F = \mathcal{P}(\{0,1\})$ et la famille de probabilité est $ \mathcal{B}(p), p(=\theta ) \in ]0,1[ (=\Theta)$ \\ 
+    Objectif : Reconstruire ou estimer ce paramètre $ p $  à l'aide de $ X_1, ..., X_n $     
+\end{exmp}
+
+\begin{exmp}[Nombre de voiture au feu]
+    C'est un modèle de Poisson avec : 
+    \[
+        \Omega = N, F = \mathcal{P}(N), (P(\lambda), \lambda > 0) \text{ avec } P_{\lambda }[X=k] = e^-{\lambda } \frac{\lambda ^k}{k!}
+    .\]
+    Le paramètre est $ \lambda \in R_+^*$ R+* est le $ \Omega  $ 
+\end{exmp}
+
+\begin{exmp}[Durée du trajet]
+    Modèle gaussien : \\
+    \[
+        \Omega = R, F = \mathcal{B}(R), (\mathcal{N}(m, \sigma  ^2), (m, \sigma ^2) \in \mathcal{R}x \mathcal{R_+^*})
+    .\]    
+\end{exmp}
+
+\section{Estimateur et propriétés}
+\begin{defn}[n-échantillon]
+    On appelle n-échantillon (échantillon de taille n) associé au modèle $ (\Omega , F, (P_{\theta})_{\theta in \Theta }) $ une suite $ X_1, ..., X_n $ de va i.i.d. de même loi $ P_{\theta } $ 
+\end{defn}
+\begin{defn}[moyenne empirique]
+    On appelle moyenne empirique la va 
+    \[
+        \bar{X_n} = \frac{1}{n} \sum_{i=1}^{n} X_i
+    .\]
+\end{defn}
+\begin{defn}[Variance empirique]
+    On appelle variance empirique la va 
+    \[
+        V_n^2 = \frac{1}{n}\sum_{i=1}^{n}(X_i - \bar{X _{n} })^2 = \frac{1}{n}\sum_{i=1}^{n}X_i^2 - \bar{X _{n} }^2
+    .\]
+\end{defn}
+\begin{defn}[Statistique]
+    On appelle statistique toute application de $ \Omega ^n $ dans $ R^p $ 
+\end{defn}
+\begin{defn}[Estimateur]
+    On appelle estimateur du paramètre $ \theta  $ toute statistique à valeur dans $ \Theta  $ 
+\end{defn}
+\begin{rem}[]
+    Une statistique est une VA qui ne dépend que de $ X_1, ..., X_n $ et a sa propre loi de probabilité.
+\end{rem}
+\begin{exmp}[]
+    Exemple du traitement  \\\begin{itemize}
+        \item $ \hat{p_1} $ est un estimateur de $ p $.  
+        \item $ \hat{p_2} = \frac{1}{n}\sum_{i=1}^{n}X_i$ est un estimateur de p (car entre 0 et 1)
+        \item $ S_n = \sum_{i)1}^{n}X_i $ est une statistique (car dans R)
+    \end{itemize}
+\end{exmp}
+\begin{thm}[]
+    $ X_1, ..;, X_n $ i.i.d. de loi commune $ (\mathcal{P}_{\theta })_{\theta \in \Theta} $. Soit $ m_{\theta } = \mathbb{E}_{\theta }[X_1] $ (espérance de $ X_1 $ pour $ P_{\theta } $)  , $ \sigma ^2_{\theta } = Var_{\Theta (X_1)} $ (variance de $ X_1 $ pour $ \mathcal{P}_{\Theta } $ ). \\
+    La moyenne empirique $ \bar{X_n} = \frac{1}{n} $ est un estimateur de $ m_{\theta } $. \\
+    La variance empirique $ V_n^2 = \frac{1}{n}\sum_{i=1}^{n}(X_i - \bar{X_n})^2  $ est un estimateur de $ \sigma _{\Theta }^2 $   
+\end{thm}
+
+\begin{defn}[Le moment empirique simple]
+    Le moment empirique simple d'ordre $ k, k \in N $ noté $ \hat{m_k} = \frac{1}{n}\sum_{i=1}^{n}X_i^k $ est un estimateur du moment théorique d'ordre $ k \in N^* $ , $ m_k(\theta) = \mathbb{E}_{\theta } (X_1^k) $  
+\end{defn}
+
+\begin{defn}[Le moment empirique centré d'ordre k]
+    Le moment empirique centré d'ordre k se note $ \hat{\mu _k}= \frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{X_n})^k $ est un estimateur de $ \mu _k (\Theta ) = \mathbb{E}_{\theta } ((X_1-\mathbb{E}_{\theta }(X_1)^k)) $  
+\end{defn}
+
+\begin{note}[]
+    La question est de savoir quel estimateur choisir ! 
+\end{note}
+
+\section{Critère de performance}
+Soit $ T_n $ un estimateur de $ \theta  $. 
+\begin{defn}[]
+    $ T_n $ est un estimateur sans biais du paramètre $ \theta  $ si $ \mathbb{E}_{\theta } (T_n) = \theta $ (en moyenne on tombe sur le vrais paramètre). \\
+    $ T_n $ est un estimateur biaisé de $ \theta  $ si $ \mathbb{E}_{\theta } (T_n) \neq  \theta $ \\
+    La quantité $ \mathcal{B}_\theta (T_n) = \mathbb{E}_\theta (T_n) - \theta  $ est appelé \textbf{biais de l'estimateur} en $ \theta  $ \\
+    Un estimateur $ T_n $ de $ \theta  $ est dit asymptotiquement sans biais si $ \lim_{n \to +\infty} \mathbb{E}_\Theta (T_n) = \theta $.
+\end{defn}
+
+
+Distribution d'un estimateur $ T_n $ sans biais de $ \theta $ \\
+Distribution d'un estimateur biaisé $ T_n $ de $ \theta $ 
+VOIR DIAPO \\\\
+
+
+\textbf{Cadre général} : $ X_1, X_2, ... , X_n $ i.i.d. de loi $ P_\theta, \theta \in \Theta  $ avec $ m_\theta = E_\theta =(X_1) $ et $ \sigma ^2_\theta = var_\theta (X_1) $. \\
+
+\begin{thm}[]
+    La moyenne empirique $ \bar{X_n} = \frac{1}{n}\sum_{i=1}^{n}X_i $ est un estimateur sans biais de $ m_\theta  $ . En effet : \begin{align*}
+        E_\theta (\frac{1}{n}\sum_{i=1}^{n} X_i) &= \frac{1}{n}\sum_{i=1}^{n} E_\theta (X_i) \\ 
+        & = \frac{1}{n} n E_\theta (X_1)\\
+        &= m_\theta 
+    \end{align*}
+
+    \begin{exmp}[]
+        $ X_1, \dots, X_n $ i.i.d. de loi $ Exp(\lambda) $ avec $ \lambda > 0 $. On a \begin{itemize}
+            \item $ E_\lambda (X_1) = \frac{1}{\lambda } $ 
+            \item $ Var_\lambda (X_1) = \frac{1}{\lambda ^2} $ 
+            \item $ \lambda  $ inconnu
+        \end{itemize}
+        $ \bar{X_n} = \frac{1}{n}\sum_{i=1}^{n} X_i$ est un estimateur sans biais de $\frac{1}{\lambda}$ ($ \frac{1}{\bar{X_n}} $ est un estimateur de $ \lambda  $ ) 
+    \end{exmp}
+    \begin{exmp}[]
+        $ X_1, \dots, X_n $ i.i.d. de loi $ \mathcal{P}(\lambda) $ avec $ \lambda > 0 $.
+        \[
+            \forall k \in N, P_\lambda (X_1 = k) = e^-k \frac{\lambda ^k }{k!}, E_\lambda (X_1)= \lambda 
+        .\]
+    \end{exmp}
+
+    \begin{thm}[]
+        La \textbf{variance empirique} $ V^2_n = \frac{1}{n}\sum_{i=1}^{n} (X_i-\bar{X_n})^2  $ est un estimateur biaisé de $ \sigma _\theta ^2 $.
+
+        La \textbf{variance empirique corrigée} $ S_n^2 = \frac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X_n})^2 $ est un estimateur sans biais de $ \sigma_\theta ^2 $ 
+
+        \begin{proof}[Preuve :]
+            On doit montrer que $ E_\theta (V_n^2) \neq \theta  $. On a 
+            \[
+                E_\theta(V^2_n) = E_\theta ( \frac{1}{n}\sum_{i=1}^{n} (X_i-\bar{X_n})^2)
+            .\]
+            Or \begin{align*}
+                V_n^2 &= \frac{1}{n}\sum_{i=1}^{n}(X_i^2 -2X_i \bar{X_n} + \bar{X_n} ^2) \\
+                &= \frac{1}{n}\sum_{i=1}^{n}X_i^2 - 2 \bar{X_n} (\frac{1}{n}\sum_{i=1}^{n}X_i) + \bar{X_n}^2 \\
+                &= \frac{1}{n}\sum_{i=1}^{n}X_i^2 - \bar{X_n}^2
+            \end{align*}
+            \begin{align*}
+                E_\theta (V_n^2) &= E_\theta (\frac{1}{n}\sum_{i=1}^{n}X_i^2 - \bar{X_n^2}) \\
+                &= \frac{1}{n}\sum_{i=1}^{n}E_\theta (X_i^2) - E_\theta (\bar{X_n}^2) \\ 
+                &= \frac{1}{n} * n E_\theta (X_1^2) - E_\theta (\bar{X_n}^2) \text{ car mes Xi ont la même loi}\\ 
+                &= E_\theta (V_n^2) = E_\theta (X_1^2) - E_\theta (\bar{X_n^2})
+            \end{align*}
+            Finaly : 
+            \[
+                Var_\theta (X_1) = E_\theta (X_1^2) - E_\theta ^2 (X_1) \Leftrightarrow \sigma _\theta ^2 = E_\theta (X_1^2) - m_\theta ^2
+            .\]
+            \[
+                \Leftrightarrow E_\theta (X_1^2) = \sigma_\theta  ^2 + m_\theta ^2
+            .\]
+            De la même façon, on a 
+            \[
+                E(X_n^2) = var(\bar{X_n}) + E^2 (\bar{X_n})
+            .\]
+            et \begin{align*}
+                Var_\theta (\bar{X_n}) &= Var_\theta (\frac{1}{n}\sum_{i=1}^{n} X_i ) \\
+                    &= (\frac{1}{n})^2 Var_\theta (\sum_{i=1}^{n}X_i) \\
+                    &= \frac{1}{n^2}\sum_{i=1}^{n}Var(X_i) \text{ car les Xi sont indépendante } \\
+                    &= \frac{1}{n^2} nVar_\theta (X_1) \text{ car les Xi ont la même loi}
+            \end{align*}
+            \textbf{Conclusion : }
+            \[
+                Var_\theta (\bar{X_n}) = \frac{Var_\theta (X_1)}{n} = \frac{\sigma_\theta  ^2}{n}
+            .\]
+            \textbf{On obtient} \begin{align*}
+                E_\theta (V_n^2) &= E_\theta (X_1^2) - (Var_\theta (X_n) + E_\theta ^2 (\bar{X_n})) \\ 
+                    &= (\sigma _\theta ^2 + m_\theta ^2) - (\frac{\sigma _\theta ^2}{n} + m_\theta ^2) \\
+                    &= \sigma _\theta ^2 - \frac{\sigma _\theta ^2}{n} \neq \sigma _\theta ^2 \\
+                    & (V_n^2 \text{ est un estimateur biaisé de } \sigma _\theta ^2)
+            \end{align*}
+            Le biais de $ V_n^2 $ en $ B_\theta (V_n^2) = E_\theta (V_n^2) - \sigma _\theta ^2 = - \frac{\sigma _\theta ^2}{n}$. \\
+            
+            \textbf{On corrige l'estimateur $ V_n^2 $ } : \begin{align*}
+                & E_\theta (V_n^2) = \frac{n-1}{n} \sigma _\theta ^2 \\
+                & E_\theta (\frac{n}{n-1} V_n^2) = \sigma _\theta ^2
+            \end{align*}
+            \begin{align*}
+                S_n^2 &= \frac{n}{n-1}V_n^2 \\
+                    &= \frac{1}{n-1} \sum_{i=1}^{n}(X_i-\bar{X_n})^2
+            \end{align*}
+            est un estimateur sans biais de $ \sigma _\theta ^2 $ . \\
+            $ V_n^2 $ est un estimateur asymptotiquement sans biaisés de $ \sigma _\theta ^2 $ car : 
+            \[
+                \lim_{n \to \infty} E_\theta (V_n^2) = \sigma _\theta ^2
+            .\]
+        \end{proof}
+        \begin{exmp}[]
+            $ X_1, \dots, X_n $ i.i.d. de loi $ Exp(\lambda ), \lambda > 0 $. \\
+            On a $ \sigma _\lambda ^2 = Var_\lambda (X_1) = \frac{1}{\lambda ^2} $\\
+            $ S_n^2 = \frac{1}{n-1}\sum_{}^{}(X_i - \bar{X_n})^2 $ est i, estimateur san biais de $ \frac{1}{\lambda ^2} $ \\
+            $ V_n^2 $ est un estimateur biaisé de $\frac{1}{\lambda ^2}$  
+        \end{exmp}
+
+        \begin{defn}[Risque quadratique \\]
+            \begin{itemize}
+                \item Soit $ T_n $ un estimateur de $ \theta  $, on appelle \textbf{Risque quadratique} de l'estimateur $ T_n $ (=erreur quadratique moyenne) la quantité définie par 
+                \[
+                    \mathcal{R}(\theta , T_n) = E_\theta [(T_n - \theta )^2]
+                .\]
+
+                \item Soit $ T_n $ et $ T_n ' $ deux estimateur de $ \theta  $, $ T_n $ est dit \textbf{préférable} à $ T_n ' $ si 
+                \[
+                    \mathcal{R}(\theta , T_n) < \mathcal{R}(\theta ,T_n '), \forall \theta in \Theta 
+                .\]
+                
+            \end{itemize}
+        \end{defn}
+
+        \begin{rem}[]
+            On a la décomposition : 
+            \[
+                \mathcal{R}(\theta , T_n) = Var_\theta (T_n) + (E_\theta  (T_n) - \theta )^2
+            .\]
+            Lorsque $ T_n $ est sans biais, sont risque quadratique se réduit à sa variance :
+            \[
+                \mathcal{R}(\theta , T_n) = Var_\theta (T_n)
+            .\]
+            \begin{proof}[Preuve: ]
+                On a : \begin{align*}
+                    \mathcal{R}(\theta, T_n) = E_\theta [(T_n - \theta )^2] 
+                    &= E_\theta [(T_n - E_\theta (T_n) + E_\theta (T_N)-\theta )^2] \\ 
+                    &= E_\theta [(T_n - E_\theta (T_n))^2] + (E_\theta - \theta )^2 + 2 E_\theta [(T_n - E_\theta (Tn) (E_\theta (T_n) - \theta ))] \\
+                    &= Var_\theta (T_n) + \mathcal{B}_\theta ^2(T_n) + 2 \mathcal{B}_\theta (T_n) E_\theta [(T_n - E_\theta (T_n))] \\ 
+                    &= Var_\theta (T_n) + \mathcal{B}_\theta ^2(T_n)
+                \end{align*} 
+            \end{proof}
+        \end{rem}
+        \begin{exmp}[Avec une loi binomiale]
+            Soient $ X_1, \dots, X_n $ i.i.d. $ \mathcal{B}(\theta ) $ avec $ \theta \in ]0;1[ $. L'estimateur empirique $ \bar{X_n} $  est sans biais pour $ \theta  $ et son risque quadratique \begin{align*}
+                \mathcal{B}(\theta, \bar{X_n}) &= E_\theta [(\bar{X_n}- \theta )^2] \\
+                    &= Var_\theta (\bar{X_n}) = \frac{Var_\theta (X_1)}{n} \\ 
+                    &= \frac{\theta (1-\theta )}{n}
+            \end{align*}
+            $ \mathcal{R}(\theta, \bar{X_n}) $ tend vers 0 lorsque la taille $ n $ augmente.\\
+            $ X_1 $ est un estimateur sans biais de $ \theta  $ car $ E_\theta (X_1) = \theta  $ et $ \mathcal{R}(\theta , X_1) =Var_\theta (X_1) = \theta (1-\theta).$ 
+        \end{exmp}
+
+        \begin{defn}[]
+            $ T_n $ est un estimateur de $ \theta  $ \textbf{convergeant en moyenne quadratique} si 
+            \[
+                \mathcal{R}(\theta , T_n) \longrightarrow _{n \to +\infty } 0
+            .\]
+        \end{defn}
+    \end{thm}
+\end{thm}
+
+
+\begin{exmp}[]
+    $ X_1, \dots, X_n  $ i.i.d. avec $ X_1 \sim B(\theta ) , \theta  \in ]0,1[$ \\
+    Fréquence empirique 
+    \[
+        \bar{X_n} = \frac{1}{n}\sum_{i=1}^{n}X_i
+    .\]
+    est un estimateur sans biais de $ \theta  $. Son risque quadratique : 
+    \[
+        \mathcal{R}(\theta , \bar{X_n}) = \mathbb{E}[(\bar{X_n}-\theta )^2] = Var_\theta (\bar{X_n}) = \frac{Var_\theta (X_1)}{n}= \frac{\theta (1-\theta )}{n}
+    .\]
+    \[
+        \lim_{n \to \infty} \mathcal{R}(\theta , \bar{X_n}) = \lim_{n \to \infty} \frac{\theta (1-\theta )}{n}= 0 \text{ (on gagne en précision lorsque n augmente)}
+    .\]
+    
+    soit $ X_1 $ comme estimateur de $ \theta , X_1 $ est un estimateur sans biais de $ \theta  $ car $ \mathbb{E}_\theta (X_1) = \theta $ et $ \mathcal{R}(\theta , X_1) = Var_\theta (X_1) = \theta (1-\theta )$. \\ 
+    Un estimateur $ T_n $ est dit convergent en moyenne quadratique vers $ \theta  $ si $ \lim_{n \to \infty} \mathcal{R}(\theta , T_n) = 0 $ 
+\end{exmp}
+\begin{exmp}[Exemple précédant : modèle de Bernouilli]
+    $ \bar{X_n} $ converge en moyenne quadratique car $ \lim_{n \to \infty} \mathcal{R}(\theta , \bar{X_n}) $ 
+\end{exmp}
+
+\begin{defn}[Estimateur faiblement consistent]
+    Soit $ T_n $ un estimateur de $ \theta $ on dira que $ T_n $ est \textbf{faiblement consistent} si $ T_n $  converge en probabilité vers $ \theta  $, signifie 
+    \[
+        \forall \theta \in \Theta, \forall \epsilon > 0, \lim_{n \to \infty} \mathbb{P}_\theta (\left| T_n  - \theta  \right| > \epsilon ) = 0
+    .\]
+\end{defn}
+\begin{defn}[Estimateur fortement consistent]
+    $ T_n $ est un \textbf{estimateur fortement consistent} de $ \theta  $ si $ T_n $ converge presque sûrement vers $ \theta  $ signifie 
+    \[
+        \forall \theta \in \Theta, \mathbb{P}(\{\omega \text{ tq. }\lim_{n \to \infty} T_n(\omega ) = \theta \})=1
+    .\]
+\end{defn}
+\begin{prop}[]
+    Si $ T_n $ converge en moyenne quadratique vers $ \theta  $ alors $ T_n $  converge en probabilité vers $ \theta  $ . 
+
+    En effet, en appliquant l'inégalité de Tchebychev, on a pour $ \epsilon > 0 $ 
+    \[
+        \mathbb{P}(\left| T_n -\theta  \right| > \epsilon ) \neq \frac{\mathbb{E}((T_n-\theta )^2)}{\epsilon ^2}
+    .\]
+\end{prop}
+\begin{exmp}[du modèle de Bernouilli]
+    $ X_1, \dots, X_n $ i.i.d. avec $ X_1 \sim \mathcal{B}(\theta ), \theta \in ]0,1[ $ \begin{itemize}
+        \item En appliquant la loi faible des grands nombre, on a 
+        \[
+            \bar{X_n} \to ^\mathbb{P}_{n \to \infty } \mathbb{E}_\theta (X_1) = \theta 
+        .\]
+        ($ \bar{X_n} $ est faiblement consistante pour $ \theta  $ )
+        
+        \item En appliquant la loi forte des grand nombre, on a 
+        \[
+            \bar{X_n}\to ^{p.s}_{n \to \infty } \mathbb{E} (X_1) = \theta 
+        .\]
+        ($ \bar{X_n} $ est fortement consistant pour $ \theta  $  )
+        
+        \item Autre façon de montrer le premier point. On a 
+        \[
+            \mathcal{R}(\theta, \bar{X_n}) = Var(\bar{X_n}) = \frac{\theta (1-\theta )}{n} \to _{n \to \infty} 0 
+        .\]
+        D'après la propriété précédente 
+        \[
+            \bar{X_n} \to _{n \to \infty }^\mathbb{P} \theta 
+        .\]
+    \end{itemize}
+    La variance $ V_n^2 = \frac{1}{n} \sum_{i=1}^{n}(X_i - \bar{X_n})^2 $ est un estimateur consistent de $ Var_\theta (X_1) $ car on a 
+    \[
+        V_n^2 = \frac{1}{n}\sum_{i=1}^{n}X_i^2 - \bar{X_n^2}
+    .\]
+    En appliquant la loi forte des grands nombres, on a 
+    \[
+        \frac{1}{n}\sum_{i=1}^{n}X_i^2 \to ^{p.s}_{n \to \infty } \mathbb{E}(X_1^2)
+    .\]
+    \[
+        \text{et } \bar{X_n} \to ^{p.s}_{n \to \infty } \mathbb{E}_\theta (X_1)
+    .\]
+    D'où 
+    \[
+        V_n^2 = \frac{1}{n}\sum_{i=1}^{n}X_i^2 - \bar{X_n^2} \to ^{p.s}_{n \to \infty }\mathbb{E}_\theta (X_1^2) - \mathbb{E}(X_1) = Var_\theta (X_1)
+    .\]
+\end{exmp}
+
+\section{Méthode de maximum vraisemblance}
+Voir diapo pour plus de précision sur l'exemple : 
+\begin{exmp}[]
+    $ X_i = \systeme*{
+        1 \text{ si la qualité de l'air dépasse le niveau 8 le jour } i,
+        0 \text{ sinon}
+    }$ \\
+    $ \theta = \mathbb{P}(X_i = 1) $ inconnu. \\
+    On observe $ (x_1,x_2, \dots, x_10) = (0,1,1,0,1,1,1,0,0,1) $ \begin{align*}
+        \mathbb{P}_\theta (X_1=x_1, X_2=x_2, \dots, X_10 =x_10) &= P_\theta (X_1=0)P(X_2=1)\dots P(X_10 = 1) (\text{indépendance}) \\ 
+        &= \theta ^6 (1-\theta )^4, \theta \in ]0,1[
+    \end{align*}
+    La valeur de $ \theta  $ qui rend maximale la probabilité d'observer $ (0,1,1,\dots, 1) $ est $ \hat{\theta } = \frac{6}{10} $ 
+\end{exmp}
+\textbf{Cadre} : $ X_1, \dots, X_n = \mathbf{X}$ i.i.d. de loi $ \mathbb{P}_\theta , \theta \in \Theta  $. On note $ f(x, \theta )  $ la densité de $ X_1 $ si la loi de $ X_1 $ est continues $ f(x, \theta ) = \mathbb{P}(X_1 = x)$ si la loi de $ X_1 $ est discrète. On dispose des données $ (X_1, \dots, X_n) $ \\
+
+\textbf{Objectif} : Trouver $ \theta  $ qui rendre la réalisation $ (x_1,\dots, x_n) $ la plus probable .
+\begin{defn}[Vraisemblance d'un échantillon]
+    On appelle \textbf{vraisemblance} de l'échantillon, la fonction $ L $ définie $ \forall \theta \in \Theta  $, par 
+    \begin{align*}
+        L(x_1, \dots, x_n, \theta ) &= \mathbb{P}_\theta (X_1 = x_1, \dots, X_n = x_n) \\
+                &= P(X_1=x_1) * \dots * P(X_n = x_n) \text{ si de loi discrète} \\
+                &= f(x_1, \theta )f(x_2, \theta )\dots f(x_n, \theta ) \text{ si X a une loi continue}
+    \end{align*}
+    
+\end{defn}
+\begin{rem}[]
+    \begin{itemize}
+        \item La vraisemblance est aléatoire. Une fois qu'on a une réalisation de l'échantillon, la vraisemblance ne depend que de $ \theta  $.
+        \item Si pour deux valeurs du paramètre, on a $ L(x_1, \dots, x_n, \theta _1) >  L(x_1, \dots, x_n, \theta _2)$. On a $ \theta _1 $ est plus vraisemblable pour $ \theta _2 $ étant donnée la réalisation $ (x_1, \dots, x_n) $  de $ (X_1, \dots, X_n) $ 
+    \end{itemize}
+\end{rem}
+
+\begin{exmp}[modèle de Bernouilli]
+    $ X_1, \dots, X_n $ avec $ X_1 \sim \mathcal{B}(\theta ) $. Données : $ x_1, \dots, x_n $ avec $ x_i \in {0,1} $. 
+    \begin{align*}
+        &\mathbb{P}(X_i=1) = \theta \\
+        &\mathbb{P}(X_i=0) = 1-\theta \\
+        &\mathbb{P}(X_i=x_i) = \theta^{x_i} (1-\theta)^{x_i}, x_i \in \{0,1\}
+    \end{align*}
+    \begin{align*}
+        L(x_1, \dots, x_n, \theta ) &= P(X_1=x_1, \dots, X_n=x_n)\\
+        &= \prod_{i=1}^{n}\mathbb{P}_\theta(X_i = x_i) \text{ car indépendance} \\
+        &= \prod_{i=1}^{n}\theta ^{x_i} (1-\theta)^{1-x_i} \\
+        L(x_1, \dots, x_n, \theta ) &= \theta ^{\sum_{i=1}^{n}x_i}(1-\theta )^{n-\sum_{i=1}^{n}x_i}
+    \end{align*}
+    Retour à ATMO : $ L(0,1,\dots,1,0) = \theta ^6 (1-\theta)^4 $ 
+\end{exmp}
+\begin{exmp}[]
+    Modèle de Poisson \\
+    $ (x_1,x_2,\dots,x_n) $ réalisation de $(X_1,\dots, X_n)$ échantillon avec $ X_1 \sim \mathcal{P}(\theta ) $ 
+    \[
+        \forall x \in N, P_\theta (X=x)= e^-\theta \frac{\theta ^x}{x!}
+    .\]
+    La vraisemblance s'écrit 
+    \begin{align*}
+        L(x_1, \dots, x_n, \theta ) &= \prod_{i=1}^{n}P_\theta (X_i = x_i) \\
+        &= \prod_{i=1}^{n}e^-\theta \frac{\theta ^{x_i}}{x_i!} \\
+        &= e^-\theta \frac{\theta ^{x_1}}{x_1!} e^-\theta \frac{\theta ^{x_2}}{x_2!} \dots e^-\theta \frac{\theta ^{x_n}}{x_n!} \\
+        %&= e^{-n \theta } \frac{\theta ^{\sum_{i=1}^{n}x_i}}{\prod_{i=1}^{n}(x_i!)}
+    \end{align*}
+\end{exmp}
+\begin{exmp}[]
+    $ (x_1,x_2,\dots,x_n) $ réalisation de $(X_1,\dots, X_n)$ échantillon avec $ X_1 \sim \mathcal{N}(\theta,1 ) $ ($ E_\theta (X) = \theta , var(X)=1 $ ); La densité de $ X_i $ sécrit 
+    \[
+        f(x, \theta )= \frac{1}{\sqrt[]{2 \pi }}e^{- \frac{1}{2}(x_\theta )^2}
+    .\]
+    LA vraisemblance \begin{align*}
+        L(x_1, \dots, x_n, \theta ) &= \prod_{i=1}^{n} f(x_i, \theta ) \\
+        &= \prod_{i=1}^{n} \frac{1}{\sqrt[]{2 \pi }}e^{- \frac{1}{2}(x_\theta )^2} \\
+        &= \frac{1}{(\sqrt[]{2 \pi })^n}e^{-\frac{1}{2}\sum_{i=1}^{n}(x_i-\theta )^2}
+    \end{align*}
+\end{exmp}
+\begin{exmp}[]
+    $ (x_1,x_2,\dots,x_n) $ réalisation de $(X_1,\dots, X_n)$ échantillon avec $ X_1 $ de densité $ f(x, \theta ) = \frac{\theta }{x^2}\mathbbm{1}_{x \geq \theta }() $. \\
+    La vraisemblance s'écrit \begin{align*}
+        L(x_1, \dots, x_n, \theta ) &= \prod_{i=1}^{n}f(x_i, \theta ) \\
+        &= \frac{\theta }{x_1^2}\mathbbm{1}_{x_1 \geq \theta } \dots \frac{\theta }{x_n^2}\mathbbm{1}_{x_n \geq \theta } \\
+        &= \frac{\theta ^n}{\prod_{i=1}^{n}x_i^2}
+    \end{align*}
+\end{exmp}
+
+\begin{defn}[Estimateur du maximum de vraisemblance]
+    On appelle estimateur pas maximum de vraisemblance (EMV) du paramètre $ \theta  $ un estimateur $ \theta _n \in \Theta $ défini par 
+    \[
+        L((X_1,\dots,X_n, \theta )) = \sup_{\theta \in \Theta } L(X_1 \dots X_n, \theta)
+    .\]    
+\end{defn}
+\begin{rem}[]
+    Comme la fonction $ x \mapsto \log(x), x>0 $ est croissante strictement 
+    \[
+        \sup _{\theta \in \Theta } L(x_1 \dots x_n, \theta ) = \sup_{\theta \in \Theta } \log L(x_1 \dots x_n, \theta ) = \systeme*{
+            \sup_{\theta \in \Theta } \sum_{i=1}^{n}\log P_\theta (X_i=x_i) \text{ cas discret},
+            \sup_{\theta \in \Theta } \sum_{i=1}^{n}\log f(x_i\, \theta ) \text{ cas continue}
+        }
+    .\]
+\end{rem}
+\begin{defn}[Log-vraisemblance]
+    La fonction définie par 
+    \[
+        l(x_1, \dots, x_n, \theta ) = \log L(\mathbf{X}, \theta ) = \systeme*{
+            \sup_{\theta \in \Theta } \sum_{i=1}^{n}\log P_\theta (X_i=x_i) \text{ cas discret},
+            \sup_{\theta \in \Theta } \sum_{i=1}^{n}\log f(x_i\, \theta ) \text{ cas continue}
+        }
+    .\]
+    est appelée \textbf{log-vraisemblance}
+\end{defn}
+
+\begin{exmp}[Modèle de Bernouilli]
+    $ L(x_1, \dots, x_n, \theta ) = \theta ^{\sum_{i=1}^{n}x_i} (1-\theta )^{n-\sum_{i=1}^{n}x_i} $. \\
+    La log-vraisemblance vait \begin{align*}
+        l(x_1, \dots, x_n, \theta ) &= \log_{} L(x_1, \dots, x_n, \theta )\\
+        &= \log(\theta ^{\sum_{i=1}^{n}x_i} (1-\theta )^{n-\sum_{i=1}^{n}x_i}) \\
+        &= \log_{}\theta ^{\sum_{i=1}^{n}x_i} + \log_{} ((1-\theta )^{n-\sum_{i=1}^{n}x_i}) \\
+        l(x_1, \dots, x_n, \theta ) &= (\sum_{i=1}^{n}x_i) \log_{} \theta + (n-\sum_{i=1}^{n}x_i)   \log_{} (1-\theta) 
+    \end{align*} 
+    \begin{align*}
+        \frac{\partial l(x_1, \dots, x_n, \theta )}{ \partial \theta } &= \frac{\sum_{i=1}^{n} x_i}{\theta _n}- \frac{n-\sum_{i=1}^{n}x_i}{1-\theta } \\
+        &= \frac{(1-\theta) \sum_{i=1}^{n}x_i - (n-\sum_{i=1}^{n}x_i) \theta}{\theta (1-\theta )} \\ 
+        &= \frac{\sum_{i=1}^{n}x_i ( n \theta )}{\theta (1-\theta )}
+    \end{align*}
+    \begin{align*}
+        \frac{\partial l(x_1, \dots, x_n, \theta )}{ \partial \theta } = 0 \Leftrightarrow &\sum_{i=1}^{n}x_i ( n \theta ) = 0 \\
+        \theta ^* = \frac{1}{n}\sum_{i=1}^{n}x_i
+    \end{align*}
+    $ l $ est maximale lorsque $ \theta = \theta ^* = \frac{1}{n}\sum_{i=1}^{n}x_i$ \\
+    $ \hat{\theta _n} = \frac{1}{n}\sum_{i=1}^{n}X_i $ (variance empirique) est l'ENV de $ \theta  $ (variance empirique)
+\end{exmp}
+
+\begin{exmp}[Modèle de Poisson]
+    La vraisemblance $ L(x_1, \dots, x_n, \theta ) = e^{-n \theta } \frac{\theta^{\sum_{i=1}^{n}x_i}}{\prod_{i=1}^{n}(x_i!)} , x_i \in N$ . \\
+    La log-vraisemblance : \begin{align*}
+        l(x_1, \dots, x_n, \theta )&= \log_{} L(x_1, \dots, x_n, \theta ) \\
+        &= \log_{} e^{-n \theta } + \log_{} \theta ^{\sum_{i=1}^{n}x_i} - \log_{} \prod_{i=1}^{n}(x_i !) \\
+        &= -n \theta + \sum_{i=1}^{n}x_i \log_{} \theta - \log_{} \prod_{i=1}^{n}(x_i !)
+    \end{align*}
+    Dérivé : \begin{align*}
+        \frac{\partial l(x_1, \dots, x_n, \theta )}{ \partial \theta } &= -n + \frac{\sum_{i=1}^{n}x_i}{\theta } \\
+        &= \frac{-n \theta + \sum_{i=1}^{n}x_i}{\theta }
+    \end{align*}
+    \begin{align*}
+        \frac{\partial l(x_1, \dots, x_n, \theta )}{ \partial \theta } = 0 \Leftrightarrow & -n \theta + \sum_{i=1}^{n}x_i = 0 \\
+        & \theta ^* = \frac{1}{n}\sum_{i=1}^{n}x_i
+    \end{align*}
+    Et : 
+    \[
+        \frac{\partial^2 l(x_1, \dots, x_n, \theta )}{ \partial \theta^2 } = \frac{1}{\theta ^2}\sum_{i=1}^{n}x_i < 0 \text{ car } x_i \in N  
+    .\]
+    $ l $ est maximale lorsque $\theta = \frac{1}{n}\sum_{i=1}^{n}x_i$ \\
+    $\Rightarrow \hat{\theta _n} = \frac{1}{n}\sum_{i=1}^{n}x_i$ (moyenne empirique) est l'ENV pour $ \theta  $  
+\end{exmp}
+\begin{exmp}[Loi normale]
+    $ (x_1,x_2,\dots,x_n) $ réalisation de $(X_1,\dots, X_n)$ échantillon avec $ X_1 \sim \mathcal{N}(\theta , 1) $. La vraisemblance : 
+    \[
+        L(x_1, \dots,x_n , \theta ) = \frac{1}{(\sqrt[]{2 \pi })^n}e^{-\frac{1}{2}\sum_{i=1}^{n}(x_i-\theta )^2}
+    .\]
+    La log-vraisemblance s'écrit : 
+    \[
+        l(x_1, \dots, x_n, \theta ) = \log((2 \pi)^n ) - \frac{1}{2}\sum_{i=1}^{n}(x_i-\theta )^2
+    .\]
+    \begin{align*}
+        \frac{\partial l(x_1, \dots, x_n, \theta )}{ \partial \theta } &= + \frac{1}{2} * 2 \sum_{i=1}^{n}(x_i-\theta) \\
+        &= \sum_{i=1}^{n}(x_i) - n \theta \\
+        &= 0 \Leftrightarrow \theta^* = \frac{1}{n}\sum_{i=1}^{n}x_i
+    \end{align*}
+    $ \theta _n = \frac{1}{n}\sum_{i=1}^{n}X_i$ est l'EMV pour $ \theta  $ 
+\end{exmp}
+\begin{exmp}[Loi random de toute à l'heure]
+    $ (x_1,x_2,\dots,x_n) $ réalisation de $(X_1,\dots, X_n)$ échantillon avec $ X_1 $ de densité $ f(x, \theta ) = \frac{\theta }{x^2}\mathbbm{1}_{x \geq \theta }() $. \\ 
+    La vraisemblance vaut 
+    \[
+        \frac{\theta ^n}{\prod_{i=1}^{n}x_i^2} \mathbbm{1}_{\min (x_i) \geq \theta }x
+    .\]
+    \begin{note}[]
+        Si on dérive on vas tombé sur une dérivé partiel type $ \frac{n}{\theta } $ dont on ne peux pas dérivé en theta encore 
+    \end{note}
+    $ L $ atteint son maximum lorsque $ \theta ^* = \min_{1 \leq i \leq n}(x_i) $, $ \hat{\theta _n} = \min _{1 \leq i \leq n} (X_i) $ est l'ENV pour $ \theta  $  
+    
+\end{exmp}
+
+\begin{exmp}[Modèle Gaussien]
+    $ X_1, \dots, X_n $ échantillon de taille $ n $ où $ X_i \sim \mathcal{N}(1, \sigma ^2), E(X_i) = 1, var(X_i) = \sigma ^2 = \theta $. \\
+    La densité de $ X_i $ vaut 
+    \[
+        f(x, \sigma ^2) = \frac{1}{\sqrt[]{2 \pi \sigma ^2}}e^{- \frac{1}{2 \sigma ^2}(x_1 - 1)^2}
+    .\]
+    La vraisemblance vaut \begin{align*}
+        L(x_1,\dots,x_n, \sigma ^2) = \prod_{i=1}^{n}f(x_i, \sigma ^2) &= \prod_{i=1}^{n}\frac{1}{\sqrt[]{2 \pi  \sigma ^2}}e^{- \frac{1}{2 \sigma ^2}(x_1 -1)^2}  \\
+        &= \frac{1}{(\sqrt[]{2 \pi \sigma ^2})^n} e^{-\frac{1}{2 \sigma ^2} \sum_{i=1}^{n}(x_i-1)^2}
+    \end{align*}
+    La log vraisemblance 
+    \begin{align*}
+        l(x_1,\dots,x_n, \sigma ^2) &= \log_{} L((x_1,\dots,x_n, \sigma ^2)) \\
+        &= - \frac{n}{2} \log_{} (2 \pi \sigma ^2) - \frac{1}{2 \sigma ^2} \sum_{i=1}^{n}(x_i-1)^2        
+    \end{align*}
+    La dérivé \begin{align*}
+        \frac{\partial l}{\partial \sigma ^2}(x_1,\dots,x_n, \sigma ^2) &= - \frac{n}{2 \sigma ^2} + \frac{1}{2 \sigma ^4} \sum_{i=1}^{n} (x_i -1) ^2\\
+        &= \frac{-n \theta ^2 + \sum_{i=1}^{n}(x_i -1)^2}{2 \sigma ^4} \\
+        \frac{\partial l}{\partial \sigma ^2}(x_1,\dots,x_n, \sigma ^2) &= 0 \Leftrightarrow -n \sigma ^2 + \sum_{i=1}^{n}(x_i -1)^2 = 0 \\
+        & \Leftrightarrow \sigma^{*2} = \frac{1}{n}\sum_{i=1}^{n}(x_i-1) ^2
+    \end{align*}
+    $ l $ est maximale lorsque $ \sigma ^2 = \frac{1}{n}\sum_{i=1}^{n}(x_i-1)^2 $ \\
+    \textbf{Conclusion} $ \hat{\sigma }^2_n = \frac{1}{n}\sum_{i=1}^{n}(X_i -1)^2 $ est l'EMV de $\sigma ^2$
+\end{exmp}
+
+\begin{exmp}[]
+    $ X_1, \dots, X_n $ échantillon de taille $ n $ où $ X_i \sim \mathcal{N}(m, \sigma ^2), E(X_i) = m, var(X_i) = \sigma ^2 = \theta $ avec $ m $ et $ \sigma ^2 $ inconnu. $ \theta = (m,\sigma ^2) $  \\
+    La densité de $ X_i $ vaut : 
+    \[
+        f(x, m, \sigma ^2) = \frac{1}{\sqrt[]{2 \pi \sigma ^2}}e^{- \frac{1}{2 \sigma ^2}(x_1 - m )^2}
+    .\]
+    La vraisemblance vaut \begin{align*}
+        L(x_1,\dots,x_n, \sigma ^2) = \prod_{i=1}^{n}f(x_i, \sigma ^2) &= \prod_{i=1}^{n}\frac{1}{\sqrt[]{2 \pi  \sigma ^2}}e^{- \frac{1}{2 \sigma ^2}(x_1 - m)^2}  \\
+        &= \frac{1}{(\sqrt[]{2 \pi \sigma ^2})^n} e^{-\frac{1}{2 \sigma ^2} \sum_{i=1}^{n}(x_i- m)^2}
+    \end{align*}
+    La log vraisemblance 
+    \begin{align*}
+        l(x_1,\dots,x_n, \sigma ^2) &= \log_{} L((x_1,\dots,x_n, \sigma ^2)) \\
+        &= - \frac{n}{2} \log_{} (2 \pi \sigma ^2) - \frac{1}{2 \sigma ^2} \sum_{i=1}^{n}(x_i-m)^2        
+    \end{align*}
+    Trouver les points critiques : 
+    \[
+        \systeme*{
+            \frac{\partial l}{\partial m} (x_1\,\dots\,x_n\, \sigma ^2) = 0, 
+            \frac{\partial l}{\partial \sigma ^2} (x_1\,\dots\,x_n\, \sigma ^2) = 0
+        } \Leftrightarrow \systeme*{
+            \sum_{i=1}^{n}(x_i -m) = 0,
+            \frac{-n \sigma ^2 + \sum_{i=1}^{n}(x_i -m)^2}{\sigma ^4} = 0
+        } \Leftrightarrow \systeme*{
+            \sum_{i=1}^{n}(x_i -m) = 0,
+            -n \sigma ^2 + \sum_{i=1}^{n}(x_i-m)^2 = 0
+        } \Leftrightarrow \systeme*{
+            m^* = \frac{1}{n}\sum_{i=1}^{n}x_i,
+            \sigma ^{*2} = \frac{1}{n}\sum_{i=1}^{n}(x_i - m^*)^2
+        }
+    .\]
+    Pour vérifier que $ (m^*, \sigma ^{*2}) $ est un maximum, il faut montrer que 
+    \[
+        \det \begin{pmatrix}
+            \frac{\partial ^2 l(m*, \sigma ^{*2})}{\partial m^2} & \frac{\partial ^2 l(m*, \sigma ^{*2})}{\partial m \partial \sigma ^2} \\
+            \frac{\partial ^2 l(m*, \sigma ^{*2})}{\partial \sigma ^2 \partial m} & \frac{\partial ^2 l(m*, \sigma ^{*2})}{\partial \sigma ^4}
+        \end{pmatrix} > 0 \text{ avec } \frac{\partial ^2 l(m*, \sigma ^{*2})}{\partial m^2} < 0, \frac{\partial ^2 l(m*, \sigma ^{*2})}{\partial \sigma ^4} < 0
+    .\]
+    
+    \[
+        \frac{\partial ^2 l(m, \sigma ^2)}{\partial m^2} = - \frac{n}{\sigma ^2}
+    .\]
+    \begin{align*}
+        \frac{\partial ^2 l(m, \sigma ^2)}{\partial \sigma ^4} &= \frac{\partial }{\partial \sigma ^2} [-\frac{n}{2 \sigma ^2} + \frac{1}{2 \sigma ^4} \sum_{i=1}^{n}(x_i - m)^2] \\
+        &= \frac{n}{2 \sigma ^4} - \frac{1}{\sigma ^6}\sum_{i=1}^{n}(x_i-m) ^2 \\
+        &= \frac{n}{2 \sigma ^{*4}} - \frac{1}{\sigma ^{*6}}\sum_{i=1}^{n}(x_i - m^*)^2 \\
+        &= \frac{n}{2 \sigma ^{*4}} - \frac{1}{\sigma ^{*6}} n \sigma ^{*2} \\
+        &= \frac{n}{2 \sigma ^{*4}}- \frac{n \sigma ^{*2}}{\sigma ^{*6}} \\
+        &= \frac{n}{2 \sigma ^{*4}} - \frac{n}{\sigma ^{*4}} \\ 
+        &= -\frac{n}{2 \sigma ^{*4}}
+    \end{align*}
+    \[
+        \frac{\partial ^2 l}{\partial m \partial \sigma ^2}(m*; \sigma ^{*2}) = 0 \text{ (A vérifier !)}
+    .\]
+    Conclusion 
+    \[
+        Hess (m*, \sigma ^{*2}) = \begin{pmatrix}
+            -\frac{n}{\sigma ^{*2}} & 0 \\
+            0 & -\frac{n}{2 \sigma ^{*4}}
+        \end{pmatrix}, \det Hess(m^*, \sigma ^{*2}) = \frac{n}{\sigma ^{*2}}\frac{n}{2 \sigma ^{*4}} > 0 , -\frac{n}{\sigma ^{*2}} < 0 \text{ et } -\frac{n}{2 \sigma ^{*4}} < 0
+    .\]
+    $ \Rightarrow (m^*, \sigma ^{*2})$ est un maximum \textbf{local} de $ l $ \\
+    $ (\frac{1}{n}\sum_{i=1}^{n}X_i, \frac{1}{n}\sum_{i=1}^{n}(X_i - \bar{X_n})^2) = (\bar{X_n}, V_n^2) $ est l'ENV de $ (m, \sigma ^2) $ 
+\end{exmp}
+
+\begin{rem}[]
+    \begin{enumerate}
+        \item L'ENV peut être \textbf{biaisé}
+        \item L'ENV n'est pas toujours \textbf{unique}
+        \item L'ENV peut ne pas exister
+    \end{enumerate}
+\end{rem}
+
+\end{document}

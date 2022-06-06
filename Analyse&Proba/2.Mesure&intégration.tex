@@ -1,0 +1,785 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[french]{babel}
+
+\usepackage[default,scale=0.95]{opensans}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb} %math
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{systeme} %use with \system*{eq1, eq2}
+\usepackage{bbm}
+\usepackage{tikz-cd}
+
+\usepackage{import}
+\usepackage{xifthen}
+\usepackage{pdfpages}
+\usepackage{transparent}
+
+
+
+\newcommand{\incfig}[2][1]{%
+	\def\svgwidth{#1\columnwidth}
+	\import{./figures_chap1/}{#2.pdf_tex}
+}
+
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+	pdftitle={Overleaf Example},
+	%pdfpagemode=FullScreen,
+}
+\urlstyle{same} %\href{url}{Text}
+
+\theoremstyle{plain}% default
+\newtheorem{thm}{Théorème}[section]
+\newtheorem{lem}[thm]{Lemme}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem*{cor}{Corollaire}
+%\newtheorem*{KL}{Klein’s Lemma}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Définition}[section]
+\newtheorem{exmp}{Exemple}[section]
+%\newtheorem{xca}[exmp]{Exercise}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remarque}
+\newtheorem*{note}{Note}
+%\newtheorem{case}{Case}
+
+
+
+\title{Mesures et Intégrale}
+\author{Charles Vin}
+\date{2021}
+
+\begin{document}
+\maketitle
+
+On note $ \Omega  $ un ensemble
+\section{Tribus}
+\begin{defn}[]
+    Une tribu (ou $ \sigma  $ -algèbre), $ \mathcal{F} $ sur $ \Omega  $ est un ensemble de parties de $ \Omega  $ tel que : \begin{itemize}
+        \item $ \varnothing \in \mathcal{F} $ 
+        \item $ \forall A \in \mathcal{F}, A^C \in \mathcal{F} $ (stabilité par passage au complémentaire)
+        \item Pour toute suite $ A_1, A_2, \dots $ d'éléments de $ \mathcal{F} $  
+        \[
+            \bigcup_{k=1}^{+ \infty } A_k \in \mathcal{F}
+        .\]
+    \end{itemize}
+    \begin{note}[]
+        Quand $ (\Omega, \mathcal{F}, P ) $ est un espace probabilisé. \\
+        $ \mathcal{F} $ est l'ensemble des événements dont on sait dire après l'expérience "oui,il s'est produit" ou "non, il ne s'est pas produit". La tribu représente donc "l'information disponible".
+    \end{note}
+    \begin{rem}[]
+        \begin{itemize}
+            \item Une tribu est stable pas union finie : $ \bigcup_{k=1}^{n} A_k = A_1 \cup A_2 \cup \dots \cup A_n \cup \varnothing \cup \dots \cup \varnothing \cup \dots  $ 
+            \item Une tribu est stable par intersection dénombrable ou finie car l'intersection est le complémentaire de l'union des complémentaires : $ \bigcap_{k=1}^{+ \infty } A_k = (\bigcup_{k=1}^{+\infty } A_k^C)^C $ 
+        \end{itemize}
+    \end{rem}
+    \begin{thm}[]
+        Un intersection de tribus sur $ \Omega  $ est une tribus sur $ \Omega  $ 
+        \begin{proof}[Preuve]
+            Prenons les $ F_i $ toutes tribus sur $ \Omega  $ avec $ i \in I (I=N, I=[...], I=[0,1])$ \begin{itemize}
+                \item $ \varnothing \in \bigcap_{i \in I}^{}F_i \Leftrightarrow \forall i \in I \varnothing \in F_i $ : Vrai car les $ F_i $ sont des tributs
+                \item Stabilité par passage au complémentaire : Prenons $ A \in \bigcap_{i \in I}^{}F_i, \forall i \in I, A \in F_i $ donc $ A^C \in F_i $ car $ F_i $ est une tribut
+                \item Stabilité par union dénombrable : prenons une suite d'éléments $ (A_n)_{n \in N} $  dans $ \bigcap_{i \in I}^{}F_i : \forall i \in I \text{ tous les } A_n \text{ sont dans } F_i$ donc $ \bigcup_{n=1}^{+\infty } A_n \in F_i$ donc  $ \bigcup_{n=1}^{+\infty } A_n \in \bigcap_{i \in I}^{}F_i $  
+            \end{itemize}
+        \end{proof}
+    \end{thm}
+\end{defn}
+
+Echelle des éléments, ensembles, etc
+\begin{itemize}
+    \item Eléments : $ w \in \Omega, w \in a $ 
+    \item Ensembles : $ \Omega, A \subset \Omega, A \in F, \Omega in F $ 
+    \item Ensemble d'ensembles: $ \mathcal{F}, P(\Omega )$ 
+\end{itemize}
+\begin{defn}[Tribut engendrée]
+    La tribu \textbf{engendrée} par une famille $ (A_j){j \in J} $ de parties de $ \Omega  $ est la plus petite tribut contenant tous les $ A_j $. C'est l'intersection de toutes les tribus qui contiennent tout les $ A_j $.
+\end{defn}
+Dans le cas ou $ \Omega = \mathbb{R} $ ou $ \Omega = \mathbb{R}^d $ 
+\begin{defn}[Tribut borélienne]
+    La tribut borélienne sur $ \mathbb{R} $ est la plus petite tribu sur $ \mathbb{R} $  contenant tous les intervalles. C'est la tribu engendrée par les intervalles. Et on la note $ \mathcal{B}(\mathbb{R}) $.
+
+    La tribus borélienne sur $ \mathbb{R}^d $ est la plus petite tribu sur $ \mathbb{R}^d $ qui contient tous les pavés $ ]a_1, b_1] \times  ]a_2,b_2] \times \dots \times ]a_d,b_d]$. C'est la tribut engendrée par les pavés, notée $ \mathcal{B}(\mathbb{R}^d) $.
+\end{defn}
+\begin{prop}[]
+    $ \mathcal{B}(R) $ est la plus petite tribu sur $ R $ contenant \begin{itemize}
+        \item Tout les $ ]-\infty ; a] $ avec $ a \in R $ 
+    \end{itemize}
+    Ou 
+    \begin{itemize}
+        \item Tous les $ ]a;b] $ avec $ a<b $ réels
+    \end{itemize}
+    Ou 
+    \begin{itemize}
+        \item Tous les $ [a;b] $ avec $ a<b $ réels
+    \end{itemize}
+    Ou
+    \begin{itemize}
+        \item Tous les ouverts de $ R $ 
+    \end{itemize}
+\end{prop}
+
+\section{Mesures}
+A partir d'ici, l'ensemble $ \Omega $ est muni d'une tribu $ \mathcal{F} $.
+\begin{defn}[Mesure]
+    Une \textbf{mesure} sur $ (\Omega , \mathcal{F}) $ est une application $ \mu : \mathcal{F} \mapsto [0;+\infty] $ qui est nulle en $ \varnothing  $ et $ \sigma-\text{additive} $ :\begin{itemize}
+        \item $ \mu : \mathcal{F} \to [0;+\infty ] $ telle que $ \mu (\varnothing ) = 0 $ 
+        \item $ \mu (\bigcup_{n=1}^{+\infty }A_n) = \sum_{n=1}^{+\infty } \mu (A_n) $ pour toute \textbf{suite} $ A_1,A_2,\dots, $ d'éléments de $ \mathcal{F} $ 2 à 2 disjoints ($ A_n \cap A_m \neq \varnothing, n \neq m $ )
+    \end{itemize}
+    Si en plus $ \mu (\Omega ) = 1 $ la mesure s'appelle une \textbf{probabilité}.
+\end{defn}
+
+On dit que $ (\Omega , \mathcal{F}) $ est un espace mesurable ou espace probabilisable. $ (\Omega , \mathcal{F}, \mu ) $ est un espace mesuré, ou espace probabilisé si $ \mu (\Omega )=1 $.
+
+Les éléments de la tribu sont appelés \textbf{parties mesurable}, ou événements si la mesure est une probabilité.
+
+Si $ \Omega = \mathbb{R} $ ou $ \Omega = \mathbb{R}^d $, les éléments de la tribu sont appelés \textbf{boréliens}.
+
+\begin{rem}[]
+    Les mesures sont des applications à valeurs dans $ [0;+\infty] $. On peut donc : \begin{itemize}
+        \item Les multipliers par une constante positive : $ c \mu  : \mathcal{F} \to [0;+\infty ], A \mapsto c \mu (A)$ est encore une mesure si $ c \in R_+^* $ 
+        \item Les additionner : $ \mu + \nu : \mathcal{F} \to [0 ; + \infty ], A \mapsto \mu (A) + \nu (A)$ mesure si $ \mu  $ et $ \nu  $ mesures. Pareil avec un somme de mesure.
+    \end{itemize}
+\end{rem}
+
+\begin{thm}[(admis)]
+    Pour toute fonction $ F $ croissante continue à droite sur $ \mathbb{R} $ , il existe une unique mesure $ \mu _F $ sur $ \mathcal{B}(\mathbb{R}) $ telle que $ \forall A \leq b, \mu _F(]a,b]) = F(b) - F(a) $.
+\end{thm}
+\begin{rem}[]
+    $ \mu _F = \mu _{F+c} $ pour toute constante $ c $.
+\end{rem}
+\begin{exmp}[(\textbf{Important})Mesure sur $ R,\mathcal{B}(R) $]
+    .\\
+    \begin{itemize}
+        \item Mesure de Dirac en $ x \in R : \delta _x $ \begin{align*}
+            \delta _x &: B(R) \to [0;+\infty] \\
+                & B \mapsto \delta _x (B) = \systeme*{
+                            1 \text{ si } x \in B,
+                            0 \text{ sinon}
+                        }
+        \end{align*}
+        \begin{align*}
+            \delta _x (]a;b]) &= \systeme*{
+                1 \text{ si } a < x \leq b,
+                0 \text{ sinon}
+            } \\
+                            &= F(b) - F(a) 
+        \end{align*}
+        \item \textbf{Mesure de Lebesgue} : 
+        \[
+            \lambda = \mu _F \text{ où } F: R \to R, x \mapsto x
+        .\]
+        la mesure des intervalles est leur longueur : 
+        \[
+            \mu (]a,b]) = b-a
+        .\]
+        
+        \item Mesure de Lebesgue sur $ [0;1] $ : $ \lambda _{[0;1]} = \mu _F =  $ 
+        \[
+            F: t \mapsto t \mathbbm{1}_{[0;1]}(t) + \mathbbm{1}_{t>1}(t)
+        .\]
+        
+        \[
+            \lambda _{[0;1]} (]a;b]) = F(b) - F(a) = \systeme*{
+                b-0 \text{ si } a \leq 0 \leq b \leq 1,
+                b-a \text{ si } 0 \leq a \leq b \leq 1, 
+                1-a \text{ si } 0 \leq a \leq 1 \leq b,
+                1 \text{ si } a \leq 0 \leq 1 \leq b
+            }
+        .\]
+        \item $ \mathcal{U}nif ([\alpha , \beta ]) = \frac{1}{\beta - \alpha } \lambda _{[\alpha , \beta ]} $ 
+        \item Si $ F $ croissante et continue à droite avec $ \lim_{t \to -\infty} F(t) = 0, \lim_{t \to +\infty} F(t) = 1 $ alors $ \mu _F $ est la mesure de probabilité de fonction de répartion $ F $ 
+    \end{itemize}
+\end{exmp}
+
+\begin{exmp}[Mesure sur $ (N, P(N)) $ ]
+    .\\
+    \begin{itemize}
+        \item \textbf{Mesure de comptage} sur $ N $ : 
+        \[
+            \mu = \sum_{n \in N}^{}\delta _n, 
+        .\]
+        \[
+            \forall A \in P(N), (\sum_{n \in N}^{}\delta _n)  (A) = Card(A)
+        .\]
+        Pour tout les entiers je regarde si l'entier est dans A et à la fin j'additionne. On obtient le $ Card(A) $.
+        \item Binomiales : 
+        \[
+            \mu = \sum_{k=0}^{n} \binom{n}{k} p^k (1-p)^{n-k} \delta _k \text{ avec } n \in N^*, p \in [0;1] \text{ fixés}
+        .\]
+        \[
+            \forall j \in N, \mu (\{j\}) = \systeme*{
+                0 \text{ si } j \not\in \{0\, \dots\, n\},
+                \binom{n}{j}p^j(1-p)^{n-j} \text{ si } j \in \{0\, \dots\, n\}
+            }
+        .\]
+        \[
+            \mu  = Bin(n,p) \text{ probabilité}
+        .\]
+        \item Poisson 
+        \[
+            \mu = Pois(a) = \sum_{k=0}^{+ \infty } e^-a \frac{a^k}{k!} \delta _k
+        .\]
+        \item Bernouilli : 
+        \[
+            \mu = Ber(p) = (1-p)\delta _0 + p \delta _1 \text{ probabilité}
+        .\]
+    \end{itemize}
+\end{exmp}
+Les mesures sur $ (N, P(N)) $ peuvent aussi être considérées comme des mesures sur $ (R, B(R)) $ qui ne chargent que $ N $ (c'est à dire pour lesquelles $ \mu (R \setminus N) = 0 $) car $ N \in Bor(R) $ : il suffit de poser $ \forall A \in Bor(R), \mu (A)= \mu (A \cap N)$
+
+\begin{exmp}[Lebesgue sur $ \mathcal{R}^d $ ]
+    .\\
+    \begin{itemize}
+        \item égale au volume : $ \lambda _d (]a_1;a_2] \times \dots \times ]a_d; b_d]) = \prod_{i=1}^{d} (b_i - a_i) $
+        \item \textbf{Invariante par translation}: 
+        \[
+            \forall z \in \mathbb{R}^d, \forall B \in Bor(R^d), \lambda _d (B+z) \lambda _d (\{x+z;x \in B\})= \lambda _d (B)
+        .\]
+        \item Transformation linéaire bijective : Si $ T:R^d \to R^d $ linéaire bijective, alors 
+        \[
+            \forall B \in Bor(R^d), \lambda _d(T(B)) = \left| \det T \right| \lambda _d(B)
+        .\]
+        
+    \end{itemize}
+\end{exmp}
+
+\underline{Nouveau cours du 04/10} (en distanciel)\\
+
+\section{Fonctions mesurables}
+Cadre : A partir d'ici, on se place sur $ \Omega, \mathcal{F, \mu } $ espace mesuré. On veut construire l'intégrale de $ f: \Omega \to R $ à partir de la mesure $ \mu  $.
+
+\textbf{Rappel:}$ A \in \mathcal{F} $ s'appelle partie mesurable de $ \Omega  $.
+\begin{defn}[]
+    La fonction $ f: \Omega \to R $ est \textbf{$ \mathcal{F} $ -mesurable} si 
+    \[
+        \forall B \in Bor(R), f^{-1}(B) \in \mathcal{F} \Leftrightarrow\{w \in \Omega, f(w) \in B\} = \{f \in B\} \in \mathcal{F}
+    .\]
+    Définition analogue : si $ f $ est à valeurs dans $ R=[-\infty ; + \infty ] $ ou dans $ R^d $ 
+\end{defn}
+
+\begin{rem}[]
+    Au lieu de $ \mathcal{F} $ -mesurable, on devrait dire "mesurable de $ (\Omega , \mathcal{F})$ vers $ (\mathbb{R}, Bor(R) )$ ". Mais sauf mention contraire, $ \mathbb{R} $ est toujours muni de la tribu borélienne. 
+\end{rem}
+\begin{note}[Cas particulier]
+    Si $ f: R \to R $ est $ Bor(R) $ - mesurable, i.e $ \Omega =R $ et $ \mathcal{F}=Bor(R) $, alors on dit que $ f $ est \textbf{borélienne}: $ \forall B \in Bor(R), f^-1 (B) \in Bor(R) $ 
+\end{note}
+\begin{exmp}[]
+    Les fonctions continues par morceau sont boréliennes
+\end{exmp}
+
+\begin{thm}[]
+    \begin{itemize}
+        \item Si $ A \in \mathcal{F} $ alors $ \mathbbm{1}_{A} $ est $ \mathcal{F} $-mesurable. $ \mathbbm{1}_{A}: \Omega \to R $ 
+        \[
+            \mathbbm{1}_{A}^-1(B \in Bor(R)) = \systeme*{
+                A \text{ si } 1 \in B \text{ et } 0 \notin B,
+                A^C \text{ si } 0 \in B \text{ et } 1 \notin B,
+                \Omega \text{ si } 1 \in B \text{ et } 1 \in B,
+                \varnothing \text{ si } 1 \in B \text{ et } 1 \notin B
+            }
+            .\]
+        \item (admis) La somme, le produit, ou la limite simple de fonction F-mesurable est F-mesurable 
+        \item La composé d'une fonction F-mesurable et d'une fonction Borélienne est F-mesurable : 
+        \[
+            \Omega \longrightarrow R \longrightarrow^g R
+        .\]
+        \begin{align*}
+            \forall B \in R, (g \circ f)^-1(B) = \{w \in \Omega , & g(f(w)) \in B\} \\
+                            & f(w) \in g^-1(B) \\
+                            & w \in f^-1(g^-1(B)) \\
+                        \end{align*}
+        
+                        \[
+            \forall B \in R, (g \circ f)^-1(B) = f^-1(g^-1(B) \in Bor(R)) \in \mathcal{F} \text{ (f est F mesurable)}
+            .\]
+
+            \item $ f: \Omega \to R $ ou $ f: \Omega \to \bar{R} $ est F-mesurable dès lors que 
+            \[
+                \forall b \in R, f^-1 (]-\infty ; b[) \in \mathcal{F}
+                .\]
+        ou 
+        \[
+            \forall a < b \in R, f^-1(]a;b]) \in \mathcal{F}
+        .\]
+        ou
+        \[
+            \forall a < b \in R, f^-1(]a;b[) \in \mathcal{F}
+            .\]
+        ou 
+        \[
+            \forall b \in R, f^-1 (]-\infty ; b[) \in \mathcal{F}
+        .\]
+    \end{itemize}
+\end{thm}
+
+\textbf{Vocabulaire:} \\
+Si $ \mu  $ est une mesure de probabilité sur $ (\Omega , \mathcal{F}) $ (i.e. $ \mu (\Omega ) = 1  $ ), on la note plutôt $ P $. \\
+La fonction $ f $ est plutôt notée $ X: \Omega \to R $ est au lieu de dire "fonction F-Mesurable" on dit "variable aléatoire". \\
+
+\textbf{Intuition probabiliste:} \\
+$X: \omega \to R $ est un nombre issu d'une expérience aléatoire. \\
+$ X $ est F-mesurable signifie que si on a toute l'information contenu dans $ F $ (si pour chaque A de F, on sait après l'expérience si A est réalisé ou non) alors on connait la valeur prise pas X. 
+\begin{note}[]
+    La tribus représente toutes les questions dont on a des réponses. La mesure dit si on peut obtenir une réponse (ou répond je sais plus), si l'événement est observable. 
+    Comme un jeu de devinette 
+\end{note}
+
+
+\section{Intégration}
+Soit $ \mu  $ une mesure sur $ (\Omega , \mathcal{F}) $ (pas forcément la mesure de Lebesgue)
+
+\subsection{Intégrale de Lebesgue des fonctions étagées}
+\begin{defn}[]
+    $ \forall A \in \mathcal{F}, \int_{\Omega }^{}\mathbbm{1}_{A}d \mu = \mu (A) $ . On note aussi : $ \int_{\Omega }^{}\mathbbm{1}_{A}(w) d \mu (w) $ 
+\end{defn}
+\begin{defn}[]
+    Une fonction étagée est une fonction $ \mathcal{F} $ -mesurable qui ne prend qu'un nombre fini de valeurs. Elle peut toujours s'écrire : 
+    \[
+        f = \sum_{i=1}^{n}a_i \mathbbm{1}_{A_i} \text{ où les } a_i \in R \text{ et les } A_i \text{ des parties mesurables} (A_i \in \mathcal{F})
+    .\]
+    
+    \[
+        \int_{\Omega }^{}f d \mu = \sum_{i=1}^{n}a_i \mu (A_i) \text{ Si ceci n'est pas une forme indéterminée (sinon, f n'est pas intégrable)}
+    .\]
+\end{defn}
+\begin{rem}[On vérifie l'unicité de ce que donne la def de Lebesgue]
+    Si $ f = \sum_{i=1}^{n}a_i \mathbbm{1}_{A_i}= \sum_{i=1}^{n} b_j \mathbbm{1}_{B_j} $ a-t-on plusieurs valeurs de l'intégrale pour la même fonction.
+    \begin{exmp}[]
+        \begin{align*}
+            f &= 2 \mathbbm{1}_{[-1;1]} + 3 \mathbbm{1}_{[0;4]} \text{ (écriture avec des Ai)}\\
+                &= 2 \mathbbm{1}_{[-1; 0[} + 5 \mathbbm{1}_{[0;1]} + 3 \mathbbm{1}_{]1;2[} + 3 \mathbbm{1}_{[3;4]} \text{ (écriture avec des Bj)}
+        \end{align*}
+        \begin{align*}
+            \int_{R}^{}fd \lambda &= 2 \lambda ([-1;1]) 3 \lambda ([0;4]) = 16 \\
+                                &= 2*1+5*1+3*1+3*1+3*1 = 16
+        \end{align*}
+    \end{exmp}
+    Quitte à redécouper les $ A_i $ on peut imposer qu'ils forment une partition de $ \Omega  $ . Idem pour les $ B_j $. $ A_i = \bigcup_{j=1}^{+\infty } (A_i \cap B_j) $ car $ (B_j) $ partition. (schéma dans le cours distanciel mais en vrais osef je pense)
+    \[
+        \int_{\Omega }^{}f d \mu = \sum_{i=1}^{n}a_i \mu (A_i) = \sum_{i=1}^{n}a_i \sum_{j=1}^{m}\mu (A_i \cap B_j) = \sum_{i=1}^{n}\sum_{j=1}^{m} b_j \mu (A_i \cap B_j)
+    .\]
+    si $ A_i \cap B_j = \varnothing  $ alors $ \mu (A_i \cap B_j) = 0$ \\
+    si $ A_i \cap B_j \neq  \varnothing  $ alors, pour $ w \in A_i \cap B_j, f(w) = a_i = b_j$  $ \mu (A_i \cap B_j) = $ \\
+    
+    \[
+        \int_{\Omega }^{}fd \mu = \sum_{j=1}^{m}b_j (\sum_{i=1}^{n}\mu (A_i \cap B_j))_{=\mu (B_j)}
+    .\]
+\end{rem}
+
+\subsection{Intégrale de Lebesgue des fonctions positives}
+
+\begin{defn}[]
+    Pour $ f: \Omega \to [0; + \infty] $ F-mesurable, l'intégrale de $ f $ est le suprémum de toutes les intégrales de fonctions étagées inférieures à f : 
+    \[
+        \int_{\Omega }^{}fd \mu = \sup \{\sum_{i=1}^{n}a_i \mu (A_i), 0 \leq \sum_{i=1}^{n}a_i \mathbbm{1}_{A_i} \leq f\} = \sup \{ \int_{\Omega }^{} \sum_{i=1}^{n}a_i \mathbbm{1}_{A_i}d \mu , 0 \leq \sum_{i=1}^{n}a_i \mathbbm{1}_{A_i} \leq f\}
+    .\]
+    On peut avoir $ \int_{\Omega }^{}fd \mu = + \infty $ .
+\end{defn}
+\begin{rem}[]
+    Quand $ (\Omega, \mathcal{F}) = (R, Bor(R)) $ et $ \mu = \lambda  $ mesure de Lebesgue. $ \int_{\Omega }^{}fd \lambda  $  est l'aire sous le graphe.
+\end{rem}
+
+\underline{Nouveau cours du 11/10} \\
+\begin{rem}[]
+    Dans le cas ou $ \mu  $ est la mesure de comptage sur $ \mathbb{N} $, l'intégrale de Lebegue est la somme d'une série 
+    \begin{align*}
+        \int_{\mathbb{N}}^{}fd(\sum_{k=0}^{+\infty }\delta _k) &= \sum_{k=0}^{+\infty }f(k) \\
+            &= \sup \{ \sum_{k=0}^{n}f(k), \leq \sum_{k=0}^{n}f(k) \mathbbm{1}_{x=k} \leq f \}
+    \end{align*}
+    (LA mesure de comptage prend uniquement les entiers et leur donne un poids de un) (on nous a appris que d'un coté il y a les séries et de l'autre les séries, non c'est là même chose, avec les même Théorème a partir du moment ou on sait manipuler les intégrales de Lebesgue)
+\end{rem}
+1) intégrale d'une fonction étagé, fini de valeur 
+2) intégrale d'une fonction positive
+
+\subsection{Intégrale de lebesgue des fonctions mesurables de signe quelconque}
+\begin{note}[]
+    On vas séparer la fonction en deux morceau, une partie positive et une partie négative. Puis intégrer séparement des deux cotés
+\end{note}
+Soit $ f: \Omega \to \mathbb{R}, \mathcal{F} $-mesurable.\begin{itemize}
+    \item Sa partie positive $ f_+ = max(f,0) = f \mathbbm{1}_{f \geq O} \geq 0 $ 
+    \item Sa partie négative $ f_- = max(-f,0) = -f \mathbbm{1}_{f \leq O} \geq 0 $ 
+    \item $ f = f_+ - f_- $ 
+\end{itemize}
+$ f_- $ est la symétrie de la partie négative de f par l'axe des abscise. \\
+Son intégrale de Lebegue par rapport à $ \mu  $ : 
+\[
+    \int_{\Omega }^{}fd \mu = \int_{\Omega }^{}f_+ d \mu - \int_{\Omega }^{}fd \mu 
+.\]
+On se retrouve avec intégrale de fonction positives, définie précédemment. Si ceci n'est pas une forme indéterminée (pas $ (+\infty ) $ ou $ (-\infty ) $ ). Sinon elle n'existe pas 
+\begin{defn}[Fonction intégrable]
+    $ f: \Omega \to \mathbb{R} $ est intégrable si $ f $ est $ \mathcal{F} $ -mesurable et si $ \int_{\Omega }^{}\left| f \right| d \mu < +\infty  $ i.e. $ \int_{\Omega }^{}f_+ d \mu < +\infty \text{ et } \int_{\Omega }^{}f_- d \mu < +\infty $ car $ \left| f \right| = f_+ + f_- $ 
+    \begin{note}[]
+        La valeur absolu force la convergence des deux terme un a un. Attention, on peut avoir une fonction non intégrable mais néanmoins définie par Lebesgue (tant qu'il y a pas de forme indéterminé)
+    \end{note}    
+    Si $ f $ intégrable, alors $ \int_{\Omega }^{}f_+ d \mu  - \int_{\Omega }^{}f_- d \mu  $ n'est pas une forme indéterminé
+\end{defn}
+\subsubsection{Notation des intégrale de lebesgue}
+\begin{itemize}
+    \item $ \int_{\Omega }^{}f d \mu = \int_{\Omega }^{}f(w)d \mu (w) = \int_{}^{}f d \mu  $ 
+    \item Quand $ \mu  $ est une mesure de probabilité : $ \mu = P $, la fonction mesurable est une v.a. $ f=X: \Omega \to \mathbb{R} $ 
+    \[
+        \int_{\Omega }^{}X(w) d P(w) = \int_{\Omega }^{}XdP = E(X)
+    .\]
+    \item Si $ A \in \mathcal{F} $, $\int_{A}^{}fd \mu = \int_{\Omega }^{}f \mathbbm{1}_{A} d \mu = \int_{\Omega }^{}f(w) \mathbbm{1}_{A}(w)d \mu (w)$
+\end{itemize}
+
+
+\subsubsection{Propriété de l'intégrale de Lebegue (admises)}
+\begin{note}[]
+    Garder en tête la construction de l'intégrale de Lebegue : \begin{itemize}
+        \item D'abord avec les fonctions étagé
+        \item Puis en prenant le sup pour les fonctions positives
+        \item Puis avec les partie négative et positive
+    \end{itemize}
+\end{note}
+Soit $ f $ et $ g $ de $ \Omega \to R $, mesurables, positives ou intégrables. \begin{itemize}
+    \item Positivité: Si $ f \geq 0 $ alors $\int_{\Omega }^{}fd \mu \geq 0$ car \begin{proof}[Preuve: ]
+        $ \int_{\Omega }^{}fd \mu  = \sup \{\sum_{i=1}^{n}(a_i)_{\geq 0} * (\mu (A_i))_{\geq 0}, 0 \leq \sum_{i)1}^{n}a_i \mathbbm{1}_{A_i} \leq f\} \geq 0 $
+    \end{proof}
+
+    \item Linéarité \begin{align*}
+        & \int_{\Omega }^{}(f+g) d \mu = \int_{\Omega }^{}fd \mu + \int_{\Omega }^{}gd \mu \\
+        & \int_{\Omega }^{}(cf) d \mu = c \int_{\Omega }^{}fd \mu 
+    \end{align*} 
+        et donc si $ f \leq  g $ alors $ \int_{\Omega }^{}f d \mu \leq \int_{\Omega }^{}gd \mu  $ car $ g-f \geq 0 $ donc $ \int_{}^{}(g-f)d \mu \geq 0 \Leftrightarrow \int_{}^{}fd \mu - \int_{}^{}gd \mu \geq 0 $ 
+
+    \item $ \left| \int_{\Omega }^{}f d \mu  \right| \leq \int_{\Omega }^{}\left| f \right| d \mu  $ (valeur absolu de la somme est inférieur ou égale à la somme des valeurs absolu = Inégalité triangulaire) car \begin{proof}[Preuve: ]
+        $ \left| \int_{\Omega }^{}fd \mu  \right| = \left| \int_{\Omega }^{}f_+ d \mu - \int_{\Omega }^{}f_- d \mu  \right| \leq  \left| \int_{\Omega }^{} f_+ d \mu \right| + \left| \int_{\Omega }^{} f_- d \mu  \right| = \int_{\Omega }^{}(f_+ + f_- ) d \mu  = \int_{\Omega }^{}\left| f \right| d \mu  $ 
+    \end{proof}
+    
+    \item Inégalité de Markov: si $ f \geq 0 $ alors $ \forall t > 0, \mu (\{w \in \Omega , f(w) \geq t\}) \leq  \frac{1}{t}\int_{\Omega }^{}f d \mu  $ \begin{proof}[Preuve: ]
+        $ f $ est suppérieur ou égale à $ t $ là où elle est supérieur ou égale à $ t $ et supérieure ou égale à 0 égale 
+        \[
+            f \geq t \mathbbm{1}_{f \geq t} \Leftrightarrow \int_{\Omega }^{}f d \mu \geq \int_{\Omega }^{}t \mathbbm{1}_{f \geq t}d \mu = t \mu ({f \geq t})
+        .\]        
+    \end{proof}
+    \item Inégalité de Hôlder : $ \forall p,q > 0, \frac{1}{p}+\frac{1}{q} = 1 $ alors 
+    \[
+        \int_{\Omega }^{}\left| f*g \right| d \mu \leq (\int_{\Omega }^{}\left| f^p \right|  d \mu )^\frac{1}{p}(\int_{\Omega }^{} \left| g \right| ^q d \mu )^{\frac{1}{q}}
+    .\]
+    Si $ p=q=2 $ c'est l'inégalité de Cauchy-Schwarz : $ E(\left| XY \right| ) \leq \sqrt[]{E(X^2)} \sqrt[]{E(Y^2)}$ 
+    \item Inégalité de Jensen : pour $ P $ mesure de probabilité, si $ X $ est une v.a. intégrable et $ \varphi $ une fonction convexe sur $ \mathbb{R} $ 
+    \[
+        \varphi (E(X)) \leq E(\varphi (X)) \Leftrightarrow \varphi (\int_{\Omega }^{}X(w)dP(w)) \leq \int_{\Omega }^{}\varphi (X(w))dP(w)
+    .\]
+    \textbf{Rappel:} $ \varphi  $ est convexe si \begin{align*}
+        \forall a,b \in \mathbb{R}, \forall \lambda \in [0;1], &\lambda \varphi (a)+(1-\lambda )\varphi (b) \geq \varphi (\lambda a + (1-\lambda )b) \\ 
+        & \int_{}^{} \varphi (x)d \mu (x) \geq \varphi (\int_{}^{}xd \mu (x)) \text{ avec } \mu = \lambda \delta _a + (1-\lambda )\delta _b\\
+        & E(\phi (X)) \geq \varphi (E(X)) 
+    \end{align*}
+\end{itemize}
+\begin{rem}[]
+    La construction de l'intégrale de Lebegue ne fait pas appel à des primitives. On peut utiliser des primitives uniquement quand on intègre par rapport à la mesure de Lebegues 
+\end{rem}
+    
+    \begin{itemize}
+        \item Si $ f $ a une intégrale de Riemann sur $ [a,b] \subset \mathbb{R} $ alors $ f $ est intégrable par rapport à la mesure de Lebesgue sur $ [a,b] $ et les intégrales coïncident : 
+        \[
+            \int_{a}^{b}f(x)dx = \int_{[a,b]}^{}f(x)d \lambda (x) = \int_{\mathbb{R}}^{}f(x) \mathbbm{1}_{[a,b]}(x)d \lambda (x)
+        .\]
+        \item Idem si $ f $ a une intégrale de Riemann généralisée absolument convergente sur $ [a; + \infty [, ]-\infty ; + \infty [$ ou $]a,b[ $ 
+    \end{itemize}
+    \begin{exmp}[]
+        $ \int_{R^+}^{}x^2e^{-x}d \lambda (x)= \int_{0}^{+\infty }x^2 e^{-x}dx $ car cette intégrale de Riemann est absolument convergente \begin{align*}
+            \int_{0}^{+\infty }x^2 e^{-x}dx &= [x^2 * (-e^{-x})]_0^{+\infty }- \int_{0}^{+\infty } 2x(-e^{-x})dx= 2 \int_{0}^{+ \infty }dx = 2*1 = 2 \text{ espérance loi exp}
+        \end{align*}
+    \end{exmp}
+    \begin{exmp}[]
+        \begin{align*}
+            \int_{\mathbb{R}}^{}\mathbbm{1}_{\mathbb{Q}}d \lambda &= \sum_{n=1}^{+\infty } \lambda (\mathbb{Q}) = \lambda (\{ \frac{k}{n}, k \in \mathbb{Z}, n \in \mathbb{Z}\setminus \{0\} \}) \\
+            & \leq \sum_{n=1}^{+\infty }\sum_{k \in \mathbb{Z}}^{}\lambda ( \{\frac{k}{n}\}) = 0
+        \end{align*}
+        $ \int_{\mathbb{R}}^{}\mathbbm{1}_{\mathbb{Q}}d \lambda = 0 $, $ \mathbbm{1}_{\mathbb{Q}} $ n'est pas Riemann intégrable.
+    \end{exmp}
+    
+    \subsubsection{Théorème de convergence monotone (Beppo-Levi)}
+    On peut échanger limite et intégrale pour les suites croissantes de fonction mesurables positives. \\
+    \[
+        \forall w \in \Omega, 0 \leq f_1(w) \leq f_2(w) \leq \dots \Rightarrow \int_{\Omega }^{}(\lim_{n \to \infty} f_n(w))d \mu (w) = \lim_{n \to \infty} \int_{\Omega }^{}f_n(w) d \mu (w)
+    .\]
+    \begin{exmp}[]
+        Pour $ n \geq 2 $ \begin{align*}
+            u_n &= \sum_{k=1}^{+\infty } \frac{k^n - k^2}{k^{n+2}} \\
+            &= \sum_{k=1}^{+\infty }f_n(k) \text{ avec } f_n(k) = \frac{k^n - k^2}{k^{n+2}} = \frac{1}{k^2}-\frac{1}{k^n} \\ 
+            &= \int_{\mathbb{N}^*}^{} f_n d \mu 
+        \end{align*}
+\underline{Nouveau cours du 18/10} \\
+
+        \textbf{Croissance de la suite de fonction} : $ f _{n+1} (k) = \frac{1}{k^2} - \frac{1}{k^{n+1}} \geq f_n(k) = \frac{1}{k^2} - \frac{1}{k^n}$ car $ \frac{1}{k^{n+1}} \leq \frac{1}{k^n} $  car $ k^n \leq k^{n+1} \forall 1 \leq k $ donc la suite $ (f_n)_n $ est croissante.
+
+        \textbf{Décroissance des fonctions} (osef pour le théorème mais cool parce suite croissante de fonction décroissante wtf) : on pose \begin{align*}
+            f_n &: [1; +\infty [ \to \mathbb{R} \\
+                & x \mapsto \frac{1}{x^2}-\frac{1}{x^n}
+        \end{align*}
+        Dérivé : 
+        \[
+            f_n^\prime (x) = \frac{-2}{x^3}- \frac{-n}{x_n+1} = \frac{nx^3 - 2x^{n+1}}{x^3 x^{n+1}}  \\
+        .\]
+        \begin{align*}
+            & \frac{nx^3 - 2x^{n+1}}{x^3 x^{n+1}} \leq 0 \\
+            \Leftrightarrow & nx^3 \leq 2x^{n+1} \\
+            \Leftrightarrow & \frac{n}{2}\leq x^{n-2} \\
+            \Leftrightarrow & \frac{n^{\frac{1}{n-1}}}{2} \leq x \\
+            \Leftrightarrow & \frac{1}{2} e^{\frac{1}{n-2}\ln (n)} \leq x
+        \end{align*}
+        Par le théorème de convergence monotone 
+        \[
+            \int_{\mathbb{N}} \lim_{n \to \infty} f_n(k) d \mu (k) = \lim_{n \to \infty} f_n(k)d \mu (k)
+        .\]
+        \[
+            \lim_{n \to \infty} \sum_{k=1}^{+\infty } (\frac{1}{k^2} - \frac{1}{k^n}) = \sum_{k=1}^{+\infty}\lim_{n \to \infty} (\frac{1}{k^2} - \frac{1}{k^n}) = \text{ 0 si k=1} = \sum_{k=2}^{+\infty } \frac{1}{k^2} = \frac{\pi ^2}{6} - 1
+        .\]
+    \end{exmp}
+    \begin{exmp}[avec des intégrale de Lebesgue]
+        Trouvons la limite des $ u_n $ avec $ n \to +\infty  $ 
+        \begin{align*}
+            u_n &= \int_{0}^{+\infty } \frac{n e^{-x}}{\sqrt[]{1+n^2 x}} dx \\
+            &= \int_{[0;+\infty [}^{}\frac{e^{-x}}{\sqrt[]{\frac{1}{n^2} + x}}d \lambda (x) \text{ car intégrale de Riemann absolument convergente}
+        \end{align*}
+        Est-ce une suite croissante de fonction positive ? (fonction positive easy) 
+        \[
+            0 \leq f_1 \leq f_2 \leq \dots \text{ car } \sqrt[]{\frac{1}{1^2} + x} \geq \sqrt[]{ \frac{1}{2^2} + x} \geq \sqrt{\frac{1}{3^2}+ x} \geq \dots
+        .\]
+        \[
+            \lim_{n \to \infty} f_n(x) = \frac{e^{-x}}{\sqrt[]{x}}
+        .\]
+        Par convergence monotone : 
+        \[
+            \lim_{n \to \infty} u_n = \int_{[0;+infty[}^{} \frac{e^{-x}}{\sqrt[]{x}}d \lambda (x) = \int_{0}^{+ \infty } \frac{e^{-x}}{\sqrt[]{x}} dx \text{ (Riemann)}
+        .\]
+        En revenant sur une intégrale de Riemann car absolue convergence de l'intégrale de Riemann. Et avec une changement de variable pour revenir à un truc proche de la gaussienne : $ x=\frac{y^2}{2}, dx = y dy $ 
+        \[
+            \lim_{n \to \infty} u_n = \int_{0}^{+\infty } \frac{e^{\frac{y^2}{2}}}{\frac{y}{\sqrt[]{2}}} = \sqrt[]{2}\int_{0}^{+\infty } e^{-\frac{y^2}{2}}dy = \sqrt[]{2} \frac{\sqrt[]{2 \pi }}{2} = \sqrt[]{\pi }
+        .\] 
+    \end{exmp}
+
+
+    \begin{thm}[Convergence dominée]
+        Soit $ (f_n)_{n \in \mathbb{N}^*} $ une suite de fonction mesurables sur $ (\Omega , \mathcal{F}, \mu ) $. Si la suite de fonction converge simplement et si elle est dominée par une fonction intégrable (qui ne dépend pas de $ n $) alors on peut échanger limite et intégrale. Plus précisément : 
+
+        S'il existe \begin{itemize}
+            \item $ f $ telle que $ \forall w \in \Omega, \lim_{n \to \infty} f_n(w) = f(w) $
+            \item $ g $ telle que $ \int_{\Omega }^{}\left| g \right| d \mu < + \infty  $ ($ g $ intégrable)
+            \item $ \forall w \in \Omega \left| f_n(w) \right| \leq g(w) $ ($ g $  domine les $ f_n $ )
+        \end{itemize} 
+        Alors 
+        \[
+            \lim_{n \to \infty} \int_{\Omega }^{}\left| f_n -f \right| d \mu = 0 \Leftrightarrow \lim \left| \int_{\Omega }^{}f_n d \mu \right| - \int_{\Omega }^{} \left| f \right| d \mu = 0
+        .\]
+        et par conséquent 
+        \[
+            \lim_{n \to \infty} \int_{\Omega }^{}f_n d \mu = \int_{\Omega }^{}f d \mu = \lim_{n \to \infty} f_n
+        .\]
+    \end{thm}
+    \textbf{Rappel:} Un négligeable est un ensemble de mesure null : $ \mu (A) = 0, A \in \mathcal{F} $ \begin{exmp}[ de négligeable\\]
+        \begin{itemize}
+            \item $ \lambda (N) = 0 $ pour $ \lambda  $ mesure de Lebesgue sur $ \mathbb{R} $ 
+            \item $ \{1,2,3,4,5\}^{\mathbb{N}^*} $ (les suite à valeur dans 12345 aka "on obtient jamais de 6") est négligeable dans $ \{1,2,3,4,5,6\}^{\mathbb{N}^2} $ muni de $ (\frac{1}{6} \sum_{i=1}^{6} \delta _i)^{\otimes \mathbb{N}^*} $ ok traduction : on n'a jamais de 6 dans une infinité de lancers d'un dé équilibré (indépendante) ($ \otimes  $ = une infinité de fois indépendamment)
+        \end{itemize}
+    \end{exmp}
+    
+    \begin{prop}[]
+        Si $ \mu (A) = 0 $  alors pour toute fonction $ f $-mesurable $ \int_{A}^{}fd \mu = 0$  
+
+        Si $ \mu (f \neq g) = 0 \Leftrightarrow \mu (\{w \in \Omega , f(w) \neq g(w)\})$ alors $ \int_{\Omega }^{}fd \mu = \int_{\Omega }^{} gd \mu \Leftrightarrow \int_{\Omega }^{}(f-g) d \mu = \int_{\Omega }^{} (f-g) \mathbbm{1}_{f \neq g} d \mu  = 0$ 
+    \end{prop}
+    \begin{rem}[\textbf{importante}]
+        Le théorème de convergence monotone et celui de convergence dominée restent vrais si leurs hypothèses sont satisfaites à un négligeable près : 
+        \begin{itemize}
+            \item Si $ 0 \leq f_1 \leq f_2 \leq \dots $ sur $ \Omega \setminus A $  avec $ \mu (A) = 0 $ 
+            \item Ou si $\lim_{n \to \infty} f_n(w) = f(w)$ et $ \forall n \in \mathbb{N}^*, \left| f_n(w) \right| \leq g(w) $ pour tout $ w \in \Omega \setminus A $ avec $ \mu (A) = 0 $ 
+        \end{itemize}
+        Alors 
+        \[
+            \int_{\Omega }^{}f_n d \mu \to_{n \to \infty} \int_{\Omega }^{}\lim_{n \to \infty} f_n(w) d \mu (w)
+        .\]
+    \end{rem}
+    \begin{exmp}[de convergence dominée]
+        $\int_{0}^{1} x^n (1-x)^n dx = \int_{[0;1]}^{}x^n(1-x)^n d \lambda (x)$ car intégrale de Riemann sur $ [0;1] $ fermé borné. \begin{align*}
+            \int_{[0;1]}^{}x^n(1-x)^n d \lambda (x) = \int_{[0;1]}^{}\left| f_n (x) \right| \leq 1=g \\
+            f_n(x) \to_{n \to +\infty } 0 = f \\
+            \int_{[0;1]}^{}gd \lambda =1 \leq + \infty 
+        \end{align*}
+        \[
+            \int_{0}^{1} x^n (1-x)^n dx = \int_{[0;1]}^{}x^n(1-x)^n d \lambda (x) \to_{n \to +\infty } \int_{[0;1]}^{}0 d \lambda (x) = 0
+        .\]
+    \end{exmp}
+    
+    \section{Interversion d'intégrales}
+    \begin{defn}[Mesure $ \sigma  $-finie ]
+        La mesure $ \mu  $  sur $ (\Omega , \mathcal{F}) $ est \textbf{$ \sigma  $-finie } si $ \Omega  $ est la réunion d'une suite de parties dont la mesure est finie : 
+        \[
+            \exists A_1, A_2, \dots \in \mathcal{F}, \forall k \in \mathbb{N}^*, \mu (A_k) < + \infty \text{ et } \Omega = \bigcup_{k=1}^{+\infty }A_k
+        .\]
+    \end{defn}
+    \begin{exmp}[de mesure $ \sigma  $-finie ]
+        \begin{itemize}
+            \item La mesure de Lebesgue sur $ \mathbb{R} $ est $ \sigma  $-finie. 
+            \[
+                \mathbb{R}= \bigcup_{k=1}^{+\infty} [-k;k]\text{ et } \forall k \in \mathbb{N}^*, \lambda ([-k;k]) = 2k < +\infty 
+            .\]
+            \item La mesure de comptage $ \mu  $ sur $ \mathbb{N} $ est $ \sigma  $-finie : 
+            \[
+                \mathbb{N} = \bigcup_{k=1}^{+ \infty } [0;k] \cap \mathbb{N} \text{ et } \forall k \in \mathbb{N}^*, \mu ([0;k] \cap \mathbb{N}) = k+1 < +\infty 
+            .\]
+            \item toute mesure finie est $ \sigma  $-finie : si
+            \[
+                \text{ Si } \mu (\Omega ) < + \infty \text{ alors } A_1 = A_2 = \dots = \Omega \text{ convient }
+            .\]
+            \item Les probabilité sont $ \sigma  $ -finies
+        \end{itemize}
+    \end{exmp}
+    
+    \begin{defn}[]
+        Soient $ (\Omega _1, \mathcal{F}_1, \mu _1) $ et $ (\Omega _2, \mathcal{F}_2, \mu _2) $ deux espace mesurés. \\
+        La tribu produit $ \mathcal{F}_1 \otimes \mathcal{F}_2 $ est la tribu engendrée par les $ A_1 \times A_2 $ où $ A_1 \in \mathcal{F}_1 $ et $ A_2 \in \mathcal{F}_2 $ 
+    \end{defn}
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics*[width=0.75\textwidth]{figures_chap2/fig1.png}
+    \end{figure}
+    
+    \begin{prop}[]
+        Si $ f: \Omega _1 \times \Omega _2 \to \mathbb{R} $ est $ \mathcal{F}_1 \otimes \mathcal{F}_2 $-mesurable. alors \begin{align*}
+            \forall w_2 \in \Omega _2, f(. , w_2) : \Omega_1 \to \mathbb{R}, w_1 \mapsto f(w_1, w_2) \text{ est } \mathcal{F}_1\text{-mesurable} \\
+            \forall w_1 \in \Omega _1, f(w_1 , .) : \Omega_2 \to \mathbb{R}, w_2 \mapsto f(w_1, w_2) \text{ est } \mathcal{F}_2\text{-mesurable} \\
+        \end{align*}
+    \end{prop}
+    
+    \subsection{Mesure produit et théorème de Fubini}
+    Soit $ \mu_1 $ une mesure $ \sigma \text{-finie} $ sur $ (\Omega _1, \mathcal{F}_1) $ et $ \mu_2 $ une mesure $ \sigma \text{-finie} $ sur $ (\Omega _2, \mathcal{F}_2)$ \begin{itemize}
+        \item Il existe une unique mesure $ \mu _1 \otimes \mu _2 $ telle que $ \forall A_1 \in \mathcal{F}_1, \forall A_2 \in \mathcal{F}_2, (\mu _1 \otimes \mu _2)(A_1 \times A_2) = \mu_1 (A_1) \mu _2 (A_2) $ 
+        \item Si $ f : \Omega_1 \times \Omega _2 \to [0;+\infty ]  $ est $ \mathcal{F}_1 \otimes \mathcal{F}_2 \text{mesurable} $ alors \begin{align*}
+            \int_{\Omega _1 \times \Omega _2}^{}f(w_1,w_2) d (\mu _1 \otimes  \mu _2)(w_1, w_2) &= \int_{\Omega _1}^{} (\int_{\Omega _2}^{} f(w_1,w_2) d \mu _2(w_2)) d \mu _1 (w_1) \\ 
+            &= \int_{\Omega _2}^{} ( \int_{\Omega _1}^{} f(w_1,w_2) d \mu _1(w_1)) d \mu _2 (w_2)
+        \end{align*}
+        \item La même égalité est vraie pour les fonctions $ f: \Omega _1 \times \Omega _2 \to \mathbb{R} $ $ \mathcal{F}_1 \otimes \mathcal{F}$ mesurable de signe quelconque qui satisfont 
+        \[
+            \int_{\Omega _1 \times \Omega _2}^{}\left| f(w_1, w_2) \right| d (\mu _1 \otimes \mu _2) (w_1, w_2) < +\infty 
+        .\]
+    \end{itemize}
+    \textbf{Deux cas particuliers importants} : \begin{enumerate}
+        \item \textbf{Mesure de Lebesgue :} $ \int_{\mathbb{R}^2}^{}f(x,y)d \lambda _2(x,y) = \int_{\mathbb{R}}^{}\int_{\mathbb{R}}^{} f(x,y) d \lambda (x) d \lambda (y) = \int_{\mathbb{R}}^{}\int_{\mathbb{R}}^{} f(x,y) d \lambda (y) d \lambda (x)$ si $ f $ est mesurable positive ou intégrable
+        \item \textbf{Mesure de comptage :} $ \sum_{j=0}^{+\infty }\sum_{k=1}^{+\infty }u_{j,k} = \sum_{k=0}^{+\infty } \sum_{j=1}^{+\infty } u_{j,k} $ si les $ u_{j,k} $ sont positifs \\
+        ou si $ \sum_{j=0}^{+\infty }\sum_{k=0}^{+\infty } \left| u_{j,k} \right| < + \infty  $ (intégrabilité)   
+    \end{enumerate}
+
+\underline{Nouveau cours du 25/10} \\
+
+    \textbf{Application :} \\
+    $ E(X) = \int_{\Omega }^{}X(w)dP(w) $ or 
+    \begin{align*}
+        X(w) &= \mathbbm{1}_{X(w)>0}\lambda (]0;X(w)[) - \mathbbm{1}_{X(w) < 0}\lambda (]X(w),0[) \\
+            &= \int_{\mathbb{R}}^{}\mathbbm{1}_{0<x<X(w)}d \lambda (x)- \int_{\mathbb{R}}^{} \mathbbm{1}_{X(w) < x <0}d \lambda (x)
+        \text{ou } &= \int_{\mathbb{R}}^{}\mathbbm{1}_{0<x \leq X(w)}d \lambda (x)- \int_{\mathbb{R}}^{} \mathbbm{1}_{X(w) \leq x <0}d \lambda (x)
+    \end{align*}
+    Donc : 
+    \begin{align*}
+        E(X) &= \int_{\Omega }^{}X(w)dP(w) \\
+            &=\int_{\Omega }^{} ( \int_{\mathbb{R}}^{} \mathbbm{1}_{0< x< X(w)} d \lambda (x)) dP(w) - \int_{\Omega }^{}\int_{\mathbb{R}}^{} \mathbbm{1}_{X(w) < x < 0}d \lambda (x) dP(w) \\
+            & \text{Les indicatrices sont positive, d'après Fubini pour les fonction positive} \\
+            &= \int_{\mathbb{R}}^{}\int_{\Omega }^{} \mathbbm{1}_{x>0}\mathbbm{1}_{X(w)>x}d P(w) d \lambda (x) - \int_{\mathbb{R}}^{}\int_{\Omega }^{} \mathbbm{1}_{x<0}\mathbbm{1}_{X(w) < x} dP(w) d \lambda (x)  \\
+            & \text{ (On peux sortir les indicatrice dépendant de x et pas de omega)}\\ 
+            &= \int_{\mathbb{R}}^{} \mathbbm{1}_{x>0}P(X > x) d \lambda (x) - \int_{\mathbb{R}}^{}\mathbbm{1}_{x<0}P(X<x) d \lambda (x) \\
+            &= \int_{]0;+\infty [}^{}P(X>x) d \lambda (x) - \int_{]-\infty ;0[}^{} P(X<x) d \lambda (x) 
+            \text{ou } \\
+            &= \int_{]0;+\infty [}^{}P(X \geq x) d \lambda (x) - \int_{]-\infty ;0[}^{} P(X \leq x) d \lambda (x) \text{ (avec "ou" de X(w))} \\
+        E(X) &= \int_{0}^{+\infty } 1-F_X(x) d \lambda (x) - \int_{- \infty }^{0} F_X(x) d \lambda (x) \text{ (si x a une espérance)}
+    \end{align*}
+
+
+\section{Mesures Images}
+    \begin{defn}[]        
+        Si $ \mu  $ mesure sur $ (\Omega, \mathcal{F} ) $ et si $ f: \Omega \to \mathbb{R} $ application mesurable sur $ (\Omega, \mathcal{F}) $. L'application \begin{align*}
+            \mu \circ f^{-1} &: Bor(\mathbb{R}) \to \mathcal{F} \to [0;+\infty ] \\
+            & B \mapsto f^{-1}(B) \mapsto \mu (f{-1}(B))
+        \end{align*}
+        est une mesure sur $ (\mathbb{R}, Bor(\mathbb{R})) $ appelée \textbf{mesure image} de $ \mu  $ par $ f $. 
+    \end{defn}
+
+    \begin{proof}[Preuve]
+        :\\
+        \begin{itemize}
+            \item $\mu (f^{-1}(\varnothing )) = \mu (\varnothing ) = 0$ 
+            \item Pour $ (B_i)_{i \in \mathbb{N}^*} $ deux à deux disjoints \begin{align*}
+                f^{-1}(\bigcup_{i=1}^{+ \infty } B_i) = \{w \in \Omega, \exists i \in \mathbb{N}^*, f(w) \in B_i (\Leftrightarrow w \in f^{-1}(B_i))\} = \bigcup_{i=1}^{+\infty } f^{-1}(B_i)
+            \end{align*} 
+            Et si $ w \in f^{-1}(B_i) \cap f^{-1}(B_j) $ alors $ f(w) \in B_i \cap B_j $ donc $ i=j $ : les $ f^{-1}(B_i) $ sont 2 à 2 disjoints 
+            \[
+                \mu (f^{-1}(\bigcap_{i=1}^{+ \infty }B_i)) = \mu (\bigcup_{i=1}^{+\infty }f^{-1} (B_i)) = \sum_{i=1}^{+\infty }\mu (f^{-1} (B_i))
+            .\]
+            $ \mu \circ f^{-1} $ est $ sigmat \text{additive} $ 
+        \end{itemize}
+    \end{proof}
+    \begin{rem}[]
+        Si $ f $ est une v.a. $ X $ et $ \mu  $ une probabilité $ P $ \begin{align*}
+            \mu \circ f^{-1} = P \circ X^{-1} :& Bor(\mathbb{R}) \to [0;1] \\
+                                &B \mapsto P(X^{-1} (B)) = P(X \in B)
+        \end{align*}
+        est la loi de $ X $, souvent notée $ P_X = P \circ X^-1 $ 
+    \end{rem}
+    \begin{exmp}[]
+        Si $ X  $ est à valeur dans $ \mathbb{N} $ : 
+        \[
+            P_X = P \circ X^{-1} = \sum_{n=0}^{+\infty } P(X=n) \delta _n \text{ sur } (\mathbb{R}, Bor(\mathbb{R}))
+        .\]
+    \end{exmp}
+    \begin{thm}[Théorème de transfert]
+        Soit $ f: \Omega \to \mathbb{R} $ mesurable sur $ (\Omega, \mathcal{F}, \mu ) $ et $ h : \mathbb{R} \to \mathbb{R} $ mesurable sur $ (\mathbb{R}, Bor(\mathbb{R})) $
+        \[
+            \int_{\Omega }^{}h(f(w))d \mu (w) = \int_{\mathbb{R}}^{} h(w) d (\mu \circ f^{-1})(x)
+        .\]
+        si $ h $ est positive ou si $ h \circ f $ est $ \mu \text{-intégrable} $ ou si $ h $ est $ (\mu \circ f^{-1}\text{-intégrable}) $ 
+
+        \begin{proof}[Idée de la preuve]
+            :\\
+            \begin{itemize}
+                \item Si $ h $ indicatrice : $ h= \mathbbm{1}_{B}, B \in Bor(\mathbb{R}) $ 
+                \[
+                    \int_{\Omega }^{}\mathbbm{1}_{B}(f(w))d \mu (w) = \int_{\Omega }^{}\mathbbm{1}_{f(w) \in B}d \mu (w) = \mu (f^{-1} (B) ) = \int_{\mathbb{R}}^{}\mathbbm{1}_{B}d (\mu \circ f^{-1})
+                .\]
+                \item Si $ h $ étagée : $ h = \sum_{i=1}^{n}a_i \mathbbm{1}_{B_i}() $ idem par linéarité des intégrales 
+                \item Si $ h $ positive : l'écrire comme limite de fonction étagées
+                \item Si $ h $ intégrable : $ h = h_+ - h_- $ 
+            \end{itemize}
+        \end{proof}       
+    \end{thm}
+    
+    \subsection{Espérance d'une fonction d'une v.a.}
+    Si $ X $ v.a. sur $ (\Omega , \mathcal{F}, P) $ et $ h: \mathbb{R} \to \mathbb{R} $ borélienne 
+    \[
+        E(h(X)) = \int_{\Omega }^{} h(X(w)) d P(w) \underbrace{=}_{\text{th de transfert}} \int_{\mathbb{R}}^{}h(x) d (P \circ X^{-1}) (w) = \int_{\mathbb{R}}^{} h(x)d P_X(x)
+    .\]
+    \begin{exmp}[]
+        Si $ X $ discrète à valeurs dans $\mathbb{N}$ : $ P_X = \sum_{n=1}^{+ \infty }P(X=n)\delta _n = P \circ X^{-1} $ 
+        \[
+            E(h(X)) = \int_{\mathbb{R}}^{}h(x)d(P \circ X^{-1})(x) = \sum_{n=0}^{+\infty }P(X=n)h(n)
+        .\]
+    \end{exmp}
+    \begin{prop}[]
+        So pour toute fonction $ h $ borélienne positive, ou toute fonction $ h $ borélienne bornée, on a 
+        \[
+            E(h(X)) = E(h(Y)) \text{ alors } X \text{ et } Y \text{ ont la même loi}
+        .\]
+        \begin{proof}[Preuve: ]
+            On vas se ramener à une fonction de répartition qui caractérise la loi. \\
+            $ \forall t \in \mathbb{R}, h=\mathbbm{1}_{]-\infty ; t]} $ donne $ E(h(X)) =E( \mathbbm{1}_{X \leq t})= P(X \leq t) = F_X(t) $ et la fonction de répartition caractérise la loi : $ F_X(t) = F_Y(t), \forall t \in \mathbb{R} $ $\rightarrow$ $ X $ et $ Y $ ont même loi?
+        \end{proof}
+        
+        
+    \end{prop}
+    
+    
+    
+    
+\end{document}

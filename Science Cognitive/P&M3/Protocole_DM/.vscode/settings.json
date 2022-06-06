@@ -1,0 +1,4 @@
+{
+    "files.autoSave": "afterDelay",
+    "latex-workshop.latex.autoBuild.run": "never"
+}

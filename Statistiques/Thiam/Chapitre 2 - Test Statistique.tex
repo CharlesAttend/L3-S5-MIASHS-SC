@@ -1,0 +1,1064 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[french]{babel}
+
+\usepackage[default,scale=0.95]{opensans}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb} %math
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{systeme} %use with \system*{eq1, eq2}
+\usepackage{bbm}
+
+\usepackage{import}
+\usepackage{xifthen}
+\usepackage{pdfpages}
+\usepackage{transparent}
+\usepackage{multirow}
+
+
+\newcommand{\incfig}[2][1]{%
+    \def\svgwidth{#1\columnwidth}
+    \import{./figures/}{#2.pdf_tex}
+}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+}
+\urlstyle{same} %\href{url}{Text}
+
+\theoremstyle{plain}% default
+\newtheorem{thm}{Théorème}[section]
+\newtheorem{lem}[thm]{Lemme}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem*{cor}{Corollaire}
+%\newtheorem*{KL}{Klein’s Lemma}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Définition}[section]
+\newtheorem{exmp}{Exemple}[section]
+%\newtheorem{xca}[exmp]{Exercise}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remarque}
+\newtheorem*{note}{Note}
+%\newtheorem{case}{Case}
+
+\title{Tests statistiques}
+\author{Charles Vin}
+\date{Date}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+Un test est un mécanisme qui permet de trancher entre deux hypothèse en se basant sur une réalisation de votre échantillon.
+
+
+\section{Généralité sur les tests paramétriques}
+\begin{exmp}[Exemple du traitement]
+    Un médicament couramment utilisé est connu pour guérir 30\% des malades. Un nouveau traitement est expérimenté sur 10 patients. On observe 7 guérison. Peut-on résonnement affirmer que le nouveau traitement est meilleurs ? \\
+    $ \theta _0 = 0.3 $ probabilité de guérrison de l'ancient traitement \\
+    $ \theta = ?$ probabilité de guerison du nouveau traitement \\
+    \textbf{Modélisation} : \begin{align*}
+        x_i &= \systeme*{
+            1 \text{ si le patient ni est gueri avec le nouveau traitement},
+            0 \text{ sinon}
+        } \\
+        &\mathbb{P}_\theta (x_i =1) = \theta \\
+        &X_i \sim \mathcal{B}(\theta ) , \theta \in ]0,1[
+    \end{align*}
+    2 hypothèse sont en compétition à propos de $ \theta $ : \begin{itemize}
+        \item $ H_0 $ appelée \textbf{hypothèse nulle} ou \textbf{fondamentale}: "le nouveau traitement n'est pas meilleur" $ \theta = 0.3 $ 
+        \item $ H_1 $ appelée \textbf{hypothèse alternative} : "le nouveau traitement est meilleur" $ \theta > 0.3 $ 
+    \end{itemize}
+    On considère un échantillon de taille $ n $ patients $ X_1, \dots, X_n $ avec $ X_i \sim \mathcal{B}(\theta ) $. 
+    \[
+        S_n = \sum_{i=1}^{n}X_i = \text{ nombre de patients guéris du nouveau traitement}
+    .\]
+    \textbf{Règle de décision} : \begin{itemize}
+        \item Si $ S_n \geq k$ on décide $ H_1 $ : le nouveau traitement meilleur
+        \item Si $ S_n < k $ on ne rejette pas $ H_0 $ : le nouveau traitement n'est pas meilleur
+    \end{itemize}
+    $ k $ est appelé \textbf{seuil critique}. \\
+    On a deux ensemble \begin{itemize}
+        \item $ \mathcal{R} = \{ (X_1, \dots, X_n), \sum_{i=1}^{n}X_i \geq k\} = $ zone de rejet du test = \textbf{Région critique}
+        \item $ \bar{\mathcal{R}} = \{(X_1, \dots, X_n), \sum_{i=1}^{n} X_i < k\} =$ zone d'acceptation de $ H_0 $ = \textbf{Région d'acceptation} 
+    \end{itemize}
+    Deux types d'erreurs apparaissent :\begin{itemize}
+        \item \textbf{Erreur de 1ère espèce} consiste à rejeter $ H_0 $ alors que $ H_0 $ est vrais (rejeter à tort $ H_0 $ $\rightarrow$ décider à tort que le nouveau traitement est meilleur)
+        \item \textbf{Erreur de 2ème espèce} consiste à ne pas rejeter $ H_0 $ alors que $ H_0 $ est fausse (accepter à tort $ H_0 $ )
+    \end{itemize}
+    Risque : \begin{itemize}
+        \item \textbf{Risque de 1ère espèce }est la probabilité de commettre l'erreur de 1ère espèce = probabilité de rejeter à tort $ H_0 $ 
+        \[
+            P_{H_0}(S_n \geq k) = \text{ probabilité de rejeter H0 alors que H0 vraie} = \mathbb{P}_{0.3} (S_n \geq k)
+        .\]
+        
+        \item \textbf{Risque de 2ème espèce} est la probabilité de commettre l'erreur de deuxième espèce. 
+        \[
+            P_{H_1} (S_n < k) = P_\theta (S_n < k) \text{ avec } \theta > 0.3
+        .\]
+        Le plus souvent, on ne peut pas la calculer car elle dépend de $ \theta $ inconnu ($ \theta > 0.3 $ ).
+    \end{itemize}
+    \begin{table}[!htbp]
+        \begin{tabular}{|c|c|c|}
+        \hline
+        \multirow{2}{*}{}                    & \multicolumn{2}{c|}{Conclusion du test}           \\ \cline{2-3} 
+                                            & Rejet de $ H_0 $          & Non-rejet de $ H_0 $  \\ \hline
+        $ \theta = \theta _0 $ ($H_0$ vraie) & Erreur de première espèce & Pas d'erreur          \\ \hline
+        $ \theta < \theta _0 $ ($H_0$ vraie) & Pas d'erreur              & Erreur de 2ème espèce \\ \hline
+        \end{tabular}
+    \end{table}
+    Pour trouver le seuil $ k $, on le choisit de telle sorte que $ \mathbb{P}_{0.3} (S_n \geq k) $ petite ($ k $ assez grand) et $ \mathbb{P}_\theta (S_n < k) $ pas trop grande. \\
+    Comme on ne peut pas diminuer les 2 risques à la fois (varient en sens inverse)\\
+    \textbf{Compromis} On fixe une probabilité \textbf{maximale} acceptable pour le risque de première espèce. En genérale, on choisit $ \alpha = 5\%, 10\%, \dots $ \\
+    Ce risque maximal est appelé \textbf{niveau du test}. On impose 
+    \[
+        \mathbb{P}_{0.3} (S_n \geq k) \leq \alpha 
+    .\]
+    Si $ H_0 $ est vraie ($ \theta = 0.3 = \theta  $ ) $ S_n \sim \mathcal{B}(10,0.3) $ on va chercher $ k $ tel que  \begin{align*}
+        \mathbb{P}_{0.3} (S_n \geq k) &\leq 0.05 \\
+        \mathbb{P}_{0.3} (S_n \geq 3) &= 1-\mathbb{P}_{0.3}(S_n \leq 2) \\
+        &= 1-(\mathbb{P}_{0.3}(S_n=0) + \mathbb{P}_{0.3}(S_n =1) + \mathbb{P}_{0.3}(S_n = 2)) \\
+        &= 62 \%        
+    \end{align*}
+    En choisissant le risque de rejeter à tort $ H_0 $ est de 62\%.
+    \begin{note}[]
+        voir le diapo y'a du matériel en plus pour comprendre + L'histograme  
+    \end{note}
+
+    \begin{figure}[htbp]
+        \centering
+        %\includegraphics*[width=.75\textwidth]{}
+        \caption{Histogramme de $ \mathcal{B}(10, 0.3) $ }
+        \label{}
+    \end{figure}
+    
+    On prend $ k=6 $ car $ \mathbb{P}_{0.3}(S_n \geq 6) \approx 0.0473 < 5\% $ (le plus proche possible du niveau) car \begin{align*}
+        k \text{ tq } & \mathbb{P}_{0.3}(S_n \geq k) \leq 0.05 \\
+                    & \Leftrightarrow 1 - \mathbb{P}_{0.3}(S_n < k) \leq 0.05 \\
+                    & \Leftrightarrow \mathbb{P}_{0.3}(S_n \leq k-1) \geq 0.95
+    \end{align*}
+    $ k-1 $ est le plus petit entier $ c $ tel que 
+    \[
+        \mathbb{P}_{0.3}(Sn \leq c) \geq 0.95
+    .\]
+    D'après les tables, $ k-1 = 6 \Leftrightarrow k=6 $ 
+    \begin{align*}
+        & \mathbb{P}_{0.3}(Sn \leq 5) = 0.9527\\
+        & \mathbb{P}_{0.3}(Sn \leq 6) = 0.9894
+    \end{align*}
+    \textbf{Règle de décision}\begin{itemize}
+        \item Si $ S_n \geq 6 $ alors on rejette $ H_0 $, on declare que le nouveau traitement est meilleur.
+        \item Si $ S_n <6 $ , on ne rejette pas $ H_0 $ , on décide $ H_0 $. 
+    \end{itemize}
+    Dans l'exemple on a observé 7 guérisons sur les 10 patients suivis. Comme $ 7 \in \mathcal{R} (7>6) $, on rejette $ H_0 $.
+
+    Le nouveau traitement peut être pire, on teste 
+    \[
+        H_0 : \theta < \theta _0
+    .\]
+    \[
+        H_1 : \theta > \theta _0, \theta _0 = 0.3
+    .\]
+    On choisit le seuil $ k $ tq $ P_\theta (S_n \geq k) \leq \alpha , \forall \theta \leq \theta _0 \Leftrightarrow \sup _{\theta \leq \theta _0} P(S_n \geq k) \leq \alpha $.\\
+    On montre que $ \theta \mapsto P_\theta (S_n \geq k) $ est croissante en $ \theta  $ ! (on verra en TD) $\Rightarrow \sup _{\theta \leq \theta _0} P(S_n \geq k) = P_{\theta _0} (S_n \geq k)$. 
+    
+    On obtient $ P_{\theta_0} \leq 0.05 $. On obtient la même zone de rejet que dans le test $ H_0: \theta = \theta _0, H_1: \theta > \theta _0$ 
+    \begin{itemize}
+        \item Si $ S_n \geq 6 $, on décide $ H_1 $ 
+        \item Si $ S_n < 6 $, on décide $ H_0 $ 
+    \end{itemize}
+\end{exmp}
+
+\textbf{Généralisation} \\
+$ X_1, \dots, X_n $ iid. de loi $ P_\theta , \theta \in \Theta  $. On suppose que $ \Theta = \Theta _0 \cup \Theta _1 $ avec $ \Theta _0 \cap \Theta _1 = \varnothing $. On veut tester 
+\[
+    H_0: \theta \in \Theta_0, H_1: \theta \in \Theta _1
+.\]
+$ H_0 $ = hypothèse fondamentale, $ H_1 $ hypothèse alternative (qye l'on veut montrer)
+\begin{exmp}[du traitement]
+    \begin{align*}
+        H_0 &: \theta = 0.3 \\
+            & \Theta _0 = \{0.3\} \\
+        H_0 &: \theta \leq 0.3 \\
+            &\Theta _0 = [0.03] \\
+        H_1 &: \theta > 0.3 \\
+            &\Theta _1 = ]0.3,1] \\
+        H_1 &:\theta > 0.3 \\
+            &\Theta _1 = ]0.3,1]
+    \end{align*}
+\end{exmp}
+
+COnstruire le test au niveau $ \alpha  $ reveint à construire une région de rejet $ \mathcal{R} $ fonction de l'échantillon 
+\[
+    \sup _{\theta \in \Theta _0} P_\theta [\mathcal{R}]\leq \alpha 
+.\]
+$ P_\theta [\mathcal{R}] $ = risque de rejeter à tort $ H_0 $ 
+
+\textbf{Règle de décision}\begin{itemize}
+    \item Si $ w \in \mathcal{R} $ ($ \mathcal{R} $ se réalise), on décide $ H_1 $
+    \item Si $ w \not\in \mathcal{R}  $ ($ \bar{\mathcal{R}} $ se réalise), on décide $ H_0 $ 
+\end{itemize}
+On une utilise une \textbf{statistique de test} dont on connaît (souvent) la loi sous $ H_0 $.
+\begin{exmp}[du traitement]
+    $ H_0: \theta =0.3, H_1: \theta >0.3 $ \begin{itemize}
+        \item Statistique de test : $ S_n = \sum_{i=1}^{n}X_i \sim \mathcal{B}(n, \theta ) $ \\
+        \item Sous $ H_0 $ (vraie), $ \theta = 0.3, S_n \sim \mathcal{B}(n,0.3) $ \\
+        \item Sous $ H_1 $ (vraie), $ \theta > 0.3, S_n \sim \mathcal{B}(n \theta), \theta >0.3$ \\
+    \end{itemize}
+        La région de rejet est \begin{align*}
+            \mathcal{R} &= \{S_{10} \geq 6\} \\
+                        &= \{(X_1, \dots, X_10) tq, \sum_{i=1}^{10}X_i \geq 6\} \\
+                        &= \{6,7,8,9,10\} \\
+                        &= [6,10]
+        \end{align*}
+\end{exmp}
+
+    \textbf{Terminologie} \\
+    $ H_0: \theta \in \Theta _0, H_1: \theta \in \Theta _1 $ 
+    \begin{itemize}
+        \item $ \alpha (\theta ) = P_\theta (\mathcal{R}), \forall \theta \in \Theta _0 $ = risque de première espèce 
+        \item $ \beta (\theta ) = P_\theta (\bar{\mathcal{R}}), \theta \in \Theta _1 $ = risque de 2ème espèce
+        \item $ \alpha _0 = \sup _{\theta \in \Theta _0} P_\theta (\mathcal{R})$ est la taille du rest (risque maximal de rejeter à tort $ H_0 $ )
+        \item $ \gamma (\theta ) = P_\theta (\mathcal{R}), \theta \in \Theta _1 = 1 - \beta (\theta ) $  = Probabilité de conclure $ H_1 $ et que $ H_1 $ vrais (proba deprendre la bonne décision)
+    \end{itemize}
+
+    \begin{exmp}[du traitement]
+        $ H_0: \theta \leq 0.3, H_1: \theta > 0.3, \mathcal{R}= \{S_{10} \geq 6\} $ \\\begin{itemize}
+            \item Taille du test : $ \alpha ^* = \sup _{\theta \leq 0.3} P_\theta (S_{10} \geq 6) = P_{0.3} (S_{10} \geq 6) = 4.73\% < \alpha =5\% \text{(niveau du test)} $ 
+            \item Le risque de 2ème espèce : $ \beta (\theta ) = P_\theta (S_{10} \leq 5), \theta > 0.3 $  (fonction dépendant de $ \theta  $ )
+            \item La puissance du test : $ \gamma (\theta ) = P_\theta (S_{10} \geq 6), \theta > 0.3 $ (proba de décider $ H_1 $ alors que $ H_1 $ vraie)
+        \end{itemize}
+    \end{exmp}
+
+    \begin{rem}[]
+        Un test de niveau $ \alpha  $ fixé est d'autant meilleur que sa puissance est grande (on ne se trombe pas en décidant $ H_1 $ )
+        \begin{align*}
+            \gamma (0.9) = P_{0.9} (S_{10} \geq 6) &= 1-P_{0.9}(S_{10} \leq 5) = 0.99 \text{fonction de répartition d'une } \mathcal{B}(10,0.9)\\
+            &= \sum_{k=6}^{10}P_{0.9} (S_{10} = k)
+        \end{align*}
+        Le test conduit à detecter $ H_1 $ lorsque $ \theta =0.9 $ dans 99\% des cas. \\
+        $ \gamma (0.4) = P_{0.4}(S_{10} \geq 6) = 0.166$ avec $ S_{10} \sim \mathcal{B}(10,0.4) $ Le test conduit à detecter $ H_1 $ lorsque $ \theta =0.4 $ seulement dans 16\% des cas. $ \beta (0.4) = 1-\gamma (0.4) = 0.84 $ 
+    \end{rem}
+    
+    \begin{defn}[]
+        \begin{itemize}
+            \item On dit qu'on effectue un \textbf{test d'hypothèse simple} contre \textbf{une hypothèse simple} lorsque $ \Theta _0 = \{\theta _0\}, \Theta _1 = \{\theta _1\} $ avec $ \theta _0, \theta _1 $ connus
+            \item On dit qu'on effectue un \textbf{test d'hypothèse multiple} contre \textbf{un hypothèse multiple} lorsque $ \Theta _0 = ]-\infty , \theta _0], \Theta _1 = ]\theta _0, +\infty [$ \begin{itemize}
+                \item $ H_0: \theta \leq \theta _0 $ contre $ H_1 : \theta > \theta _0 $ \textbf{test unilatéral avec région de rejet à droite}
+                \item $ H_0: \theta \geq \theta _0 $ contre $ H_1 : \theta < \theta _0 $ \textbf{test unilatéral avec région de rejet à gauche}
+                \item $ H_0: \theta = \theta _0 $ contre $ H_1 : \theta \neq  \theta _0 $ \textbf{test bilatérale}
+            \end{itemize}
+        \end{itemize}
+    \end{defn}
+    \begin{exmp}[]
+        Si on veut savoir si le candidat A aura la majorité absolue à une election, on test $ H_0: p \leq 0.5, H_1: p >0.5$. C'est un test d'hypothèse multiple contre une hypothèse multiple.
+    \end{exmp}
+    
+    Quelle est la valeur du niveau pour laquelle la décision du test est modifié \begin{itemize}
+        \item Si $ \alpha =10\%, \mathcal{R}=\{S_{10} \geq 6\}$ comme on observe 7 guérisons on rejette $ H_0 $ 
+        \item Si $ \alpha =5\%, \mathcal{R}=\{S_{10} \geq 6\}$ 
+        \item Si $ \alpha =1\%, \mathcal{R}=\{S_{10} \geq 0.6\}$ On observe 7 guerisons, on ne rejette pas $ H_0 $ 
+    \end{itemize}
+    \begin{defn}[]
+        On appelle degré de signification d'un test ou p-valeur ou probabilité critique, la plus petite valeur de $ \alpha  $ pour laquelle on rejette $ H_0 $. On note $ \alpha ^* $ \begin{itemize}
+            \item Si $ \alpha ^* < \alpha  $ on rejette $ H_0 $ 
+            \item Si $ \alpha ^* \geq \alpha  $ on ne rejette pas $ H_0 $ 
+        \end{itemize}
+        $ \alpha ^* $ mesure la crédibilité de $ H_0 $ par rapport aux données
+    \end{defn}
+
+\underline{Nouveau cours du 09/11} \\
+
+\begin{rem}[]
+    La zone de rejet dépend du niveau $ \alpha  $ fixé
+    \begin{exmp}[]
+        $ H_0 : \theta =0.3 $ contre $ H_1: \theta > 0.3 $. \\
+        \begin{itemize}
+            \item Si on fixe $ \alpha = 10\%, \mathcal{R} = \{S_n \geq k\} $ avec $ k $ tq $ P_{0.3}(\mathcal{R}) = P_{0.3}(S_n \geq k) \leq 10\% $ \\
+            Si $ H_0 $ est vraie, $ \theta =0.3 $ et $ S_n \sim \mathcal{B} (n,0.3), n=10 $ \\
+            $ P_{0.3} (S_n \leq k-1) \geq 0.9 $ \\
+            D'après la table de $ \mathcal{B}(10, 0.3) $ on obtient $ k-1=5 $ d'où $ k=6 $ d'où $ \mathcal{R}= \{S_n \geq 6\} $ et $ 7 \in \mathbb{R} $ on rejette $ H_0 $ 
+            \item Si $ \alpha = 1\%, \mathcal{R}=\{S_n \geq k\}  $ on cherche $ k $ tq $ P_{0.3}(S_n \leq k-1) \geq 0.99 $ donc $ k-1=7 \Rightarrow k=8, \mathcal{R}=\{S_n \geq 8\} $. On observe $ s_n=7 \in \bar{\mathcal{R}} $ on ne rejette pas $ H_0 $ 
+        \end{itemize}
+    \end{exmp}    
+\end{rem}
+
+\begin{defn}[]
+    On appelle p-valeur (probabilité critique ou degré de signification) le plus petit niveau $ \alpha ^* $ pour lequel on rejette $ H_0 $ au vu des observations
+    \begin{itemize}
+        \item Si $ \alpha ^* < \alpha  $, on rejette $ H_0 $ 
+        \item Si $ \alpha ^* > \alpha  $, on ne rejette pas $ H_0 $  
+    \end{itemize} 
+    $ \alpha ^* $ mesure le degré de crédibilité de $ H_0 $ 
+\end{defn}
+\begin{exmp}[]
+    Dans l'exemple $ \alpha ^* $ est entre 10\% et 1\%. 
+    \begin{align*}
+        \alpha ^* &= P_{0.3}(S_n \geq 7) \\
+                &= P_{0.3}(S_n \leq 6) \text{ avec } S_n \sim \mathcal{B}(10,0.3)\\
+                &= 1 - 0.9894 = 1.1\%
+    \end{align*}
+    Si on accepte un risque de première espèce d'au moins 1.1\%
+\end{exmp}
+
+\subsection{Exemple de test de niveau asymptotique}
+On dispose de $ n=900 $ individus 
+\[
+    X_i = \systeme*{
+        1 \text{ si la i eme personne votre pour A}, 
+        0 \text{ sinon}
+    }, X_i \sim B(\theta ), \theta = P(X_i=1)
+.\]
+On test $ H_0: \theta \leq \frac{1}{2} $ A ne gagne pas. Et $ H_1: \theta > \frac{1}{2} $. On prend comme statistique du test $ S_{900} = \sum_{i=1}^{900}X_i $ (nombre d'individus votant pour A) ou $ F_900 = \frac{S_{900}}{900} $ (fréquence empirique des votants). \\
+On rejette $ H_0 $ lorsque $ S_n \geq k $ (Sn est assez grand) (on ne peut pas prendre 450 car sinon le risque de l'erreur de première espèce est très grand (0.5), il faut prendre une marge de sécurité $ 450 + c = k $)\\
+Pour trouver $ k $, on fixe $ \alpha = 5\% $ par exemple et je contrôle 
+\[
+    \sup_{\theta \leq 1/2} P_\theta (S_n \geq k) \leq \alpha = \text{ taille du test avec dedans la proba de rejeter H}
+.\]
+L'application $ \theta \mapsto P_\theta (S_n \geq k) $ est croissante en $ \theta $, donc 
+\begin{align*}
+    &\sup_{\theta \leq 1/2} P_\theta (S_n \geq k) = P_{1/2}(S_n \geq k) \leq \alpha = 5\% \\
+    &S_n = \sum_{i=1}^{n}X_i \sim \mathcal{B}(900,0.5) 
+\end{align*}
+D'après le TCL, \begin{align*}
+    &\frac{S_n - E(S_n)}{\sqrt[]{Var(S_n)}} \approx \mathcal{N}(0,1)
+    Z = & \frac{S_n - \frac{n}{2}}{\sqrt[]{\frac{n}{4}}} \approx \mathcal{N}(0,1)
+\end{align*}
+Donc : 
+\begin{align*}
+    & P_{1/2} (Z \geq \frac{k - \frac{n}{2}}{\sqrt[]{n/4}}) \approx 5\% \\
+    & P_{1/2} (Z \geq \frac{k - 450}{\sqrt[]{225}}) \approx 5\% \\
+    & P_{1/2} (Z < \frac{k - 450}{\sqrt[]{225}}) \approx 0.95\% = P(Z \leq 1.645)
+\end{align*}
+D'après les tables de $ \mathcal{N}(0,1) $
+\begin{align*}
+    & \frac{k-450}{15} \approx 1.645 \\
+    & k=450+1.645*15 \approx 475
+\end{align*}
+\textbf{CCL : règle de décision} : 
+\begin{itemize}
+    \item Si $ S_n \geq 475 $, on décide $ H_1 $ (A va gagner) 
+    \item Si $ S_n < 475 $, on décide $ H_0 $ (A ne va pas gagner) 
+\end{itemize}
+Comme on a observé, $ s_n=S_n(w) = 486 $ personnes et $ 486 \in 
+\mathbb{R} $, on rejette $ H_0 $ (A va gagner). Que vaut la p-valeur du test ? 
+\[
+    \alpha ^* = P_{1/2} (S_n \geq 486), S_n \sim \mathcal{B}(900, 1/2)
+.\]
+Il manque peut être des morceau $\rightarrow$ demander à ID \\
+
+\underline{Nouveau cours du 16/11} \\
+
+En utilisant le TCL 
+\begin{align*}
+    \alpha ^* &= P_{0.5}(S_n \geq 486) \\
+                &= P_{0.5}(\frac{S_n - E(S_n)}{\sqrt[]{Var(S_n)}} \geq \frac{486 - E(S_n)}{\sqrt[]{Var(S_n)}}) \\
+\end{align*}
+Avec $ E(S_n) = 900*0.5 = 450 $ et $ Var(S_n) =900*0.5*0.5 = 225 $ 
+\begin{align*}
+    \alpha ^* &= P_{0.5}(Z \geq \frac{486-450}{\sqrt[]{225}}) \text{ avec } Z \sim \mathcal{N}(0,1) \\
+                &=P_{0.5} (Z \geq 2.4) \\
+                &= 1 - P(Z < 2.4) \\
+                &= 1 - 0.9918 = 0.82\% \text{ (très faible)}
+\end{align*}
+On rejette $ H_0 $ (A va gagner)
+
+
+\textbf{Démarche d'un test statistique} 
+\begin{itemize}
+    \item Choix de $ H_0 $ et $ H_1 $ 
+    \item Choix d'un risque $ \alpha  $ 
+    \item Choix d'une statistique de test $ S_T $ et de sa loi sous $ H_0 $ 
+    \item Détermination de la région critique ou régionn de rejet $ \mathcal{R} $ 
+    \item Conclusion : observation de la réalisation de $ S_T $ sur l'échantillon 
+        \begin{itemize}
+            \item Si $ w \in \mathcal{R} $ alors Rejet de $H_0$
+            \item Si $ w \not\in \mathcal{R} $ alors Non rejet de $ H_0 $ 
+        \end{itemize}
+\end{itemize}
+
+
+\section{Exemple : Test de conformité de la moyenne}
+Test sur la moyenne avec variance \textbf{connue}. \\
+\textbf{Contexte : }$ x_1, ..., x_n $  des réalisation de $ X_1,..., X_n $ iid. avec $ X_1 \sim \mathcal{N}(m, \sigma ^2) $ avec $ \sigma ^2 connu $. Soit $ m_0 $ une valeur fixée connue, on veut tester : $ H_0: m = m_0, H_1: m \neq m_0 $ 
+
+On décide $ H_1 $ si $ \left| \bar{X_n} - m_0 \geq c \right|  $ 
+Pour trouver $ c $, on fixe le niveau $ \alpha  $ de telle sorte que 
+\[
+    P_{H_0} ( \left| \bar{X_n}-m_0 \right| \geq c) \leq \alpha 
+.\]
+Si $ H_0 $ est vraie, $ m=m_0 $ et $ \bar{X_n} \sim \mathcal{N}(m_0, \sigma/n) $ et
+\begin{align*}
+        &\frac{\bar{X_n} - m_0}{\sqrt[]{\sigma ^2 /n}} \sim \mathcal{N}(0,1) \\
+    \Leftrightarrow Z= & \sqrt[]{n}\frac{\bar{X_n} - m_0}{\sqrt[]{\sigma}} \sim \mathcal{N}(0,1)
+\end{align*}
+\begin{align*}
+    P_{m_0} ( \sqrt[]{n}\frac{\left| \bar{X_n} - m_0 \right|}{\sqrt[]{\sigma}} \geq  \frac{\sqrt[]{n}*c}{\sigma }) &\approx \alpha \\
+    P_{m_0} ( \left| Z \right|  \leq  \frac{\sqrt[]{n}*c}{\sigma }) &\approx 1 - \alpha \\
+\end{align*}
+D'où \begin{align*}
+        &\frac{\sqrt[]{n}c}{\sigma } = z_{1 - \alpha /2} = \text{ le quantile=valeur dans la table } \\
+    \Leftrightarrow & c = \frac{\sigma }{\sqrt[]{n}} z_{1 - \alpha /2}
+\end{align*}
+Finalement la région de rejet est 
+\begin{align*}
+    \mathcal{R} &= \{\left| \bar{X_n}- m_0 \right| \geq  \frac{\sigma }{\sqrt[]{n}z_{1 - \alpha /2}}\} \\
+    &= \{\frac{\sqrt[]{n}}{\sigma} \left| \bar{X_n}- m_0 \right| \geq  z_{1 - \alpha /2}\} \\
+    &= \{\left| Z \right| \geq z_{1 - \alpha /2}\}
+\end{align*}
+
+\begin{exmp}[Poids de vaches]
+    $ X_i $ poids de la ième vache, $ X_i \sim N(m, \sigma ^2) $ avec $ \sigma ^2 = 10^2 kg $ (connue), $ m=E(X_i)=$poids moyen d'une vache inconnu, \\
+    $ H_0: m=87.6kg$ le régime n'a pas d'influence sur les poids. \\
+    $ H_1: \neq 87.6kg $ le régime a une influence sur le poids des vaches \\
+    On va prendre en comme statistique de test :
+    \[
+        Z= \sqrt[]{5} \frac{\bar{X_5} - 87.6}{\sqrt[]{10}} \sim \mathcal{N}(0,1)
+    .\]
+    Si on fixe le niveau $ \alpha = 5\% $ 
+    \[
+        \mathcal{R} = \{\left| Z \right| \geq z_{1-\alpha/2 = 0.975}\} = \{\left| Z \right| \geq 1.96\}
+    .\]
+    On observe 
+    \[
+        \bar{X_5}(w) = \frac{83+81+84+80+85}{5} = 82.5
+    .\]
+    La statistique de test observée est 
+    \[
+        Z(w) = \sqrt[]{5} \frac{82.5 - 87.6}{\sqrt[]{10}} = -3.53
+    .\]
+    et $ Z(w) \in \mathcal{R} $, on rejette $ H_0 $ : le régime a une influence sur le poids des bêtes
+
+    \begin{rem}[]
+        \begin{align*}
+            \mathcal{R} &= \{\left| Z \right| \geq 1.96\} \\
+                        &= \{\sqrt[]{5} \frac{\left| \bar{X_5} - 87.6 \right| }{\sqrt[]{10}} \geq 1.96\} \\
+                        &= \{ \left| \bar{X_5} - 87.6 \right| \geq  \frac{\sqrt[]{10}}{\sqrt[]{5}} 1.96\} \\
+            \bar{\mathcal{R}} &= \{ \left| \bar{X_5} - 87.6 \right| < \frac{\sqrt[]{10}}{\sqrt[]{5}} 1.96\} (\text{acceptation de } H_0)\\
+                        &= \{\bar{X_5} - \frac{\sqrt[]{10}}{\sqrt[]{5}} 1.96 \leq  87.6 \leq \bar{X_5} - \frac{\sqrt[]{10}}{\sqrt[]{5}} \}
+        \end{align*}
+    \end{rem}
+    \begin{rem}[]
+        Faire ce test bilateral au niveau $ \alpha  $ revient à se demander si $ m_0 \in IC_{1- \alpha }(m) $ où $ IC_{1 - \alpha }(m) = [\bar{X_n} - z_{1-\alpha /2} \frac{\sigma }{\sqrt[]{n}} , \bar{X_n}+ z_{1 - \alpha /2} \frac{\sigma }{\sqrt[]{n}}] $ \\
+        Car on teste : $ H_0: m \leq m_0, H_1: m > m_0 $. Si $ H_1 $ est vrais, $ \bar{X_n} $ a tendance a prendre de grandes valeurs que sous $ H_0 $. $\rightarrow$ On rejette $ H_0 $ lorsque $ \bar{X_n} \geq c $. \\
+        Pour trouver la constance $ c $, on fixe $ \alpha  $ tq $ \sup_{m \leq m_0} P_m (\bar{X_n} \geq c) \approx \alpha  $.\\
+        L'application $ m \mapsto P_m(\bar{X_n} \geq c) $  est croissante en $ m $, donc le sup est atteint lorsque $ m=m_0 $
+        \begin{align*}
+            P_{m_0}(\bar{X_n} \geq c) \approx \alpha \\
+            P_{m_0}(\bar{X_n} < c) \approx 1 - \alpha 
+        \end{align*}
+        Si $ H_0 $ est vraie ($m=m_0$), $ \bar{X_n} \sim \mathcal{N}(m_0, \sigma^2 /n), Z = \sqrt[]{n}\frac{\bar{X_n}-m_0}{\sigma} \sim \mathcal{N}(0,1) $. \\
+        Finalement 
+        \begin{align*}
+            P_{m_0}(\sqrt[]{n}\frac{\bar{X_n}-m_0}{\sigma} \leq \sqrt[]{n}\frac{c - m_0}{\sigma }) \approx 1 - \alpha \\
+            P_{m_0}(Z \leq z_{1-\alpha /2}) \\
+            \Rightarrow \sqrt[]{n}\frac{c - m_0}{\sigma } = z_{1-\alpha } \Leftrightarrow c = m_0 + \frac{\sigma }{\sqrt[]{n}}z_{1 - \alpha}
+        \end{align*}
+        Car on teste : $ H_0: m \leq m_0, H_1 : m > m_0 $
+        \begin{align*}
+            \mathcal{R} &= \{\bar{X_n} \leq m_0 + \frac{\sigma }{\sqrt[]{n}} z_{1-\alpha }\} \\
+                    &= \{\sqrt[]{n} \frac{\bar{X_n - m_0}}{\sigma} \leq  z_{1-\alpha }\} \\
+                    &= \{Z \leq z_{1-\alpha }\}
+        \end{align*} 
+    \end{rem}
+    
+    
+\end{exmp}
+
+\underline{Nouveau cours du 23/11} \\
+
+\section{Test du rapport de vraissemblance}
+On dispose de $ X_1, \dots, X_n $ iid. de loi $ P_\theta , \theta \in \Theta  $. On souhaite tester $ H_0: \theta = \theta _0, H_1: \theta = \theta _1 $.
+
+\begin{exmp}[]
+    De la pièce de monnaie : une équilibré une 30\% de chance \\
+    Soit $ X_i = \systeme*{
+        1 \text{ si le ième lancer donne Pile},
+        0 \text{ sinon.}
+    }, X_i \sim \mathcal{B}(\theta), S_n = \sum_{i=1}^{10}X_i \sim \mathcal{B}(10,\theta ) $ 
+    \begin{align*}
+        &P_{0.3} (S_{10} = 4) = 20\% \\
+        &P_{0.5} (S_{10} = 4) = 20.5\% 
+    \end{align*}
+    Il vaut mieux parier sur la pièce équilibrée ($ \theta =0.5 $ ).
+
+    Dans un test, $ H_0: \theta 0.3 $ contre $ H_1: \theta = 0.5 $. On accepte $ H_1 $ (la pièce est équilibré) lorsque 
+    \[
+        rv : \frac{P_{0.5} (S_{10} = 4)}{P_{0.3} (S_{10} = 4)} >> 1
+    .\]
+    Autrement dit, on va chercher $ k $ tq $ rv \geq k > 1 $ avec $ k $ choisit tq $ P_{0.3}(\mathcal{R}) \leq \alpha $.
+\end{exmp}
+
+\textbf{Rappel :} Si $ X_1, \dots, X_n $ iid. $ P_\theta  $ la vraisemblance est 
+\[
+    L(x_1,\dots,x_n, \theta ) = \systeme*{
+        \prod_{i=1}^{n}P_\theta (X_i = x_i) \text{ si les Xi sont discret}, 
+        \prod_{i=1}^{n}f(x_i, \theta ) \text{ si la loi des Xi est continue}
+    }
+.\]
+
+\begin{defn}[Test du rapport de vraisemblance]
+    Dans le test d'hypothèse simple : $ H_0: \theta = \theta_0, H_1: \theta = \theta _1 $ On appelle statistique du \textbf{test du rapport de vraisemblance} 
+    \[
+        V(X_1,\dots, X_n) = \frac{L(X_1, \dots, X_n, \theta _1)}{L(X_1, \dots, X_n, \theta _0)}
+    .\]
+    Par convention:
+    \begin{align*}
+        V(X_1,\dots, X_n) = + \infty \text{ si } L(X_1,\dots, X_n, \theta _0) = 0 \\
+        V(X_1,\dots, X_n) = 0 \text{ si } L(X_1,\dots, X_n, \theta _0) = L(X_1,\dots, X_n, \theta _1) = 0
+    \end{align*}
+    Si $ H_1 $ est vraie ($ \theta = \theta _1 $), $ V(X_1,\dots, X_n) $ a tendance à être grand que sous $ H_0 $ (>> 1). \\
+    Si $ H_0 $ est vraie ($ \theta = \theta _0 $), $ V(X_1,\dots, X_n) $ a tendance à être petit que sous $ H_1 $ (<< 1). 
+
+    Au niveau $ \alpha  $, la zone de rejet 
+    \[
+        \mathcal{R} = \{V(X_1,\dots, X_n) \geq V_\alpha \}, V_\alpha > 1
+    .\]
+\end{defn}
+
+Reprenons l'exemple de la pièce de monnaie : 
+\begin{exmp}[Pièce de monnaie]
+    $ H_0: \theta = 0.3, H_1 : \theta = 0.5 $. La statistique de RV est 
+    \[
+        V(X_1,\dots, X_{10}) = \frac{\theta _1^{S_{10}} (1- \theta _1)^{10 - S_{10}}}{\theta _0^{S_{10}} (1 - \theta _0)^{10 - S_{10}}}
+    .\]
+    Car $ L(x_1, \dots, x_10, \theta ) = \prod_{i=1}^{10}P_\theta (X_i = x_i) = \prod_{i=1}^{10}\theta ^{x_i} (1- \theta )^{1 - x_i}, x_i \in \{0,1\} $ 
+
+    \begin{align*}
+        V(X_1,\dots, X_n) &= (\frac{\theta _1}{\theta _0})^{S_{10}} (\frac{1 - \theta _1}{1 - \theta _0})^{10} (\frac{1 - \theta _1}{1 - \theta _0})^{S_{10}} \\
+        &= (\frac{\theta _1 (1-\theta _0)}{\theta _0 (1-\theta _1)})^{S_{10}} (\frac{1 - \theta _1}{1 - \theta _0})^{10}
+    \end{align*}
+
+    La zone de rejet est 
+    \begin{align*}
+        \mathcal{R} &= \{V(X_1,\dots, X_n) \geq V_\alpha \} \\
+            &= \{(\frac{\theta _1 (1-\theta _0)}{\theta _0 (1-\theta _1)})^{S_{10}} \geq C_\alpha \} \\
+            &= \{ ( \frac{\not 0.5 * 0.7}{0.3 \not 0.5})^{S_{10}} \geq C_\alpha \} \\
+            &= \{S_{10} \log (\frac{0.7}{0.3}) \geq \log (C_\alpha )  \} \\
+            &= \{S_{10} \geq k_\alpha \} \text{ (zone de rejet du test)}
+    \end{align*}
+    Pour $ \alpha = 5\% $, on a trouvé $ k_\alpha = 6 $ (lecture de la table $ \mathcal{B}(10,0.3) $ )
+\end{exmp}
+
+\begin{thm}[Neyman - Pearson]
+    Pour deux hypothèses simple $ H_0: \theta = \theta _0, H_1: \theta = \theta _1 $ le test de RV de zone de rejet $ \mathcal{R} = \{V(X_1, \dots, X_n) \geq V_\alpha \}$ est plus puissant que n'importe quel test de niveau $ \alpha  $ 
+
+    \begin{rem}[]
+        La zone de rejet $ \{V(X_1, \dots, X_n) \geq V_\alpha \} $ sera optimal (on obtient un test où le risque $ \beta $ est minimal pour $ \alpha $ fixé.)
+    \end{rem}
+\end{thm}
+
+\begin{exmp}[Test sur la moyenne]
+    $ X_1, \dots, X_n $ iid. $ \mathcal{N}(m, \sigma ^2) $, $ m $ inconnu, $ \sigma ^2 $ connu.  $ H_0: m=m_0, H_1, m=m_1 $, $ m_0, m_1 $ connu
+
+    La vraisemblance s'écrit 
+    \begin{align*}
+        L(x_1, \dots, x_n, m) &= \prod_{i=1}^{n}f(x_i, m) \\
+            &= \prod_{i=1}^{n}\frac{1}{\sqrt[]{2 \pi \sigma ^2}} e^{- \frac{1}{2 \sigma ^2} (x_i - m)} \\
+            &= \frac{1}{(\sqrt[]{2 \pi \sigma^2})^n} e^{- \frac{1}{2 \sigma ^2} \sum_{i=1}^{n}(x_i - m)^2}
+    \end{align*}
+
+    Statistique du RV : 
+    \begin{align*}
+        V(X_1, \dots, X_n) &= \frac{L(X_1,\dots, X_n, m_1)}{L(X_1,\dots, X_n, m_0)} = \frac{\frac{1}{(\sqrt[]{2 \pi \sigma^2})^n} e^{- \frac{1}{2 \sigma ^2} \sum_{i=1}^{n}(x_i - m_1)^2}}{\frac{1}{(\sqrt[]{2 \pi \sigma^2})^n} e^{- \frac{1}{2 \sigma ^2} \sum_{i=1}^{n}(x_i - m_0)^2}} \\
+            &= \exp (- \frac{1}{2 \sigma ^2} (\sum_{i=1}^{n} (X_i - m_1)^2 - \sum_{i=1}^{n}(X_i - m_0)^2 )) \\
+            &= \exp (- \frac{1}{2 \sigma ^2} ( \sum_{i=1}^{n}X_i^2 - 2m_1 \sum_{i=1}^{n}X_i + nm_1^2 - \sum_{i=1}^{n}X_i^2 + 2m_0 \sum_{i=1}^{n}X_i - nm_0^2)) \\
+            &= \exp (- \frac{-2nm_1 \bar{X_n} + 2m_0 n \bar{X_n} + n(m_1^2 - m_0^2)}{2 \sigma ^2}) \\
+            &= \exp ( \frac{n}{2 \sigma ^2} ( -m_1^2 + m_0^2 + 2(m_1 - m_0) \bar{X_n})) \\
+            &= \exp ( \frac{n}{2 \sigma ^2} (2\bar{X_n}(m_1 - m_0) )+ m_0^2 + m_1^2) \\
+        \mathcal{R} &= \{V(X_1, \dots, X_n) \geq V_\alpha \} \\
+            &= \{e^{\frac{n}{2 \sigma ^2} (-m_1^2 + m_0^2 + 2(m_1 - m_0) \bar{X_n})} \geq V_\alpha \} \text{ (fonction croissante de )} \bar{X_n} \text{ lorsque } m_1 > m_0 \\
+        \mathcal{R} &= \{\bar{X_n} \geq C_\alpha \} \text{ si } m_1<m_0 \text{ on change le sens de l'inégalité}
+    \end{align*}
+
+    Pour trouver la constante $ C_\alpha  $, on a
+    \[
+        P_{m_0} (\bar{X_n} \geq C_\alpha) \approx \alpha 
+    .\]
+    \begin{itemize}
+        \item Si $ H_0 $ est vraie $ \bar{X_n} \sim \mathcal{N}(m_0, \frac{\sigma ^2}{n}) $ 
+        \item Si $ H_1 $ est vraie $ \bar{X_n} \sim \mathcal{N}(m_1, \frac{\sigma ^2}{n}) $ 
+    \end{itemize}
+    \begin{align*}
+        P_{m_0}(\bar{X_n} \geq C_\alpha ) &= P(\sqrt[]{n} \frac{\bar{X_n} - m_0}{\sigma } \geq \sqrt[]{n}\frac{C_\alpha - m_0}{\sigma }) \approx \alpha \\
+        &= P(Z \leq \sqrt[]{n}\frac{C_\alpha - m_0}{\sigma }) \approx 1 - \alpha (= \phi (z_{1-\alpha })) \\
+        \sqrt[]{n}\frac{C_\alpha - m_0}{\sigma } &= z_{1- \alpha} \\
+        C_\alpha &= m_0 + \frac{\sigma }{\sqrt[]{n}}z_{1-\alpha }
+    \end{align*}
+    Finalement 
+    \[
+        \mathcal{R} = \{\bar{X_n} \geq m_0 + \frac{\sigma }{\sqrt[]{n}} z_{1-\alpha }\} = \{\sqrt[]{n} \frac{\bar{X_n} - m_0}{\sigma } \geq Z_{1-\alpha }\}
+    .\]
+\end{exmp}
+
+\begin{exmp}[des pièces]
+    X = variable aléatoire, $ X \sim \mathcal{N}(m, 16), m = E(X) \text{ inconnu }, H_0 = m = 20, H_1 : m = 22 $. \\
+    Pour un niveau $ \alpha =5\% $, la zone de rejet optimal du test. 
+    \begin{align*}
+        \mathcal{R} &= \{\bar{X_n} \geq 20 + z_{0.95} \frac{4}{\sqrt[]{25}}\} \\
+        &= \{\bar{X_n} \geq 20 + 1.645 \frac{4}{5}\} \\
+        &= \{\bar{X_n} \geq 21.316\}
+    \end{align*}
+
+    \underline{Suite qu'on fait en TD du 26/11} \\
+
+    On va utiliser le RV : 
+    \begin{align*}
+        V(X_1, \dots, X_n) &= \frac{L(X_1, \dots, X_n, 22)}{L(X_1, \dots, X_n, 20)} \\
+            &= \exp (\frac{n}{2 \sigma ^2} (20^2 - 22^2 + (22-20) \bar{X_n}))
+    \end{align*}
+    La zone de rejet du RV est 
+    \begin{align*}
+        \mathcal{R} &= \{V(X_1, \dots, X_n) \geq V_\alpha \} \\
+            &= \{\exp (\frac{n}{2 \sigma ^2} (20^2 - 22^2 + (22-20) \bar{X_n})) \geq V_\alpha  \} \\
+            &= \{\bar{X_n} \geq C_\alpha \}
+    \end{align*}
+    Si on fixe le niveau $ \alpha = 5\% $ on va chercher $ C_\alpha $ tel que $ P_{20} (\bar{X_n} \geq C_\alpha ) \approx 5\% $
+
+    \begin{itemize}
+        \item Si $ H_0 $ est vraie ($ m=20 $), $ \bar{X_n} \sim \mathcal{N}(20, \frac{16}{25}) $
+        \item Si $ H_1 $ est vraie ($ m=22 $), $ \bar{X_n} \sim \mathcal{N}(22, \frac{16}{25}) $
+    \end{itemize}
+
+    \begin{align*}
+        & P_{20}(\bar{X_n} \geq C_\alpha ) \approx 0.05 \\
+        & 1 - P_{20} (\bar{X_n} < C_\alpha ) \approx 0.05 \\
+        & P_{20} (\bar{X_n} < C_\alpha ) \approx 0.95
+    \end{align*}
+    Or sous $ H_0 $, $ \bar{X_n} \sim \mathcal{N}(20, \frac{16}{25}), n=25$
+    \begin{align*}
+        & \sqrt[]{25} \frac{\bar{X_n} - 20 }{\sqrt[]{16}} \sim \mathcal{N}(0,1) \\
+        & P(\sqrt[]{25} \frac{\bar{X_n} - 20 }{\sqrt[]{16}} < \sqrt[]{25} \frac{C_\alpha - 20}{\sqrt[]{16}}) \\
+        & 5 * \frac{C_\alpha - 20 }{4} = 1.645 \\
+        & C_\alpha = 20 + \frac{4}{5}1.645 = 21.31
+    \end{align*}
+    La zone de rejet du test est 
+    \[
+        \mathcal{R} = \{\bar{X_{25}} \geq 21.31\}
+    .\]
+    Règle de decision : 
+    \begin{itemize}
+        \item Si $ \bar{X_{25}} \geq 21.31 $, on décide $ H_1 $ 
+        \item Si $ \bar{X_{25}} < 21.31 $, on décide $ H_0 $ 
+    \end{itemize}
+    Que vaut la puissance du test ? 
+    \[
+        \gamma = P_{22}(\bar{X_{25}} \geq  21.31)
+    .\]
+    Si $ H_1 $ vraie (m=22), $ \sqrt[]{25}\frac{\bar{X_{25} - 22}}{\sqrt[]{16}} \sim \mathcal{N}(0,1) $
+    \begin{align*}
+        \gamma &= P(5 \frac{\bar{X_{25} - 22}}{4} \geq 5 \frac{(21.31 - 22)}{4})\\
+            &= 1 - \phi (-0.86) = \phi (0.86) = 80.6 \%
+    \end{align*}
+    Le risque de deuxième espèce $ \beta  $ est 
+    \[
+        \beta = 1 - \gamma = 19.5\%
+    .\]
+    Voir la Figure \ref{fig1}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics*[width=.5\textwidth]{./Figure2/fig1.jpg}
+        \label{fig1}
+    \end{figure}
+\end{exmp}
+
+\underline{Nouveau cours du 30/11} \\
+
+\subsection{Test d'une hypothèse simple contre une hypothèse multiple}
+\begin{align*}
+                & H_0: \theta = \theta _0 \text{ contre } H_1: \theta > \theta _0 \\
+\Leftrightarrow & H_0: \theta = \theta _0 \text{ contre } H_1: \theta = \theta _1 \text{ ou } \theta _1 > \theta _0
+\end{align*}
+Lorsque la zone de rejet du test ne depend pas de la valeur de $ \theta _1 $ mais uniquement du sens de l'inégalité, le test sera uniformément plus puissant (UPP).
+
+\begin{exmp}[Application : Test sur la moyenne]
+    $ X_1, \dots, X_n $ iid. avec $ X_1 \sim \mathcal{N}(m, \sigma ^2) $. $ \sigma $ connue \\
+    $ H_0: m=m_0 $ contre $ H_1: m>m_0 $ avec $ m_0 $ fixé   \\
+    $ H_0: m=m_0 $ contre $ H_1: m=m_1 $ avec $ m_1 > m_0 $  \\
+    La zone de rejet du test (pour un niveau $ \alpha  $ )
+    \[
+        \mathcal{R} = \{\bar{X_n} \geq m_0 + z_{1 - \alpha } \frac{\sigma }{\sqrt[]{n}}\}
+    .\]
+    La zone de rejet ne dépend pas de la valeur de $ m_1 $, cet test est UPP.
+\end{exmp}
+
+\begin{exmp}[14 du diapo : fromage]
+    On veut tester : $ H_0: m=30\% \text{ contre } H_1: m > 30\% $ \\
+    On rejette $ H_0 $ lorsque $ \bar{X_n} \geq c, n = 16 $. \\
+    Pour trouver la constante $ c $, on fixe le niveau $ \alpha = 2\% $ tq 
+    \begin{align*}
+        & P_{0.3} (\mathcal{R}) \approx 0.0.2  \\
+        & P_{0.3} (\bar{X_n} \geq c) \approx 0.0.2  \\
+    \end{align*}
+    Si $ H_0 $ vraie ($m=0.3$) et $ \bar{X_n} = \frac{1}{n}\sum_{i=1}^{n}X_i \sim \mathcal{N}(0.3, \frac{0.16^2}{16}) \Leftrightarrow \sqrt[]{16}\frac{\bar{X_n} - 0.3}{0.16} \sim \mathcal{N}(0,1)$ 
+    \begin{align*}
+        &P_{0.3} ( \sqrt[]{16} \frac{\bar{X_n} - 0.3}{0.16} \geq \sqrt[]{16} \frac{c - 0.3}{0.16}) \approx 0.02 \\
+        &P(Z < \frac{4(c-0.3)}{0.16}) \approx 0.98 = P(Z \leq 2.055) \\
+        c &= 0.3 + \frac{0.16}{\sqrt[]{16}} * 2.055 = 0.3822 \\
+        &= m_0 + \frac{\sigma }{\sqrt[]{n}} * z_{1-\alpha} \text{ (on retrouve la formule exemple 4.5)} \\
+        & \mathcal{R}= \{\bar{X_n} \geq 38.22\%\} \text{ test UPP }
+    \end{align*}
+    Que vaut la fonction puissance ? 
+    \begin{align*}
+        \gamma :& ]0.3, + \infty [ \to [0,1] \\
+                & m \mapsto P_m (\bar{X_n} \geq 0.3822)
+    \end{align*}
+    Si $ H_1 $ vraie ($ m > 30\% $ ), $ \bar{X_n} \sim \mathcal{N}(m, \frac{\sigma ^2}{n}) \Leftrightarrow \sqrt[]{n} \frac{\bar{X_n} - m}{\sigma } \sim \mathcal{N} (0,1)$ 
+    \begin{align*}
+        \gamma (m) &= P_m (\sqrt[]{n} \frac{\bar{X_n} - m}{\sigma } \geq \sqrt[]{n} \frac{0.3822 - m}{\sigma }) \\
+                    &= 1 - P_m (Z < \sqrt[]{16} \frac{0.3822 - m}{0.16}) \\
+                    &= 1 - \phi (\frac{4}{0.16} (0.3822 - m) \text{ avec } \phi \text{ fdr de } Z \sim \mathcal{N}(0,1))
+    \end{align*}
+    Par exemple 
+    \begin{align*}
+        \gamma (0.4) &= 1 - \phi (\frac{4}{0.16} (0.3822 - 0.4)) = 1 - \phi (-0.445) \\
+                    & \phi (0.445) = 67\%
+    \end{align*}
+
+    \begin{note}[]
+        La zone de rejet ne vas pas dépendre de $ m_1 $ et la taille du test augmente en fonction de $ m_1 $. Plus on s'éloigne de $ m_0 $, plus la puissance est grande. Il est plus simple de distinguer, différencier deux valeurs éloignées.
+    \end{note}
+\end{exmp}
+
+\subsection{Test d'une hypothèse multiple contre une hypothèse multiple}
+
+\textbf{Généralisation:} \begin{align*}
+    &H_0: \theta \in \Theta _0 &\text{ contre } H_1: \theta \in \Theta _1 \\
+    \text{Par exemple } &H_0: m \leq 30\% &\text{ contre } H_1: m > 30\%
+\end{align*}
+
+\begin{defn}[]
+    La statistique de test du RV est 
+    \[
+        V(X_1, \dots, X_n) = \frac{\sup _{\theta \in \Theta _1} L(X_1, \dots, X_n, \theta )}{\sup _{\theta \in \Theta _0} L(X_1, \dots, X_n, \theta )}
+    .\]
+    La zone de rejet du test de RV est 
+    \[
+        \mathcal{R}= \{V(X_1, \dots, X_n) \geq V_\alpha \} \text{ avec } V_\alpha > 1 \text{ tq } \sup _{\theta \in \Theta _0} P_\theta (\mathcal{R}) \leq \alpha 
+    .\]
+\end{defn}
+
+\subsubsection{Test sur le paramètre d'une Bernouilli}
+
+\begin{align*}
+    H_0: p= 0.48, H_1 : p=0.52 \Leftrightarrow H_0: p \leq 0.48, H_1: p > 0.48 \rightarrow \mathcal{R} = \{S_n \geq k\} \\
+    H_0: p= 0.52, H_1 : p=0.48 \Leftrightarrow H_0: p \geq 0.52, H_1: p < 0.52 \rightarrow \mathcal{R} = \{S_n \leq k\} \\
+    \text{On obtient la même zone de rejet dans tous les cas } 
+\end{align*}
+\textbf{Résumé: } diapo tableau qui résume test avec leurs zone de rejet
+
+\subsubsection{Test sur la moyenne avec écart type connu}
+
+Contexte : $ X_1, \dots, X_n $ iid. avec $ X_1 \sim \mathcal{N}(m, \sigma ^2), \sigma$ connu. On veut tester $ H_0:m=m_0 $ contre $ H_1: m = m_1 $ avec $ m_1 < m_0 $ On decide $ H_1 $ lorsque $ \bar{X_n} < c $. Pour trouver $ c $, on fixe $ \alpha  $ tq 
+\begin{align*}
+    & P_{m_0} (\bar{X_n} \leq c) \approx \alpha \\
+    & P_{m_0} (\sqrt[]{n} \frac{\bar{X_n} - m_0}{\sigma } \leq \sqrt[]{n} \frac{ c - m_0}{\sigma }) \approx \alpha = P(Z \leq z_{1-\alpha }) \\
+    & c = m_0 - z_{1 - \alpha } \frac{\sigma }{\sqrt[]{n}} \\
+    & \mathcal{R} = \{\bar{X_n} \leq m_0 - z_{1 - \alpha } \frac{\sigma }{\sqrt[]{n}}\}
+\end{align*}
+La zone de rejet de ce test est la même que pour le test $ H_0: m \geq m_0, H_1: m < m_0 $. \\
+De même lorsque l'on teste $ H_0: m=m_0 $  contre $ H_1: m=m_1, m_1 > m_0 $. 
+
+La zone de rejet du test est 
+\[
+    \mathcal{R}= \{\bar{X_n} \geq m_0 + z_{1-\alpha } \frac{\sigma }{\sqrt[]{n}}\}
+.\]
+Même zone de rejet que le test de niveau $ \alpha  $ : $ H_0: m \leq m_0 $ contre $ H_1: m \neq m_0 $ 
+
+\textbf{Cas du test bilatérale} : $ H_0: m=m_0 $ contre $ H_1: m \neq m_0 $. On rejette $ H_0 $ lorsque $ \left| \bar{X_n} - m_0 \right| \geq c $. On fixe $ \alpha  $ tq $ P_{m_0} (\left| \bar{X_n} - m_0 \right| \geq c) \approx \alpha $.
+
+Si $ H_0 $ est vraie ($ m=m_0 $), $ \bar{X_n} \sim \mathcal{N}(m, \frac{\sigma ^2}{n}) \Leftrightarrow Z = \sqrt[]{n} \frac{\bar{X_n} - m_0}{\sigma } \sim \mathcal{N} (0,1)$ 
+\[
+    P(\frac{\left| \sqrt[]{n} (\bar{X_n} - m_0) \right| }{\sigma } \geq \frac{\sqrt[]{n} c}{\sigma }) \approx \alpha 
+.\]
+
+\[
+    P(\left| Z \right| < \frac{\sqrt[]{n} c}{\sigma }) \approx 1- \alpha 
+.\]
+Donc $ c = \frac{\sigma }{\sqrt[]{n}}z_{1-\alpha} $. La zone de rejet est 
+\begin{align*}
+    \mathcal{R} &= \{\left| \bar{X_n} - m_0 \right| \geq \frac{\sigma}{\sqrt[]{n}} z_{1 - \alpha/2}\} \\
+        &= \{\bar{X_n} \leq m_0 - z_{1- \alpha } \frac{\sigma }{\sqrt[]{n}}\} \cup \{\bar{X_n} \geq m_0 + z_{1-\alpha /2} \frac{\sigma }{\sqrt[]{n}}\} 
+\end{align*}
+
+\subsubsection{Loi du Khi-Deux}
+$ X_1,\dots,X_n $ iid. avec $ X_1 \sim \mathcal{N}(0,1) $. Alors la v.a. $ Z_n = X_1^2 + X_2^2 + \dots + X_n^2 $ suit la loi du Khi-Deux à $ n $ degré de liberté. On note $ Z_n \sim \mathcal{X}^2(n) $. 
+
+Il existe des tables de la loi du Khi-Deux. Si $ X \sim \mathcal{X}^2(d) $, les table donnent la valeur $ \mathcal{X}^2_{d, 1-\alpha } $ tq 
+\[
+    P(X \leq \mathcal{X}^2_{d, 1-\alpha }) = 1 - \alpha 
+.\]
+$ \mathcal{X}^2_{d, 1-\alpha } $ est le quantile d'ordre $ 1-\alpha  $ de $ \mathcal{X}^2(d) $ 
+\begin{exmp}[]
+    Si $ X \sim \mathcal{X}^2 (10) $, alors 
+    \begin{align*}
+        P(X \leq 18.307) &= 0.95 \\
+        \mathcal{X}^2_{10, 0.95} = 19.307      
+    \end{align*}
+    Par lecture dans la table de la loi du Khi-deux
+\end{exmp}
+
+\subsubsection{Loi de Student}
+\begin{defn}[Loi de Student]
+    Si $ Z $ et $ U $ sont deux v.a. indépendantes telle que $ Z \sim \mathcal{N}(0,1) $ et $ U \sim \mathcal{X}^2(n) $ alors 
+    \[
+        T = \frac{Z}{\sqrt[]{U/n}} \sim \mathcal{T}(n) \text{ loi de Student à } n \text{ degrés de liberté}
+    .\]
+\end{defn}
+
+\begin{prop}[]
+    Si $ T \sim \mathcal{T}(n) $, si $ n \geq 2 $ 
+    \begin{itemize}
+        \item $ T $ admet un moment d'ordre un $ E(T) = 0 $
+        \item La loi est symétrique en 0
+        \item Lorsque $ n $ augmente, $ T $ se comporte comme une $ \mathcal{N}(0,1) \Leftrightarrow T \to^\mathcal{L} \mathcal{N}(0,1)$
+    \end{itemize}
+    $ P(\left| T \right| \leq t_{d, 1- \frac{q}{2}}) = 1 - q $ 
+\end{prop}
+
+\begin{exmp}[]
+    Si $ T \sim \mathcal{T}(8) $. 
+    \[
+        P(T \leq 186_{=t_{q, 0.95}}) = 0.95
+    .\]
+    Quantile d'ordre 0.95 de la loi de Student à 8 ddl.
+    
+    \[
+        P( \left| T \right|  \leq 2.306) = 0.95
+    .\]
+        Quantile d'ordre 0.975 de la loi de Student à 8 ddl.
+        
+        
+    \[
+        P( T  \leq 2.306_{=t_{8,0.975}}) = 0.975
+    .\]
+\end{exmp}
+
+\begin{thm}[de Student]
+    On considère $ X_1, \dots, X_n $ iid. avec $ X_1 \sim \mathcal{N}(m, \sigma ^2) $. \\
+    On pose $ \bar{X_n} = \frac{1}{n}\sum_{i=1}^{n}X_i $ et $ S_n^2 = \frac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X_n})^2$ 
+    \begin{enumerate}
+        \item $ \bar{X_n} $ et $ S_n^2 $ sont indépendantes
+        \item $ \bar{X_n} \sim \mathcal{N}(m, \frac{\sigma ^2}{n}) $ 
+        \item $ (n-1) \frac{S_n^2}{\sigma ^2} \sim \mathcal{X}^2 (n-1) $ 
+    \end{enumerate}
+\end{thm}
+
+\begin{cor}[]
+    Soient $ X_1, \dots, X_n $ iid. avec $ X_1 \sim \mathcal{N}(m, \sigma ^2) $ alors 
+    \[
+        T = \sqrt{n} \frac{\bar{X_n} - m }{S_n} \sim \mathcal{T}(n-1)
+    .\]
+    La va. $ T= \sqrt[]{n}\frac{\bar{X_n} - m}{S_n} $ suit une loi de Student à $ (n-1) $ ddl.
+
+    \begin{proof}[Preuve: ]
+        En effet : 
+        \begin{itemize}
+            \item D'après 2) $ \sqrt[]{n}\frac{\bar{X_n}-m}{\sigma } \sim \mathcal{N}(0,1) $ 
+            \item D'après 3) $ (n-1) \frac{S_n^2}{\sigma ^2} \sim \mathcal{X^2} (n-1) $ 
+        \end{itemize}
+        Comme les deux variables sont indépendantes (d'après 1), on a 
+        \[
+            \frac{ \sqrt[]{n} \frac{(\bar{X_n} - m)}{\not \sigma }}{ \sqrt[]{ \frac{\not{(n-1)} S_n^2}{\not{\sigma ^2} \not{(n-1)}}}} \sim \mathcal{T}(n-1)
+        .\]
+        \[
+            \sqrt[]{n}\frac{\bar{X_n} - m}{S_n} \sim \mathcal{T}(n-1)
+        .\]
+    \end{proof}
+\end{cor}
+
+\section{Test sur la variance lorsque la moyenne est connue}
+On a un échantillon \textbf{gaussien} $ X_1, \dots, X_n $ iid. avec $ X_1 \sim \mathcal{N}(m, \sigma ^2) $ avec $ m $ connue.
+
+Soient $ \sigma _0 $ et $ \sigma _1 $ fixé : 
+\[
+    H_0: \sigma ^2 = \sigma _0 ^2 \text{ contre } H_1 : \sigma ^2 = \sigma _1 ^2 \text{ avec } \sigma _1 < \sigma _0
+.\]
+\textbf{Rappel: }La vraisemblance de l'échantillon 
+\[
+    L(x_1, \dots, x_n, \sigma ^2) = \frac{1}{(\sqrt[]{2 \pi } \sigma ^2)^{n}} e^{- \frac{1}{2 \sigma ^2} \sum_{i=1}^{n}(x_i - m)^2}
+.\]
+L'EMV de $ \sigma ^2 $ est 
+\[
+    V_n^2 = \frac{1}{n}\sum_{i=1}^{n}(x_i - m)^2
+.\]
+Le rapport de vraisemblance 
+\begin{align*}
+    V(X_1, \dots, X_n) &= \frac{L(X_1, \dots, X_n, \sigma _1^2)}{L(X_1, ..., X_n, \sigma _0^2)} \\
+    &= \frac{\frac{1}{(\sqrt[]{2 \pi } \sigma_1 ^2)^{n}} e^{- \frac{1}{2 \sigma_1 ^2} \sum_{i=1}^{n}(x_i - m)^2}}{\frac{1}{(\sqrt[]{2 \pi } \sigma_0 ^2)^{n}} e^{- \frac{1}{2 \sigma_0 ^2} \sum_{i=1}^{n}(x_i - m)^2}} \\ 
+    &= (\frac{\sigma _0}{\sigma _1})^n e^{\frac{1}{2} (\frac{1}{\sigma ^2_0} - \frac{1}{\sigma _1^2}) \sum_{i=1}^{n}(X_i -m)^2} \\
+\end{align*}
+D'après le Théorème de N.P., la zone de rejet au niveau $ \alpha  $  est de la forme 
+\[
+    \mathcal{R} = \{V(X_1, \dots, X_n) \geq  V_\alpha \} = \{\sum_{i=1}^{n}(X_i - m)^2 \leq t_\alpha \}
+.\]
+
+\begin{note}[]
+    On change le signe car $ \frac{1}{\sigma ^2_0} - \frac{1}{\sigma _1^2} $ est négatif, donc la fonction est décroissante en $ nV_n^2 $ 
+\end{note}
+
+\[
+    \mathcal{R} = \{\frac{1}{n}\sum_{i=1}^{n}(X_i - m)^2 \leq u_\alpha \} = \{V_n^2 \leq u_\alpha \}
+.\]
+
+La statistique de test est $ V_n^2 = \frac{1}{n}\sum_{i=1}^{n}(X_i -m )^2 $. Pour trouver $ u_\alpha  $, on fixe le niveau $ \alpha  $ tq 
+\begin{align*}
+    &P_{\sigma _0^2} (\mathcal{R}) \leq \alpha \\
+    &P_{\sigma _0^2} (V_n^2 \leq u_\alpha ) \leq \alpha \\
+\end{align*}
+Si $ H_0 $ est vrais : $ \frac{nV_n^2}{\sigma _0^2} = \sum_{i=1}^{n} (\frac{X_i - m}{\sigma _0})^2 \sim \mathcal{X}^2(n) $ par définition de la loi du Khi-Deux. \\
+Si $ H_1 $ est vrais : $ \frac{nV_n^2}{\sigma _1^2} = \sum_{i=1}^{n} (\frac{X_i - m}{\sigma _1})^2 \sim \mathcal{X}^2(n) $ par définition de la loi du Khi-Deux 
+\begin{align*}
+    P_{\sigma _0^2} (\frac{n V_n^2}{\sigma _0^2} \leq \frac{n u_\alpha }{\sigma _0^2}) \approx \alpha \text{ (= fdr de la loi Khi-Deux)}
+\end{align*}
+Donc pour trouver $ u_\alpha  $ 
+\begin{align*}
+    &\frac{n u_\alpha }{\sigma_0 ^2} = \mathcal{X}^2_{n,\alpha } \text{ valeur dans la table} \\
+    \Leftrightarrow & u_\alpha = \frac{\sigma _0 ^2}{n} \mathcal{X}^2_{n,\alpha }
+\end{align*}
+La zone de rejet est 
+\begin{align*}
+    \mathcal{R} &= \{V_n^2 \leq \frac{\sigma ^2_0}{n}\mathcal{X}_{n,\alpha }\} \\
+    &= \{ \frac{ V_n^2}{\sigma _0^2} \leq \mathcal{X}^2_{n,\alpha }\}
+\end{align*}
+
+\begin{note}[]
+    Ca fonctionne aussi avec 
+    \begin{align*}
+        H_0: \sigma ^2 = \sigma _0^2 &\Leftrightarrow H_1: \sigma^2 \geq \sigma _0^2 \\
+        H_1: \sigma ^2 = \sigma _1^2 &\Leftrightarrow H_1: \sigma^2 < \sigma _1^2 \\
+    \end{align*}
+    car le sup est atteint en $ \sigma _0 $ ou $ \sigma _1 $ 
+\end{note}
+
+\begin{exmp}[]
+    $ X= $ contenance d'un flacon, $ X \sim \mathcal{N}(100, \sigma ^2) $. On veut tester $ H_0: \sigma ^2=1 $ contre $ H_1: \sigma ^2 = \frac{1}{4} $ . 
+
+    Au niveau $ \alpha =5\% $, la zone de rejet est 
+    \[
+        \mathcal{R} = \{V_n^2 \leq \frac{\sigma _0^2}{n} \mathcal{X}^2_{n, 0.05}\}
+    .\]
+    On a observé $ n=10, \sum_{i=1}^{n}(X_i - 100)^2 = 3 $ 
+    \[
+        V_n^2(w) = \frac{1}{10}\sum_{i=1}^{n}(X_i(w) - 100)^2 = \frac{3}{10} = 0.3
+    .\]
+    La zone de rejet est 
+    \begin{align*}
+        \mathcal{R} &=\{V_n^2 \leq \frac{3.94}{10}\} \\
+                    &= \{V_n^2 \leq 0.394\}
+    \end{align*}
+    $ V_n^2(w)=0.3 \in \mathcal{R} $, on decide $ H_1 $ 
+\end{exmp}
+
+\textbf{Résumé:} dans le diapo beau tableau
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{|l|l|l|}
+    \hline
+        $H_0$ & $H_1$ & Région de rejet : $\mathcal{R}$ \\ \hline
+        $ \sigma ^2 \leq \sigma _0^2 $ & $ \sigma ^2 > \sigma _0^2 $ & $ \{\mathcal{K} \geq \mathcal{X}^2_{n,1-\alpha}\} $ \\ \hline
+        $ \sigma ^2 \geq \sigma _0^2 $ & $ \sigma ^2 < \sigma _0^2 $ & $ \{\mathcal{K} \leq \mathcal{X}^2_{n,\alpha}\} $ \\ \hline
+        $ \sigma ^2 = \sigma _0^2 $ & $ \sigma ^2 \neq \sigma _0^2 $ & $ \{\mathcal{K} \leq  \mathcal{X}^2_{n,1-\alpha/2} \text{ ou } \mathcal{K} \geq  \mathcal{X}^2_{n,\alpha/2}\} $ \\ \hline
+    \end{tabular}
+\end{table}
+
+\section{Test sur la moyenne avec variance inconnu}
+\textbf{Contexte:} $ X_1,\dots, X_n $ iid. avec $ X_1 \sim \mathcal{N}(m, \sigma ^2) $ avec $ m $ et $ \sigma ^2 $  inconnus
+
+Pour une valeur $ m_0 $ fixée, on veut tester: $ H_0: m=m_0 $ contre $ H_1: m > m_0 $. Sous $ H_1, \bar{X_n} $ a tendance à prendre de plus grandes valeur que sous $ H_0 $. On décide $ H_1 $ lorsque $ \bar{X_n} \geq c $. Pour trouver $ c $, on fixe $ \alpha  $ avec 
+\[
+    P_{m_0} (\bar{X_n} \geq c) \leq \alpha 
+.\]
+Si $ H_0 $ est vraie ($ m=m_0 $ ) et 
+\begin{align*}
+            &\bar{X_n} \sim \mathcal{N}(m, \frac{\sigma ^2}{n}) \\
+    \Leftrightarrow & \sqrt[]{n} \frac{\bar{X_n} -m }{\sigma} \sim \mathcal{N}(0,1) \\
+    \Leftrightarrow & \sqrt[]{n} \frac{\bar{X_n} - m}{S_n} \sim t(n-1) \text{ avec } S_n = \sqrt[]{\frac{1}{n-1} \sum_{i=1}^{n} (X_i - \bar{X_n})^2 }
+\end{align*}
+\begin{align*}
+    &P_{m_0} (\sqrt[]{n} \frac{\bar{X_n} - m_0 }{S_n} \geq  \sqrt[]{n} \frac{c - m_0}{S_n}) \approx \alpha \\
+    \Leftrightarrow & P_{m_0} (T < \sqrt[]{n} \frac{c - m_0}{S_n}) \approx  1- \alpha
+\end{align*}
+D'où $ \sqrt[]{n} \frac{c - m_0}{S_n} = t_{n-1 , 1 - \alpha } \Leftrightarrow c = m_0 + \frac{S_n}{\sqrt[]{n} t_{n-1, 1-\alpha }}$\\
+La zone de rejet est 
+\begin{align*}
+    \mathcal{R} &= \{\bar{X_n} \geq  m_0 + \frac{S_n}{\sqrt[]{n} t_{n-1, 1-\alpha }}\} \\
+    &= \{\sqrt[]{n} \frac{ \bar{X_n} - m_0 }{S_n} \geq  t_{n-1, 1 - \alpha }\}
+\end{align*}
+La zone de rejet est la même pour \begin{align*}
+    H_0: m=m_0 &\Leftrightarrow H_0 : m \leq m_0 \\
+    H_1 : m > m_0 &\Leftrightarrow H_1: m>m_0
+\end{align*}
+
+\textbf{Cas où on test} : $ H_0 \geq m_0 $ contre $ H_1: m < m_0 $ \\
+Pour un niveau $ \alpha  $ fixé, la zone de rejet est 
+\begin{align*}
+    \mathcal{R} &= \{\bar{X_n} \leq m_0 - \frac{S_n}{\sqrt[]{n}} t_{n-1, 1-\alpha }\} \\
+    &= \{\sqrt[]{n} \frac{\bar{X_n} - m_0}{S_n} \leq - t_{n-1, 1-\alpha }\}
+\end{align*}
+
+\textbf{Cas où on test} : $ H_0: m=m_0 $ contre $ H_1: m \neq m_0 $ \\
+Pour un niveau $ \alpha  $ fixé, la zone de rejet 
+\begin{align*}
+    \mathcal{R} &= \{ \left| \bar{X_n} - m_0 \right|  \geq  t_{n-1, 1-\alpha /2 } \frac{S_n}{\sqrt[]{n}}\} \\
+    &= \{\sqrt[]{n} \frac{\left| \bar{X_n} - m_0 \right| }{S_n} \geq  t_{n-1, 1 - \alpha /2}\}
+\end{align*}
+
+\textbf{Résumé}: 
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{|l|l|l|}
+    \hline
+        $H_0$ & $H_1$ & Région de rejet : $\mathcal{R}$ \\ \hline
+        $ m \leq m_0 $ & $ m > m_0 $ & $ \{\mathcal{T} \geq t_{n-1,1-\alpha}\} $ \\ \hline
+        $ m \geq m_0 $ & $ m < m_0 $ & $ \{\mathcal{T} \leq t_{n-1,1-\alpha}\} $ \\ \hline
+        $ m = m_0 $ & $ m \neq m_0 $ & $ \{\left| \mathcal{T}  \right| \leq  t_{n-1,1-\alpha/2}\} $ \\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{exmp}[exemple 17 du diapo]
+    $ X=$ temps de sommeil, $ X \sim \mathcal{N}(m ,\sigma ^2) $ $ m, \sigma ^2 $ inconnus. 
+
+    On veut tester : $ H_0: m \geq 7 $ contre $ H_1: m<7 $. Pour $ \alpha =5\% $, la zone de rejet est 
+    \begin{align*}
+        \mathcal{R} &= \{\bar{X_n} \leq 7 - t_{n-1, 0.95} \frac{S_n}{\sqrt[]{n}}\}
+    \end{align*}
+    On a observé : $ n=30, \bar{X_n}(w) = 6.36, S_n(w) = \sqrt[]{1.85} $. La valeur lue dans la table de $ T(29) $ vaut $ t_{29, 0.95} = 1.699 $ 
+    \begin{align*}
+        \mathcal{R} &= \{\bar{X_n} \leq 6.58 \} 
+    \end{align*}
+    Comme $ \bar{X_n}(w) = 6.36 \in \mathcal{R} $ on décide $ H_1 $. 
+\end{exmp}
+
+\section{Test sur la variance lorsque $ m $ est inconnu}
+
+\textbf{Contexte:} On dispose de $ X_1, \dots, X_n $ iid. avec $ X_1 \sim \mathcal{N}(m, \sigma^2) $ avec $ m $ et $ \sigma ^2 $ inconnu. On veut tester $ H_0: \sigma ^2 = \sigma _0^2$ contre $ H_1: \sigma ^2 < \sigma _0^2$. 
+
+\textbf{Rappel:} l'EMV de $ \sigma ^2 $ est 
+\begin{align*}
+    V_n^2 &= \frac{1}{n} \sum_{i=1}^{n}(X_i - \bar{X_n})^2 \\
+        &= \frac{n-1}{n}S_n^2 \text{ avec } S_n^2 \text{ variance empirique corrigée}
+\end{align*}
+Sous $ H_0, \sigma ^2 = \sigma _0^2, (n-1)\frac{S_n^2}{\sigma _0^2} \sim \mathcal{X}^2 (n-1)$ \\
+Sous $ H_1, \sigma ^2 < \sigma _0^2, (n-1)\frac{S_n^2}{\sigma _0^2} = (n-1) \frac{S_n^2}{\sigma ^2} (\frac{\sigma ^2}{\sigma _0^2})_{<1} $ prend des valeur plus petites que sous $ H_0 $
+
+La zone de rejet est de la forme 
+\begin{align*}
+    \mathcal{R} &= \{V_n^2 \leq \frac{\sigma _0^2}{n} \mathcal{X}^2_{n-1, \alpha }\} \\
+        =& \{ \frac{n V_n^2}{\sigma _0^2}\leq \mathcal{X}^2 _{n-1, \alpha }\}
+\end{align*}
+
+
+
+
+\end{document}

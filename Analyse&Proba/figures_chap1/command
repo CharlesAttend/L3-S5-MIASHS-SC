@@ -1,0 +1,3 @@
+copier la template.svg to figure.svg
+inkscape figure.svg
+inkscape figure5.svg --export-area-page --export-dpi 300 --export-type=pdf --export-latex --export-filename figure5.pdf

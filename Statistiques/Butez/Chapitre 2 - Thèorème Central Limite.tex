@@ -1,0 +1,792 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[french]{babel}
+
+\usepackage[default,scale=0.95]{opensans}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb} %math
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{systeme} %use with \system*{eq1, eq2}
+\usepackage{bbm}
+
+\usepackage{import}
+\usepackage{xifthen}
+\usepackage{pdfpages}
+\usepackage{transparent}
+
+
+
+\newcommand{\incfig}[2][1]{%
+    \def\svgwidth{#1\columnwidth}
+    \import{./figures/}{#2.pdf_tex}
+}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    %pdfpagemode=FullScreen,
+}
+\urlstyle{same} %\href{url}{Text}
+
+\theoremstyle{plain}% default
+\newtheorem{thm}{Théorème}[section]
+\newtheorem{lem}[thm]{Lemme}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem*{cor}{Corollaire}
+%\newtheorem*{KL}{Klein’s Lemma}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Définition}[section]
+\newtheorem{exmp}{Exemple}[section]
+%\newtheorem{xca}[exmp]{Exercise}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remarque}
+\newtheorem*{note}{Note}
+%\newtheorem{case}{Case}
+
+
+
+\title{Cours}
+\author{Charles Vin}
+\date{Date}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\begin{exmp}[]
+    Soit $ (X_i)_{i \in \mathbb{N}} $ une suite de v.a. i.i.d., admettant un moment d'ordre 2. \\
+    En particulier, les $ X_i $ admettent aussi un moment d'ordre 1. Ainsi d'après la loi forte des grands nombres 
+    \[
+        \bar{X_n} = \frac{1}{n}\sum_{i=1}^{n}X_i \to^{p.s}_{n \to +\infty}E(X_1)
+    .\]
+    Pour $ n $ fixé, comment quantifier $ \bar{X_n} $ proche de $ E(X_1) $. "Avec n fixé très grand, on sais que c'est autout de l'espérance mais comment ?"
+    Si je reformule, quelle est la taille typique de la variable $ \bar{X_n} - E(X_1) $ \begin{itemize}
+        \item Espérance ? : $ E(\bar{X_n}-E(X_1)) = E(\bar{X_n}) - E(X_1) = E(X_1) - E(X_1) = 0 $ 
+        \item Variance ? : On pose $ Y_n = \bar{X_n} - E(X_1) $ \begin{align*}
+            Var(Y_n) = E((Y_n - E(Y_n))^2) = E(Y_n^2) = Var(\bar{X_n}) = \frac{Var(X_1)}{n}
+        \end{align*} 
+        $\rightarrow$ Ma variance est petite
+    \end{itemize}
+    $ Y_n $ est une variable d'espérance 0 et de variance $ \frac{Var(X_1)}{n} $. Par quoi fait-il multiplier $ Y_n $ pour que sa variance soit d'ordre 1 (volontairement impréci, je crois que ça veut dire fini et de grandeur humaine). \\
+    Si on regarde $ \sqrt{n} Y_n $ que voit on ? 
+    \[
+        Var(\sqrt[]{n}Y_n) = n* Var(Y_n) = n * \frac{Var(X_1)}{n} = Var(X_1)
+    .\]
+    La variance ne dépend plus de $ n $ ! Conclusion : Pour étudier les fluctuation de $ \bar{X_n} $ autour de sa limite $ E(X_1) $, il semble raisonnable d'étudier $ Y_n = \sqrt[]{n}(\bar{X_n} - E(X_1)) $.
+\end{exmp}
+\begin{defn}[]
+    Un variable $ X $ est dit centré et réduite si \begin{itemize}
+        \item Elle admet un moment d'ordre 2 
+        \item Si $ E(X) = 0, Var(X) = 1 $ 
+    \end{itemize}
+    Si $ X $ est une variable admettant un moment d'ordre 2, la variable centré réduite issue de $ X $ est $ Z = \frac{X-E(X)}{\sqrt[]{Var(X)}}$ \\
+    La centrée réduite de $ \bar{X_n} $ est 
+    \[
+        Z_n = \frac{\sqrt[]{n} (\bar{X_n}-E(X_1))}{\sqrt[]{Var(X_1)}}
+    .\]
+    \textbf{Preuve importante à faire en exercice}
+\end{defn}
+
+\section{Notion de convergence en loi}
+\begin{defn}[Convergence en loi]
+    Soit $ (X_n)_{n \in \mathbb{N}} $ une suite de variables aléatoires et $ X $ une variable aléatoire. \\
+    On dit que $ (X_n)_{n \in \mathbb{N}}  $ converge en loi vers $ X $ si $ \forall t  $ où $ F_X $ est continue en $ t $ 
+    \[
+        F_{X_n}(t) \to_{n \to +\infty } F_X(t)
+    .\]
+    On le note 
+    \[
+        X_n \to _{n \to +\infty}^{\mathcal{L}} X
+    .\]
+\end{defn}
+\begin{rem}[]
+    \begin{itemize}
+        \item Ca veut dire quoi $ \{t \in \mathbb{R} \text{ tq } F_X \text{ est continue en } t\} $ ? \\
+        $ F_X $ est continue en $ t \Leftrightarrow P(X=t)=0$ 
+        \begin{itemize}
+            \item Si $ X $ est à densité, $ F_X $ est continue sur $ \mathbb{R} $ 
+            \item Si $ X $ est discrète, $ F_X $ est discontinue en chaque point tel que $ P(X=k) > 0 $ 
+        \end{itemize}
+        \item "Cette notion de convergence est foireuse" Cette notion de convergence n'identifie \textbf{que} la loi de $ X $ \\
+        Si on a $ X_n \to^\mathcal{L} X $ et $ Y\perp X  $ de même loi que $ X $ alors $ X_n \to^\mathcal{L} Y$ \begin{proof}[Preuve: ]
+            Soit $ t \in \mathbb{R} $ tel que $ F_Y $ est continue en $ t $ . Comme $ F_X = F_Y $, $ F_X $ est aussi continue en $ t $ , et on a comme $ X_n \to ^\mathcal{L} X $ 
+            \[
+                F_{X_n}(t) \to F_X(t)=F_Y(t)
+            .\]
+            donc $ X_n \to ^\mathcal{L} Y $ 
+        \end{proof}
+    \item La remarque 2 implique  : si $ X_n \to^\mathcal{L} X $ et $ Y_n \to^\mathcal{L} Y $  
+    \[
+        \lim_{n \to \infty} X_n + Y_n \neq X+Y
+    .\]
+    Exemple : $ X_n, Y_n, X \sim \mathcal{N}(0,1) $ 
+    \[
+        X_n \to^\mathcal{L}X \text{ car } \forall n, t, F_{X_n} (t) = F_X(t)
+    .\]
+    \[
+        Y_n \to ^\mathcal{L} -X
+    .\]
+    \[
+        \forall t \in \mathbb{R}, F_{Y_n}(t)=F_{X}(t) = F_{-X}(t)
+    .\]
+    Comme la gaussienne est symetrique $ -X $ est une gaussienne également ect \\
+    Mais on a \textbf{pas} $ X_n + Y_n \to^\mathcal{L}X_X=0  $ FAUX car $ X_1 $ indép $ Y_1 $ , $ X_n + Y_n \sim \mathcal{N}(0,2) $ 
+    \end{itemize}
+\end{rem}
+
+\begin{prop}[(admise)]
+    Un suite de v.a. $ (X_n)_{n \in \mathbb{N}} $ converge en loi vers une variable aléatoire $ X $ ssi 
+    \[
+        \forall f \in C^o_b (\mathbb{R}), E(f(X_n)) \to E(f(X))
+    .\]
+    Exercice : En admettant cette proposition, montrer que si $ X_n \to ^\mathcal{L}X $ et si $ h \in C^o(\mathbb{R}) $ alors $ h(X_n) \to ^\mathcal{L} h(X) $ 
+\end{prop}
+\textbf{Méthode : } \begin{enumerate}
+    \item Calculer $ F_X $ 
+    \item Déterminer $ A=\{t \in \mathbb{R}, F_x \text{ est } C^o \text{ en } t\} $ 
+    \item Calculer $ F_{X_n}(t) $ pour $ t \in A $ et montrer $ F_{X_n}(t) \to F_X(t) $ 
+\end{enumerate}
+Autre cas : \\
+Si je vous donne $ (X_n)_{n \in \mathbb{N}} $ et que je vous demande si $ (X_n)_{n \in \mathbb{N}} $ converge en loi. Que faut-il faire ? \begin{itemize}
+    \item Je calcule $ F_{X_n}(t), \forall t \in \mathbb{R}$.
+    \item Je montre $ F_{X_n}(t) \to_{n \to +\infty } g(t)$ (pas forcement pour tous les $ t $ )
+    \item Je dois reconnaitre une variable $ Z $ tq $ F_Z = g $ 
+    \item Il faudra avoir montré la convergence pour tous les t tel que $ F_Z $ est continue en $ t $.
+\end{itemize}
+\begin{exmp}[]
+    Soit $ (pn) $ une suite qui converge vers $ p \in ]0,1[ $. $ X_n $ v.a. de loi $ \mathcal{B}er(pn) $ \\
+    Montrons que si $ X $ est une v.a. de loi $ \mathcal{B}er(p) $ on a 
+    \[
+        X_n \to ^\mathcal{L}X
+    .\]
+    \begin{enumerate}
+        \item Soit $ t \in \mathbb{R} $
+        \[
+            F_X(t) = P(X \leq t) = \systeme*{
+                0 \text{ si } t<0,
+                1-p \text{ si } t \in [0;1[,
+                1 \text{ si } t \geq 1
+            }
+        .\]
+        \item $ F_X $ est continue en t sur $ R \setminus \{0,1\} $ 
+        \item Soit $ t \in R \setminus \{0,1\}$ 
+        \[
+            F_{X_n}(t) = \systeme*{
+                0 \text{ si } t<0,
+                1 - pn \text{ si } t \in [0;1[,
+                1 \text{ si } t \geq 1
+            }
+        .\]
+        Si $ t < 0 $, alors 
+        \[
+            F_{X_n} = 0 \to 0=F_X(t)
+        .\]
+        Si $ t \in ]0,1[ $ 
+        \[
+            F_{X_n}(t) = 1-p_n \to 1-p = F_X(t) \text{ car } p_n \to p
+        .\]
+        Si $ t>1 $ 
+        \[
+            F_{X_n}(t) = 1 \to 1 = F_X(t) 
+        .\]
+        Ainsi, $ \forall t \in \mathbb{R}\setminus \{0,1\}, F_{X_n}(t) \to F_X(t) $ donc $ X_n \to ^\mathcal{L}X $ 
+    \end{enumerate}
+\end{exmp}
+\begin{exmp}[]
+    $ \lambda _n \to \lambda, \forall \lambda _n>0, \lambda >0 $. Soit $ (X_n)_{n \in \mathbb{N}} $  suite de v.a. de loi $ \mathcal{E}(\lambda _n) $ et $ X $ une v.a. de loi $ \mathcal{E}(\lambda ) $. Montrer que $ X_n \to ^\mathcal{L}X $ \begin{enumerate}
+        \item Soit $ t \in \mathbb{R} $ 
+        \[
+            F_X(t) = \systeme*{
+                0 \text{ si } t<0,
+                \int_{0}^{t}\lambda e^{-\lambda x}dx \text{ si } t \geq 0
+            } = \systeme*{
+                0 \text{ si } t \leq 0,
+                {(1-e^{-\lambda t})} \text{ si } t \geq 0
+            }
+        .\]
+        \item $ F_X $ est continue sur $ \mathbb{R} $ ($ X $ est à densité)
+        \item Soit $ T \in \mathbb{R} $ 
+        \[
+            F_{X_n}(t)= \systeme*{
+                0 \text{ si } t \leq 0, 
+                ({1-e^{-\lambda nt})} \text{ si } t \geq 0
+            }
+        .\]
+        Si $ t \leq 0 $, $ F_{X_n}(t) = 0 \to 0=F_X(t) $ \\
+        Si $ t > 0, F_{X_n}(t) = (1-e^{-\lambda nt}) \to {(1-e^{-\lambda t})} = F_X(t) $ car $ \lambda _n \to \lambda  $ et l'expo est continue \\
+        Ainsi, $ \forall t \in \mathbb{R}, F_{X_n}(t) \to F_X(t) $ donc $ X_n \to ^\mathcal{L} X $ 
+    \end{enumerate}
+\end{exmp}
+
+\underline{Nouveau cours du 21/10} \\
+
+\section{Le Théorème Central Limite}
+\begin{thm}[Théorème Central Limite]
+    Soit $ (X_n)_{n \in \mathbb{N}} $ une suite de variable aléatoire \textbf{i.i.d.} admettant un \textbf{moment d'ordre 2}.
+
+    Soit $ m = E(X_i), \sigma = \sqrt[]{Var(X_i)} $ alors 
+    \[
+        Z_n = \frac{\sqrt[]{n}}{\sigma }(\frac{1}{n}\sum_{i=1}^{n}X_i-m) \to_{n \to +\infty }^{\mathcal{L}} Z \sim \mathcal{N}(0,1)
+    .\]
+    Cela signifie : 
+    \[
+        \forall t \in \mathbb{R}, P(Z_n \leq t) \to_{n \to \infty }\int_{-\infty }^{t}\frac{1}{\sqrt[]{2 \pi }}e^{-\frac{x^2}{2}}dx
+    .\]
+\end{thm}
+\begin{rem}[]
+    $ n=10, X_n $ i.i.d. uniforme sur $ [0,1], Var X_i = 1/12, \sigma = \frac{1}{\sqrt[]{12}} $
+    \begin{align*}
+        Z{_10} &= \frac{\sqrt[]{10}}{1/\sqrt[]{12}}(\frac{1}{10} \sum_{i=1}^{10}X_i - \frac{1}{2}) \\
+            &= \sqrt[]{120}(\frac{1}{10} \sum_{i=1}^{10}X_i - 1/2) 
+    \end{align*}
+    Comment voir la loi de $ Z{_10} $ ? \\
+    $ Z{_10}^\prime, \dots, Z{_10}^{(N)} $ copies i.i.d. de $ Z{_10} $. \\
+    Glivenko-Conteli nous assure que 
+    \[
+        t \in \mathbb{R} \sup \left| \frac{1}{N} \sum_{i=1}^{N} \mathbbm{1}_{Z{_10}^{(i)} \leq t} - F_{Z{_10}}(t)\right| \to_{n \to \infty }^{p.s} 0
+    .\]
+    C'est bien mais super visuel.
+
+    A la place, on préfère tracer des histogrammes (voir le cours de Mma. Fradon). On regarde si l'histogrammes suit la densité d'une $ \mathcal{N}(0,1) $ 
+\end{rem}
+On note $ \phi (t) = \int_{_\infty }^{t}\frac{e^{-x^2 /2}}{\sqrt[]{2 \pi }} $ 
+\begin{prop}[]
+    Soit les hypothèse précédantes, on a 
+    \[
+        \forall a,b \in \mathbb{R}, P(a \leq Z_n \leq b) \to P(a \leq Z \leq b) = \int_{a}^{b}\frac{e^{-x^2 /2}}{\sqrt[]{2 \pi }} = \phi (b) - \phi (a)
+    .\]
+    De même pour \begin{align*}
+        P(a < Z_n < b) \to \phi (b) - \phi (a) \\
+        P(a \leq Z_n < b) \to \phi (b) - \phi (a) \\
+        P(a < Z_n \leq  b) \to \phi (b) - \phi (a)
+    \end{align*}
+
+    \begin{proof}[Preuve: ]
+        Uniquement pour $ a < Z_n \leq b $
+
+        Soit $ a,b \in \mathbb{R} $ 
+        \[
+            P(a < Z_n \leq b) = F_{Z_n}(b) - F_{Z_n}(a) \text{ car } P(Z_n \leq b) - P(Z_n \leq a)
+        .\]
+        Or d'après le théorème central limite 
+        \[
+            F_{Z_n}(b) \to \phi (b)
+        .\]
+        De même 
+        \[
+            F_{Z_n}(a) \to \phi (a)
+        .\]
+        Donc : 
+        \[
+            P(a < Z_n \leq b) = F_{Z_n}(b) - F_{Z_n}(a) \to \phi(b)- \phi (a)
+        .\]
+        Pour tous les autres cas, ce n'est pas immédiat. Cela provient de la continuité de $ \phi  $ 
+    \end{proof}
+    
+    
+\end{prop}
+
+\begin{defn}[Intervalle de confiance asymptotique]
+    Soit $ (\Omega , \mathcal{F}, (P_\theta )_{\theta \in \Theta }) $ un modèle statistique. Soit $ X_1, \dots, X_n $ un échantillon d'une loi $ P_\theta  $. 
+
+    Un intervalle de confiance asymptotique de niveau $ 1 - \alpha  $ pour une quantité $ g(\theta ) $ est un intervalle aléatoire $ I(X_1, \dots, X_n) $, ne dépendant pas de $ \theta  $ et tel que 
+    \[
+        \forall \theta \in \Theta, \lim_{n \to \infty}  P(g(\theta ) \in I(X_1, \dots, X_n)) \geq 1-\alpha 
+    .\]
+\end{defn}
+\begin{exmp}[\textbf{Application}]
+    Détermination d'un intervalle de confiance asymptotique à l'aide du théorème centrale limite 
+
+    Soit $ (X_i)_{i \in \mathbb{N}} $ une suite de v.a. i.i.d. d'espérance inconnue et de variance égale à 35. 
+
+    On cherche à estimer $ m $ et à donner un IC. asymptotique.
+
+    Soit $ \bar{X_n} = \frac{1}{n}\sum_{i=1}^{n}X_i $. Comme $ (X_i)_{i \in \mathbb{N}} $ est une suite de v.a. i.i.d. admettant un moment d'ordre 2, d'après le théorème central limite, on a 
+    \[
+        Z_n = \frac{\sqrt[]{n}}{\sqrt[]{35}}(\bar{X_n}-m) \to_{n \to +\infty }^\mathcal{L} Z \sim \mathcal{N}(0,1)
+    .\]
+    Ainsi 
+    \[
+        \forall a \in \mathbb{R}, P(-a \leq Z_n \leq a) \to_{n \to \infty } \int_{-a}^{a}\frac{e^{-x^2 /2}}{\sqrt[]{2 \pi }}dx = \phi (a) - \phi (-a)
+    .\]
+    Si je souhaite un intervalle de confiance asymptotique de niveau 99\%. \\
+    On cherche $ a $ tel que : $ \phi(a) - \phi (-a) \geq 0.99 $ \\
+    On cherche $ a $ tel que : $ P(Z \geq a) = 0.005 $ (l'aire restante à droite de la gaussienne) $ P(Z \geq a) = 1 - \phi (a) = 0.005 $.
+    Ainsi, on cherche $ a \in \mathbb{R} $ tel que $ \phi (a) = 0.995 $. Lecture de la table : si $ a=2.58, \phi (a) = 0.995 $. Ainsi, $ P(-2.58 \leq Z \leq 2.58) \geq 0.99 $ On a donc :
+    \[
+        \lim_{n \to \infty} P(-2.58 \leq \frac{\sqrt[]{n}}{\sqrt[]{35}} (\bar{X_n} - m ) \leq 2.58) \geq 0.99
+    .\]
+    Ré exprimons $ -2.58 \leq Z_n \leq 2.58 $ en $ m \in I(X_1, \dots, X_n) $
+    \begin{align*}
+        -2.58 \leq \frac{\sqrt[]{n}}{\sqrt[]{35}} (\bar{X_n} - m ) \leq 2.58 \\
+        \frac{2.58 * \sqrt[]{35}}{\sqrt[]{n}} \geq m - \bar{X_n} \geq \frac{-2.58* \sqrt[]{35}}{\sqrt[]{n}} \\
+        m \in [\bar{X_n} - \frac{2.58 * \sqrt[]{35}}{\sqrt[]{n}} , \bar{X_n} + \frac{2.58 * \sqrt[]{35}}{\sqrt[]{n}}]\\
+        2.58 * \sqrt[]{35} \approx 15.26
+    \end{align*}
+    On obtient alors 
+    \[
+        \lim_{n \to \infty} P(m \in [\bar{X_n} \pm  \frac{15.26}{\sqrt[]{n}}]) \geq 0.99
+    .\]
+    Un intervalle de confiance asymptotique de niveau 99\% est 
+    \[
+        [\bar{X_n} \pm \frac{2.56 * \sqrt[]{35}}{\sqrt[]{n}}]
+    .\]
+\end{exmp}
+
+
+\underline{Nouveau cours du 28/10} \\
+
+\section{Précision du théorème central limite }
+Le TCL stipule que 
+\[
+    \forall a \in \mathbb{R}, P(Z_n \leq a) \to_{n \to +\infty } P(Z \leq a) = \phi (a)
+.\]
+Ou bien : 
+\[
+    \forall a \in \mathbb{R}, P(-a \leq Z_n \leq a) \to _{n \to \infty } \phi (a) - \phi (-a)
+.\]
+Malheuresement, à ce stade, nous n'avons aucune idée de la valeur de $ \left| P(Z_n \leq a) - \phi (a) \right|  $ pour une valeur de $ n $ fixée. \\
+Pour $ a $ fixé, quelle est la qualité de cette approximation ? Pour mesurer cette différence, je souhaite controler 
+\[
+    \sup_{a \in \mathbb{R}} \left| F_{Z_n}(a) - \phi (a) \right| 
+.\]
+\begin{note}[]
+    C'est la distance entre les deux fonctions de répartion dans le pire des cas
+\end{note}
+\begin{rem}[]
+    Cela n'a RIEN à voir avec le théorème de Glivenko-Cantelli
+\end{rem}
+
+\begin{thm}[Inégalité de Berry-Esseen]
+    Soit $ (X_i)_ {i \in \mathbb{N}} $ une suite de v.a. i.i.d., admettant un moment d'ordre 3.
+
+    On note  $ m = E(X_1), \sigma =\sqrt[]{Var(X_1)}, \rho = E( \left| X_1-m \right| ^3), Z_n = \frac{\sqrt[]{n}}{\sigma } ((\frac{1}{n}\sum_{i=1}^{n}X_i) - m)$ on a :
+    \[
+        \forall a \in \mathbb{R}, \left| F_{Z_n}(a) - \phi (a) \right| \leq \frac{1}{2}\frac{\rho }{\sigma ^3 \sqrt[]{n}}
+    .\]
+\end{thm}
+\begin{rem}[]
+    Pour pouvoir utiliser ce théorème, il faut connaitre la valeur exacte de $ \sigma  $ et $ \rho $. Calculer $ \rho = E(\left| X-m \right| ^3) $ 
+    \begin{exmp}[]
+        Si $ X \sim \mathcal{B}(p), m=p $ \begin{align*}
+            E( \left| X-p \right| ^3) &= P(X=0) p^3 + P(X=1) \left| 1-p \right| ^3 \\
+                            &= (1-p)p^3 + p(1-p)^3
+        \end{align*}
+        Si $ X \sim \mathcal{E}(\lambda ), m=1/\lambda  $ 
+        \[
+            E(\left| X - \frac{1}{\lambda } \right| ^3) = \int_{0}^{+\infty }\left| x-\frac{1}{\lambda } \right| ^3 \lambda e^{-\lambda x}dx
+        .\]
+    \end{exmp}
+\end{rem}
+
+\textbf{Comment se servir de ce théorème ?} Application aux intervalles de confiance.
+
+$ X_1, \dots, X_n $ v.a. i.i.d. d'esperance $ m $ inconnue, mais admettant un moment d'ordre 3, avec $ \sigma = \sqrt[]{Var(X_1)} $ et $ \rho =E(\left| X_1 - m \right| ^3) $ connus. \\
+D'après le théorème central limite, appliqué à la suite $ (X_i)_{i \in \mathbb{N}} $ 
+\[
+    \forall a \in \mathbb{R}, P(Z_n \leq a) \to _{n \to +\infty } \phi (a)
+.\]
+Or d'après l'inégalité de Berry-Esseen, on a 
+\[
+    \left| P(Z_n \leq a) - \phi (a) \right| \leq \frac{1}{2}\frac{\rho }{\sigma ^3}\sqrt[]{n}
+.\]
+Cela donne: 
+\[
+    \phi (a) - \frac{1}{2}\frac{\rho }{\sigma ^3 \sqrt[]{n}}\leq P(Z_n \leq a) \leq \phi (a) + \frac{1}{2}\frac{\rho }{\sigma ^3 \sqrt[]{n}}
+.\]
+Si on veut $ a $ tq $ \phi (a) = 0.95 \Leftrightarrow a = 1.65 $ alors 
+\[
+    0.95 - \frac{1}{2}\frac{\rho }{\sigma ^3 \sqrt[]{n}} \leq P(Z_n \leq 1.65) \leq 0.95 + \frac{1}{2}\frac{\rho }{\sigma ^3 \sqrt[]{n}}
+.\]
+
+
+
+
+On change d'exemple  : Si on regarde $ P(-a \leq Z_n \leq a) \approx \phi (a) - \phi (-a) $ on regarde en faite $ F_{Z_n}(a) - F_{Z_n}(-a) \approx \phi (a) - \phi (-a) $ .\\
+Si on choisit $ a $ tq $ \phi (a) - \phi (-a) = 0.96 \Leftrightarrow \phi (a) = 0.98 \Leftrightarrow a \approx 2.06$
+
+D'après le TCL, on avait 
+\[
+    P(-2.06 \leq Z_n \leq 2.06) \to_{n \to +\infty } 0.96
+\]
+\[
+    P(m \in (\bar{X_n} - \frac{2.06 \sigma }{\sqrt[]{n}}, \bar{X_n} + \frac{2.06 \sigma }{\sqrt[]{n}}))
+.\]
+\begin{align*}
+    P(-a \leq Z_n \leq a) &= P(Z_n \leq a) - P(Z_n < -a) \to \phi (a) - \phi (-a) \\ 
+    &\Leftrightarrow \left| P(-a \leq Z_n \leq a) - (\phi (a) - \phi (-a))\right| \\ 
+    &= \left| P(Z_n \leq a) - P(Z_n < -a) - (\phi (a) - \phi (-a)) \right| \\
+    &= \left| (P(Z_n \leq a) - \phi (a)) - (P(Z_n < -a) - \phi (-a)) \right| \\
+    & \leq \left| P(Z_n \leq a) - \phi (a) \right| + \left| P(Z_n < -a) - \phi(-a) \right|
+\end{align*}
+D'après l'inégalité de Berry-Esseen, on a : \begin{align*}
+    \left| P(-a \leq Z_n \leq a) - (\phi (a) - \phi (-a)) \right| & \leq \frac{\phi }{2 \sigma ^3 \sqrt[]{n}} + \frac{\rho }{2 \sigma ^3 \sqrt[]{n}} \\ 
+        & \leq \frac{\rho }{\sigma ^3 \sqrt[]{n}}
+\end{align*}
+Pour $ a=2.06 $ cela donne  
+\[
+    0.96 - \frac{\rho }{\sigma ^3 \sqrt[]{n}} \leq P(-2.06 \leq Z_n \leq 2.06) \leq 0.96 + \frac{\rho }{\sigma ^3 \sqrt[]{n}}
+.\]
+Pour $ \rho =10, \sigma = 1, n = 10000 $ 
+\[
+    \frac{\rho }{\sigma ^3 \sqrt[]{n}} = \frac{10}{100} = 0.1, P(-2.06 \leq Z_n \leq 2.06) \geq 0.86
+.\]
+L'inégalité de Berry-Esseen permet de passer d'un intervalle de confiance asymptotique de niveau $ 1-\alpha  $ à un intervalle de confiance \textbf{exact} de niveau $ 1-\alpha  $ avec $ \alpha ^\prime  $ explicite. $ \alpha ^\prime  = \alpha - \frac{rho
+}{\sigma ^3 \sqrt[]{n}}$ \\
+Vous pouvez comparer avec Tchebychev. Le meilleur dépendra des valeur de $ \rho ,n, \sigma  $. En général, $ n $ grand $\rightarrow$ TCL + Berry-Esseen // $ n $ petit $\rightarrow$ Tchebychev.
+
+Si on veut garantir un niveau fixé, on peut anticiper. C'est à dire choisir $ \alpha  $ tq, par exemple, $ 1- \alpha \geq 0.95$. (Quand c'est possible, je ne peux pas toujours anticiper car $ \alpha \geq 0 $ ). 
+Reprenons l'exemple : \\
+On sait 
+\[
+    (\phi (a) - \phi (-a)) - \frac{\rho }{\sigma ^3 \sqrt[]{n}} \leq P(-a \leq Z_n \leq a)
+.\]
+On cherche alors $ a $ tq 
+\begin{align*}
+    &\phi (a) - \phi (-a) - \frac{\rho }{\sigma ^3 \sqrt[]{n}} = 1 - \alpha  \\
+    & \Leftrightarrow \phi (a) - \phi (-a) = 1 - \alpha + \frac{\rho }{\sigma ^3 \sqrt[]{n}}\\
+    & \Leftrightarrow \phi (a) = 1 - \frac{1}{2}(\alpha - \frac{\phi }{\sigma ^3 \sqrt[]{n}}) = 1 - \frac{\alpha }{2} + \frac{\phi }{\sigma ^3 \sqrt[]{n}}
+\end{align*} 
+Il est possible, si $ 1 - \frac{\alpha }{2} + \frac{\phi }{\sigma ^3 \sqrt[]{n}} > 1$ qu'il n'y ait pas de solution. \\
+Si $ \rho = 10, \sigma =1, n = 10 000, 1-\alpha = 0.95 $ : 
+\[
+    \phi (a) = 1 - 0.025 + 0.05 = 1.025 > 1 \text{impossible }
+.\]
+
+\underline{Nouveau cours du 18/11} \\
+
+\begin{cor}[Inégalité de Berry-Esseen]
+    Sous les hypothèses de l'inégalité de Berry-Esseen, on a : 
+    \[
+        \forall a \in \mathbb{R}^+, P(-a \leq Z_n \leq a) \geq P(-a \leq Z \leq a) - \frac{\rho }{\sigma ^3 \sqrt[]{n}}
+    .\]
+    Avec $ Z \sim \mathcal{N}(0,1) $ 
+
+    \begin{proof}[Preuve: ]
+        La démonstration a été faites le cours précèdent.
+    \end{proof}
+    
+    
+\end{cor}
+Interprétation : 
+
+Si $ a $ est tel que $ P(-a \leq Z \leq a) = 1 - \alpha $  alors $ P(-a \leq Z_n \leq a) \geq 1 - \alpha - \frac{\rho }{\sigma ^3 \sqrt[]{n}} $. 
+
+On en déduit alors le niveau \textbf{réel} de l'intervalle de confiance asymptotique. 
+
+Lien entre $ P(-a \leq Z_n \leq A) $ et $ P(m \in ) $ 
+\[
+    P(-a \leq Z_n \leq a) = P(m \in [\bar{X_n} - \frac{a \sigma }{\sqrt[]{n}} ; \bar{X_n} + \frac{a \sigma }{\sqrt[]{n}}])
+.\]
+
+
+
+\section{Théorème central limite avec autonormalisation}
+Le point faible de ce qu'on a vu précédemment est qu'on requiert la connaissance de la variance des variables aléatoires considérées.
+
+Dans de nombreux exemples, la connaissance de l'espérance et de la variance sont équivalentes. 
+
+Exemple : \begin{itemize}
+    \item si $ X \sim \mathcal{B}(p), E(X) = p, Var(X) = p(1-p) $. Si je connais $ p(1-p) $, je connais $ p $. 
+    \item Si $ X \sim \mathcal{E}(\lambda ), \lambda > 0, E(X) = \frac{1}{\lambda }, Var(X)= \frac{1}{\lambda ^2} $ Si $ Var(X) = \frac{1}{100} $ alors $ \lambda = 10 $ et on sait tout ...
+    \item On vas pas dire qu'on connaît la variance si on connaît pas l'espérance :sob:
+\end{itemize} 
+Pour beaucoup d'applications, on ne peut pas connaître la variance des données et le TCL est inapplicable. Le théorème suivant est alors utilisé.
+
+\begin{thm}[Théorème central limite avec autonormalisation]
+    Soit $ (X_i)_{i \in \mathbb{N}} $ une suite de variable aléatoire \textbf{i.i.d.} admettant un \textbf{moment d'ordre 2} (inconnu). De moyenne $ m=E(X_1) $  \\
+    Soit $ V_n $ un estimateur \textbf{faiblement consistant} de $ Var(X_1) $ Alors :
+    \[
+        Z_n = \frac{\sqrt[]{n}}{\sqrt[]{V_n}}(\frac{1}{n}\sum_{i=1}^{n}X_i - m) \to^\mathcal{L}_{n \to +\infty } Z \text{ de loi } \mathcal{N}(0,1)
+    .\]
+\end{thm}
+\begin{note}[]
+    3 methode pour estimateur faiblement confisquant
+    \begin{itemize}
+        \item CVG presque sur 
+        \item CVG en moyenne quadratique 
+        \item A la main Tchebychev
+    \end{itemize} 
+\end{note}
+
+
+\begin{rem}[]
+    Les avantages : \begin{itemize}
+        \item On peut faire des intervalles de confiance asymptotique ! Du type 
+        \[
+            []\bar{X_n} - \frac{1.96 \sqrt[]{V_n}}{\sqrt[]{n}}, \bar{X_n} + \frac{1.96 \sqrt[]{V_n}}{\sqrt[]{n}} ]
+        .\]
+    \end{itemize}
+    Les désavantages : \begin{itemize}
+        \item Pas d'inégalité de Berry-Esseen, donc pas d'IC, ni de correction
+    \end{itemize}
+\end{rem}
+
+\begin{exmp}[Application aux sondages]
+    On effectue un sondage dans la population, deux choix sont possibles : A et B. Les votens sont modélisé par des variables aléatoires i.i.d. de loi de Bernouilli de paramètre $ p $ inconnu \begin{align*}
+        X_i = 1 \Leftrightarrow \text{le ième votant vote A} \\
+        X_i = 0 \Leftrightarrow \text{le ième votant vote B} \\
+    \end{align*}
+    But : Intervalle de confiance asymptotique pour $ p $ de niveau $ 0.96 $ 
+    \begin{enumerate}
+        \item Choix de l'estimateur : On relie $ p $ au propriétées de $ X_i $. Comme $ E(X_i) = p $. On propose comme estimateur de $ p $ : $ \bar{X_n} = \frac{1}{n}\sum_{i=1}^{n}X_i $. Exo: montrer que c'est un estimateur sans biais et fortement conscistant de $ p $.
+        \item On cherche un intervalle de confiance asymptotique de niveau 0.96 : \begin{itemize}
+            \item Les varables $ (X_i)_{i \in \mathbb{N}} $ sont i.i.d. et admettent un moment d'ordre 2 (leurs variances vaut $ p(1-p) $ )
+            \item Estimateur fortement consistent ? $ V_n = \frac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X_n})^2 $ OU plus simple $ V_n = \bar{X_n}(1 - \bar{X_n}) $ \\
+            Comme : \begin{itemize}
+                \item $ \bar{X_n} \to ^{p.s} p  $ 
+                \item $ x \mapsto x(1-x) continue $ 
+            \end{itemize}
+            Alors 
+            \[
+                \bar{X_n}(1 - \bar{X_n})
+            .\]
+            est aussi un estimateur fortement consistant pour $ Var(X_i) $ il est donc faiblement consistant.
+        \end{itemize}
+        Ainsi d'après le TCL avec autonormalisation appliqué à la suite de variable i.i.d. $ (X_i)_{i \in \mathbb{N}} $ admettant un moment d'ordre 2 et à un estimateur faiblement consistant de $ V_n^\prime = Var(X_1) $ on a : 
+        \[
+            \forall a \in \mathbb{R}^+, P(-a \leq \frac{\sqrt[]{n}}{\sqrt[]{V_n}} (\frac{1}{n}\sum_{i=1}^{n}X_i - p) \leq a) \to_{n \to +\infty } P(-a \leq Z \leq a) (Z \sim \mathcal{N} (0,1))
+        .\]
+        On cherche $ a $ dans la table tel que 
+        \[
+            P(-a \leq Z \leq a) = 0.96
+        .\]
+        C'est à dire 
+        \[
+            P(Z \leq a) = 0.98 \Leftrightarrow a = 2.06
+        .\]
+        Ainsi 
+        \[
+            P(-2.06 \leq frac{\sqrt[]{n}}{\sqrt[]{V_n}} (\frac{1}{n}\sum_{i=1}^{n}X_i - p) \leq 2.06)) \to 0.96
+        .\]
+        Or 
+        \begin{align*}
+                &-2.06 \leq frac{\sqrt[]{n}}{\sqrt[]{V_n}} (\frac{1}{n}\sum_{i=1}^{n}X_i - p) \leq 2.06 \\
+            \Leftrightarrow & \frac{-2.06 \sqrt[]{V_n}}{\sqrt[]{n}} \leq \bar{X_n} - p \leq \frac{2.06 \sqrt[]{V_n}}{\sqrt[]{n}} \\
+            \Leftrightarrow & \bar{X_n} - \frac{2.06 \sqrt[]{V_n}}{\sqrt[]{n}} \leq p \leq \bar{X_n} + \frac{2.06 \sqrt[]{V_n}}{\sqrt[]{n}}
+        \end{align*}
+        Ainsi 
+        \[
+            P(p \in [\bar{X_n} - \frac{2.06 \sqrt[]{V_n}}{\sqrt[]{n}}, \bar{X_n} + \frac{2.06 \sqrt[]{V_n}}{\sqrt[]{n}}]) \to 0.96
+        .\]
+        $ [\bar{X_n} - \frac{2.06 \sqrt[]{V_n}}{\sqrt[]{n}}, \bar{X_n} + \frac{2.06 \sqrt[]{V_n}}{\sqrt[]{n}}] $ est un intervalle de confiance asymptotique de niveau 0.96 pour $ p $ 
+    \end{enumerate}
+\end{exmp}
+
+
+\underline{Nouveau cours du 07/12} \\
+On a vu le théorème central limite avec autonormalisation. Malheureusement, ce résultat n'est qu'asymptotique. \\
+Que faire si on veut quelque chose de précis ?
+
+\section{Le cas des variables gaussienne}
+
+\subsection{Rappel : variance connue}
+
+$ X_1, \dots, X_n $ va. iid. de loi $ \mathcal{N}(m,\sigma ^2) $ avec $ m $ inconnu et $ \sigma ^2 $ connue. On a vu précédemment que 
+\[
+    \forall n \in \mathbb{N}^*, Z_n = \frac{\sqrt[]{n}}{\sigma } (\frac{1}{n}\sum_{i=1}^{n}X_i - m) \sim \mathcal{N}(0,1)
+.\]
+On obtient alors facilement des intervalles de confiance exacts et optimaux. \\
+
+Que faire si la variance est inconnu ? 
+
+\subsection{Cas de la variance inconnue}
+
+$ X_1, \dots, X_n $ va. iid. de la $ \mathcal{N}(m, \sigma ^2) $ avec $ m $ et $ \sigma ^2 $ inconnues. Dans toute cette section : 
+\[
+    V_n = \frac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X_n})^2
+.\]
+On ne va considérer que cet estimateur. Tout ce qu'on va raconter dans la suite est faux pour un autre choix d'estimateur de la variance. Pourquoi ce modèle est-il important ? \begin{itemize}
+    \item Pragmatiquement, parce que c'est le seule modèle sur lequel je sais faire tant de chose 
+    \item Les gaussiennes sont partout. On modélise souvent de l'incertitude (erreur de mesure) par des gaussiennes. Les mesures expérimentales montrent souvent des fluctuation gaussiennes car on mesure des moyennes
+\end{itemize}
+
+\begin{thm}[de Cochran]
+    Si $ X_1, \dots, X_n $ sont des va. iid. de loi $ \mathcal{N}(m, \sigma ^2) $ alors 
+    \begin{enumerate}
+        \item $ \bar{X_n} $ et $ V_n $ sont \textbf{indépendante} (contre instinctif car il y a $ \bar{X_n} $ dans $ V_n $, miracle gaussien)
+        \item $ \frac{(n-1)V_n}{\sigma ^2} $ suit la loi $ \mathcal{X}^2 (n-1) $ 
+    \end{enumerate}
+    Cette loi a pour densité 
+    \[
+        f_{n-1} (x) = \frac{1 }{2^{n-1/2} \Gamma (\frac{n-1}{2}) } x^{\frac{n-1}{2} - 1} e^{-x} \mathbbm{1}_{x>0}
+    .\]
+    où 
+    \[
+        \Gamma (\frac{n-1}{2}) = \int_{0}^{t} x^{\frac{n-1}{2} - 1} e^{-x} dx
+    .\]
+    est la fonction gamma d'Euler
+\end{thm}
+
+
+\subsection{Loi du khi deux}
+
+Quelle est cette loi $ \mathcal{X}^2(n-1) $ ? \\
+On dit que $ \mathcal{X}^2(n-1) $ est la loi du chi-deux à (n-1) degrés de liberté. \\
+En général, la loi $ \mathcal{X}^2(h), h \in \mathbb{N} $ (h degrès de liberté) est la loi de $ \sum_{i=1}^{h}Y_i^2 $ où $ Y_i \sim \mathcal{N}(0,1) $ iid.
+\[
+    f_h(x) = \frac{1}{2^{h/2} \Gamma (\frac{h}{2})} x^{h/2 -1 } e^{-x} \mathbbm{1}_{x>0}
+.\]
+Si $ Z \sim \mathcal{X}^2(h) $ alors
+\begin{align*}
+    &E(Z) = E(\sum_{i=1}^{h}Y_i^2) = hE(Y_n^2) = h \\
+    &Var(Z) = h Var(Y_i)
+\end{align*}
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics*[width=.5\textwidth]{./figures/Chi-square_pdf.png}
+    \caption{Loi du khi deux}
+\end{figure}
+
+\subsubsection{Intervalle de confiance à 0.95}
+
+Comme c'est pas symétrique, il faut trouver $ a $ et $ b $ tel que $ P(Z \leq a) = 0.025 $ et $ P(Z \leq B) = 0.975 $ 
+
+Utilisons le théorème de Cochran pour trouver un intervalle de confiance de niveau 0.95 pour $ \sigma ^2 $ 
+\[
+    \frac{(n-1) V_n}{\sigma ^2} \sim \mathcal{X}^2(n-1)
+.\]
+Je trouve $ a $ et $ b $ tq si $ Z \sim \mathcal{X}^2 (n-1) $ 
+\[
+    P(a \leq Z \leq b) = 0.95
+.\]
+On les trouve dans la table en lisant $ P(Z \leq a) = 0.025 $ et $ P(Z \leq b) = 0.975 $. Ainsi 
+\begin{align*}
+    & P(a \leq \frac{(n-1) V_n}{\sigma ^2} \leq b) = 0.95
+    \Leftrightarrow & P(\frac{(n-1) V_n}{b} \leq \sigma ^2 \leq \frac{(n-1) V_n}{a}) = 0.95
+\end{align*}
+$ [\frac{(n-1) V_n}{b}, \frac{(n-1) V_n}{a}] $ est un intervalle de confiance de niveau 0.95 pour $ \sigma ^2 $.
+
+\subsection{Théorème de Student}
+
+\begin{thm}[de Student]
+    $ X_1, \dots, X_n  $ va. iid. de loi $ \mathcal{N}(m, \sigma ^2) $ 
+    \[
+        \frac{\sqrt[]{n}}{\sqrt[]{V_n}} (\bar{X_n} - m) \sim t(n-1)
+    .\]
+    Loi de student à $ (n-1) $ degrés de liberté.
+    \[
+        t_{n-1}(x) = \frac{1}{\sqrt[]{(n-1) \pi }} \frac{\Gamma (\frac{n}{2})}{\Gamma (\frac{n-1}{2})} \frac{1}{(1 + \frac{t^2}{n-1}) ^{n/2}}
+    .\]
+\end{thm}
+\begin{proof}[Preuve: ]
+    $ T = \frac{Z}{V/h} $ student si $ Z \sim \mathcal{N}(0,1), V \sim \mathcal{X}^2(h) $. 
+
+    On veut regarder 
+    \begin{align*}
+        &\frac{\sqrt[]{n}}{\sqrt[]{V_n}} (\bar{X_n} - m) = \frac{\sqrt[]{n}}{\sigma }(\bar{X_n} - m) * \frac{\sigma }{\sqrt[]{V_n}} 
+    \end{align*}
+    Trouvons la loi de $ \frac{\sqrt[]{V_n}}{\sigma } $
+    \[
+        \frac{\sqrt[]{V_n}}{\sigma } = \sqrt[]{\frac{V_n}{\sigma ^2}} = \sqrt[]{\frac{V_n (n-1)}{\sigma ^2}}_{(\sim \mathcal{X}^2(n-1))} * \frac{1}{\sqrt[]{n-1}}
+    .\]
+    $ \frac{\sigma }{\sqrt[]{V_n}} $ s'écrit comme $ \frac{1}{\sqrt[]{\mathcal{X}^2 (n-1) / (n-1)}} $ 
+
+    Ainsi $ \frac{\sqrt[]{n}}{\sqrt[]{V_n} (\bar{X_n} - m )} $ est de la forme $ \frac{\mathcal{N}(0,1)}{\sqrt[]{\mathcal{X}^2 (n-1) / (n-1)}} $ et $ \bot $ par Cochran !
+\end{proof}
+
+
+
+\subsubsection{Loi de student}
+    La loi de Student à $ k $ degrés de liberté, noté $ t(h) $ est la loi de 
+    \[
+        T = \frac{Z}{\sqrt[]{V/k}} \text{ où } Z \sim \mathcal{N}(0,1), V \sim \mathcal{X}^2 (h), Z \bot V
+    .\]
+    Elle a pour densité 
+    \[
+        t_h(x) = \frac{1}{\sqrt[]{h \pi }} \frac{\Gamma (\frac{h+1}{2})}{\Gamma (\frac{h}{2})} \frac{1}{(1 + \frac{t^2}{h})^{\frac{h+1}{2}}}
+    .\]
+
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics*[width=.5\textwidth]{./figures/Student_density.png}
+        \caption{Loi de student}
+    \end{figure}
+
+\subsubsection{Intervalle de confiance}
+IC pour m exact de niveau 0.95 à n fixé. $ \frac{\sqrt[]{n}}{\sqrt[]{V_n}} (\bar{X_n} - m ) \sim t(n-1) $ (thm de student). 
+
+On cherche $ a_t \in \mathbb{R}$ tq si $ Z \sim t(n-1) $ on a 
+\[
+    P(-a_t \leq Z \leq a_t) = 0.95
+.\]
+Par symétrie de la loi de Student. Cela revient à trouver $ a_t $ tq 
+\[
+    P(Z \leq a_t) = 0.975
+.\]
+On trouve $ a_t $ dans la table de la loi $ t(n-1) $ et on a 
+\[
+    P(-a_t \leq \frac{\sqrt[]{n}}{\sqrt[]{V_n}} (\bar{X_n} -m ) \leq a_t) 0.95
+.\]
+On réécrit et on a 
+\[
+    P(m \in [\bar{X_n} \pm  \frac{\sqrt[]{V_n}}{\sqrt[]{n} a_t}])
+.\]
+\begin{rem}[]
+    \textbf{Attention:} $ a_t $ est un quantile de la loi de Student à $ n-1 $ degrés de liberté. Ce n'est pas le "a" de la loi $ \mathcal{N}(0,1) $.
+
+    Plus $ n $ est grand, plus $ a_t $ se rapproche du quantile de la gaussienne $ \mathcal{N}(0,1) $ 
+\end{rem}
+
+\section{Complément sur le cours}
+
+\begin{thm}[de Slutsky]
+    Si $ Z_n \to ^{\mathcal{L}} Z$  et $ Y_n \to ^{P} y \in \mathbb{R} (constante)$ alors 
+    \[
+        Y_n Z_n \to ^{\mathcal{L}} y Z
+    .\]
+    \begin{rem}[]
+        En général $ Y_n = V_n $ estimateur faiblement consistant de la variance
+    \end{rem}
+\end{thm}
+
+\textbf{TCL + Slutsky $\Rightarrow$ TCL autonormalisé} : 
+
+$ (X_i)_{i \in \mathbb{N}} $ une suite de va. iid. et admettant un moment d'ordre 2, $ V_n $ estimateur faiblement consistant de $ \sigma ^2 = Var(X_1) $ 
+\begin{align*}
+    \frac{\sqrt[]{n}}{\sqrt[]{V_n}} (\bar{X_n} - m ) = \frac{\sqrt[]{n}}{\sigma} (\bar{X_n} - m) * \frac{\sigma }{\sqrt[]{V_n}}
+\end{align*}
+Comme 
+\begin{align*}
+    & Z_n = \frac{\sqrt[]{n}}{\sigma }(\bar{X_n} - m) \to ^\mathcal{L} Z \sim \mathcal{N}(0,1) \\
+    & Y_n = \frac{\sigma }{\sqrt[]{V_n}} \to ^{\mathbb{P}} 1
+\end{align*}
+Alors 
+\[
+    Z_n Y_n = \frac{\sqrt[]{n}}{\sqrt[]{V_n}} (\bar{X_n} - m) \to ^\mathcal{L} 1 - Z = Z \text{ (d'après Slutsky) }
+.\]
+
+\begin{thm}[Méthode Delta]
+    Soit $ (T_n)_{n \in \mathbb{N}} $ une suite de variables aléatoires et $ \theta \in \mathbb{R} $ tels que 
+    \[
+        \sqrt[]{n}(T_n - \theta ) \to ^{\mathcal{L}}_{n \to \infty } \mathcal{N}(0, \sigma ^2)
+    .\]
+    alors si $ g $ est une fonction dérivable telle que $ g'(\theta ) \neq 0 $, on a 
+    \[
+        \sqrt[]{n}(g(T_n) - g(\theta )) \to ^{\mathcal{L}}_{n \to \infty}  \mathcal{N}(0, \sigma ^2 g'(\theta)^2)
+    .\]
+    Ce théorème est très utile pour obtenir des intervalles de confiance asymptotique !
+\end{thm}
+
+
+\section{Récap du cours}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics*[width=0.75\textwidth]{./figures/Fiche recap BUTEZ P1.png}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics*[width=0.75\textwidth]{./figures/Fiche recap BUTEZ P2.png}
+\end{figure}
+
+\end{document}

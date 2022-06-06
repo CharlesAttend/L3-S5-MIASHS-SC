@@ -1,0 +1,655 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[french]{babel}
+
+\usepackage[default,scale=0.95]{opensans}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb} %math
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{systeme} %use with \system*{eq1, eq2}
+\usepackage{bbm}
+\usepackage{tikz-cd}
+
+\usepackage{import}
+\usepackage{xifthen}
+\usepackage{pdfpages}
+\usepackage{transparent}
+
+
+
+\newcommand{\incfig}[2][1]{%
+	\def\svgwidth{#1\columnwidth}
+	\import{./figures_chap1/}{#2.pdf_tex}
+}
+
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+}
+\urlstyle{same} %\href{url}{Text}
+
+\theoremstyle{plain}% default
+\newtheorem{thm}{Théorème}[section]
+\newtheorem{lem}[thm]{Lemme}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem*{cor}{Corollaire}
+%\newtheorem*{KL}{Klein’s Lemma}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Définition}[section]
+\newtheorem{exmp}{Exemple}[section]
+%\newtheorem{xca}[exmp]{Exercise}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remarque}
+\newtheorem*{note}{Note}
+%\newtheorem{case}{Case}
+
+
+
+\title{Topologie}
+\author{Charles Vin}
+\date{2021}
+
+\begin{document}
+\maketitle
+
+\section{Espaces métriques}
+\begin{defn}[Distance]
+    Une distance sur l'ensemble $ E $ est une application $ d: E \times E \to [0;+\infty ], (x,y) \mapsto d(x,y) $ telle que pour tout $ (x,y) \in E^2, x,y,z \in E $ 
+    \begin{itemize}
+        \item $ d(x,y) = d(y,x)$ (symétrie)
+        \item $ d(x,y) = 0 \Leftrightarrow x=y $ (séparation)
+        \item $ d(x,z) \leq d(x,y) + d(y,z) $ (inégalité triangulaire)
+    \end{itemize}
+    On dit que $ (E, d) $ est un \textbf{espace métrique}.
+\end{defn}
+\begin{rem}[]
+    L'inégalité triangulaire implique : 
+    \[
+        \left| d(x,y) - d(x,z) \right| \leq d(y,z)
+    .\]
+\end{rem}
+
+
+\begin{defn}[Boules]
+    La boule ouverte de rayon $ r>0 $ et de centre $ x \in E$ est $ B(x,r) = \{y \in E, d(x,y) < r\} $. \\
+    La boule fermé de rayon $ r>0 $ et de centre $ x \in E$ est $ \bar{B}(x,r) = \{y \in E, d(x,y) \leq  r\} $. \\
+\end{defn}
+
+\begin{exmp}[Exemple de distance]
+    \begin{enumerate}
+        \item Distance grossière (existe sur tout ensemble E) : $ d(x,y) = \mathbbm{1}_{x \neq y} $ la boule ouverte : $ B(x,r) = \systeme*{
+            \{x\} \text{ si } r < 1 ,
+            E \text{ si } r \leq 1
+        }$
+        \item Distance euclidienne (distance usuelle) sur $ \mathbb{R} $ : $ d(x,y) = \left| x-y \right|  $ la boule ouverte $ B(x,r) = ]x-r;x+r[ $ 
+        \item Distance euclidienne sur $ R^d $ : $ d(x,y) = \sqrt[]{\sum_{i=1}^{d}(x_i - y_i)^2} $ où $ x=(x_1, \dots, x_d), y=(y_1, \dots, y_d) $ boule ouverte = cercle
+        \item Distance $ l^1 $ dans $ \mathbb{R}^d $ (distance de Manhattan (car toute les rues se coupes en angle droit)) : $ d_1 (x,y) = \sum_{i=1}^{d} \left| x_i - y_i \right| $ la boucle ouverte donne un losange.
+        \item Distance $ l^p $ sur $ \mathbb{R}^d, (p \geq 1)$ : $ d_p (x,y) = (\sum_{i=1}^{d} \left| x_i - y_i \right| )^{1/p}, (0 < p < 1) : d_p (x,y) = (\sum_{i=1}^{d} \left| x_i - y_i \right| )^p$
+        \item Distance $ l^\infty  $ sur $ \mathbb{R}^d $ : $ d(x,y) = \max (\left| x_1-y_1 \right| , \dots, \left| x_d -y_d \right| ) $ Les boules ouvertes sont des carrées.
+    \end{enumerate}
+\end{exmp}
+
+\begin{defn}[]
+    Soit $ A $ est une partie de $ E $ et d'une distance sur $ E $ \begin{itemize}
+        \item $ A $ est un \textbf{voisinage} de $ x \in E $ s'il existe $ r>0 $ tel que $ B(x,r) \subset A $ 
+        \item $ A $ est dit \textbf{ouvert} s'il est voisinage de chacun de ses points : $ \forall x \in A, \exists r>0, B(x,r) \subset A $ 
+        \item $ A $ est fermé si son complémentaire est ouvert : $ A^C = E \setminus A $ ouvert 
+    \end{itemize}
+    \begin{rem}[]
+        \begin{itemize}
+            \item On peut être à la fois ouvert et fermé : ex: $ \mathbb{R} $ pour la distance usuelle
+            \item On peut n'être ni ouvert ni fermé ex: $ ]0;1] $ pas voisinage, $ ]0;1]^C = ]-\infty ;0] \cup ]1;+\infty ] $ pas voisinage de 0
+        \end{itemize}
+    \end{rem}
+\end{defn}
+\begin{defn}[]
+    La \textbf{topologie} d'un espace métrique est l'ensemble de ses ouverts. 
+\end{defn}
+\begin{prop}[]
+    .
+    \begin{enumerate}
+        \item Les boules ouvertes sont des ouverts
+        \item Les boules fermées sont des fermés
+        \item Un voisinage peut être ni ouvert ni fermé
+    \end{enumerate}
+    \begin{proof}[Preuve: ]
+        \begin{enumerate}
+            \item Prenons $ B(x,r) $. Pour tout $ y \in B(x,r) $, $ B(x,r) $ est elle voisinage de $ y $. Faire le dessin. \\
+            Il faut montrer que $ B(y, r-d(x,y)) \subset B(x,r) $, ça veut dire que tous les points de l'un sont dans l'autre $ \forall z \in B(y, r-d(x,y)) \Rightarrow z \in B(x,r) $. \begin{align*}
+                & \forall z \in B(y, r_d(x,y)) \\
+                & d(x,z) \leq d(x,y) + d(y,z) \\
+                & \text{Or } d(y,z) < r-d(x,y) \\
+                & d(x,z) < r \text{ donc } z \in B(x,r)
+            \end{align*}
+            \item Prenons $ \bar{B}(x,r) = \{y \in E, d(x,y) \leq r\} $
+            $(\bar{B}(x,r))^C = \{y \in E, d(x,y) > r\}$ est-il ouvert ? \\
+            Pour tout $ y \in (\bar{B}(x,r))^C : d(x,y) > r $ 
+            \begin{align*}
+                B(y, d(x,y)-r) &\subset (\bar{B}(x,r))^C \text{ car } \\
+                \forall z \in B(y, d(x,y) -r ) &, d(y,z) < d(x,y) - r \\
+                &\Leftrightarrow r < d(x,y) - d(y,z) \\
+                \text{Or } d(z,x) \geq & \left| d(x,y) - d(y,z) \right| > r \\
+                \text{On a bien } & d(z,x) > r, z \in (\bar{B}(x,r))^C
+            \end{align*}
+            \item $ ]0,1] $ n'est ni ouvert ni fermé dans $ \mathbb{R} $ (pour la distance usuelle) \\
+            $ ]0;1] $ est voisinage de $ \frac{1}{2} $ car $ B(\frac{1}{2}, \frac{1}{10}) = ]\frac{4}{10}, \frac{6}{10} \subset ]0;1[ ?=? \{x \in \mathbb{R}, \left| x - \frac{1}{2} \right| < \frac{1}{10}\}$ 
+        \end{enumerate}
+    \end{proof}
+    \begin{rem}[]
+        Dans $ \mathbb{R} $ muni de la distance $ (x,y) \mapsto \left| x-y \right|  $ les boules ouvertes sont les intervalles ouverts bornés : 
+        \begin{align*}
+            & B(a,r) = ]a-r;a+r[ \\
+            \forall \alpha < \beta, & ]\alpha , \beta [ = B(\frac{\alpha + \beta }{2}, \frac{\beta - \alpha }{2})
+        \end{align*}
+    \end{rem}
+\end{prop}
+
+\begin{prop}[]
+    \begin{enumerate}
+        \item $ E $ et $ \varnothing  $ sont ouverts et fermés
+        \item Une union quelconque d'ouvert est un ouvert 
+        \item Une intersection quelconque de fermés est un fermé
+        \item Une intersection finie d'ouvert est un ouvert 
+        \item Une union finie de fermés est un fermé
+    \end{enumerate}
+    \begin{proof}[Preuve:]
+        \begin{enumerate}
+            \item $ \forall x \in E, B(x,r) \subset E $  donc $ E $ est ouvert et $ \varnothing  $ est fermé. \\
+            $ \forall x \in \varnothing, B(x,r) \subset \varnothing  $  donc $ E $ est ouvert et $ E $ est fermé. Car y'a rien dans $ \varnothing  $, car le vide n'a pas d'élément.
+            \begin{note}[]
+                $ E = ]0,1], d:(x,y) \mapsto \left| x-y \right|  $ \\
+                $ B_{(]0;1], d)} (1, \epsilon ) = \{x \in ]0,1], \left| x-1 \right| < \epsilon \} = ]1-\epsilon ;1]$ 
+                $ B_{(\mathbb{R}, d)} (1, \epsilon ) = \{x \in \mathbb{R}, \left| x-1 \right| < \epsilon \} = ]1-\epsilon ;1+\epsilon ]$ 
+            \end{note}
+    
+            \item Prenons $ (A_i)_{i \in I} $ famille d'ouverts de $ (E,d) $\\
+            $ \forall x \in \bigcup_{i \in I}^{}A_i, B(x,y) ?\subset?\bigcup_{i \in I}^{A_i}$ 
+            \begin{align*}
+                \forall x \in \bigcup_{i \in I}^{}A_i &\Rightarrow  \exists i \in I, x \in A_i \\
+                & \Rightarrow \exists r > 0, B(x,r) \subset A_i \subset \bigcup_{j \in I}^{}A_j \text{ car } A_i \text{ ouvert}
+            \end{align*}
+    
+            \item Prenons $ (F_i)_{i \in I} $  famille de fermés de $ (E,d) $ 
+            \begin{align*}
+                (\bigcap_{i \in I}^{}F_i)^C = \bigcup_{i \in I}^{}(F_i)^C \text{ Ouvert d'après 2}
+            \end{align*}
+            
+            \begin{rem}[]
+                2) et 3) marche pour $ I=\{1,2\}, I=\mathbb{N}, I=\mathbb{R} $ ou tout autre ensemble d'indice $ I $.
+            \end{rem}
+            
+            \item Prenons $ (A_i)_{i \in [1,n]} $ une famille finie d'ouverts de $ (E,d) $. 
+            \begin{align*}
+                \forall x \in \bigcap_{i=1}^{n}A_i, & \forall i \in \{1,\dots, n\}, x \in A_i \text{ ouvert} \\
+                & \exists r_i > 0, B(x,r_i) \subset A_i\\ 
+                & B(x, \min (r_1, ..., r_n)) \subset \bigcap_{i=1}^{n}A_i \\
+                \forall i \in \{1, ..., n\} & B(x, \min _{1 \leq i \leq n} r_i) \subset B(x,r_i) \subset A_i
+            \end{align*}
+    
+            \item Prenon $ (F_i)_{1 \leq i \leq n} $ une famille finie de fermés de $ (E,d) $ 
+            \begin{align*}
+                (\bigcup_{i=1}^{n}F_i)^C = \bigcap_{i=1}^{n}(F_i)^C \text{ Ouvert d'après 4)}
+            \end{align*}
+        \end{enumerate}
+    \end{proof}
+\end{prop}
+\begin{exmp}[Intersection infinie d'ouverts qui n'est pas un ouvert]
+    $ \bigcap_{n=1}^{+\infty }]0 - \frac{1}{n}, 0 + \frac{1}{n}[ = \{0\} $ fermé, pas ouvert (il n'existe pas de $ \epsilon  $ tq. $ B(0, \epsilon ) = ]-\epsilon ; +\epsilon[ \subset \{0\} $  ) 
+\end{exmp}
+
+\begin{defn}[]
+    Soit $ A $ une partie de $ (E,d) $ 
+    \begin{enumerate}
+        \item L'\textbf{intérieur} de $ A $ est l'ensemble des points de $ E $ dont $ A $ est voisinage 
+        \[
+            Int(A) = \dot{A} = \{x \in E, \exists r > 0 B(x,r) \subset A\} 
+        .\]
+        C'est le plus grand ouvert de $ E $ contenu dans $ A $.
+        \item L'\textbf{adhérence} de $ A $ est l'ensemble des points de $ E $ dont tout voisinage intersecte $ A $ 
+        \[
+            Adh(A) = \bar{A} = \{x \in E, \forall r > 0 B(x,r) \cap A \neq \varnothing \}
+        .\]
+        C'est le plus petit fermé de $ E $ contenant $ A $ 
+        \item on dit que $ A $ est \textbf{dense} dans $ E $ si $ \bar{A} = E $.
+    \end{enumerate}
+\end{defn}
+\begin{proof}[Preuve que $ \dot{A} $ est ouvert: ]
+    Soit $ x \in \dot{A} : \exists r^\prime > 0, B(x, r^\prime) \subset \dot{A} $ ?
+    \begin{align*}
+        \exists r > 0, & B(x,r) \subset A \\
+                        & B(x, \frac{r}{2}) \subset \dot{A} \\
+        \text{car }      & \forall y \in B(x, \frac{r}{2}); B(y, \frac{r}{2}) \subset B(x,r) \subset A
+    \end{align*} 
+    $ \dot{A} $ est voisinage de chacun de ses points 
+\end{proof}
+\begin{proof}[Preuve que $ \dot{A} $ plus grand ouvert inclus dans $ A $ : ]
+    Si $ U $ ouvert avec $ U \subset A $
+    \begin{align*}
+        \forall x \in U, & \exists r>0 B(x,r) \subset u \subset A \\
+                        & x \in \dot{A} \\
+            U \subset \dot{A} &
+    \end{align*}
+\end{proof}
+
+
+\section{Suites et limites}
+\textbf{Rappel:} Une application définie sur $ \mathbb{N} $ s'appelle une suite. On l'appelle souvent :
+\begin{align*}
+    u: & \mathbb{N} \to E \\
+        & n \mapsto u(n) = u_n
+\end{align*}
+On la note souvent $ (u_n)_{n \in \mathbb{N}} $. L'ensemble des suites à valeurs dans $ E $ est noté $ E^{\mathbb{N}} $.
+
+\begin{defn}[]
+    Dans l'espace métrique $ (E,d) $ la suite $ (u_n)_{n \in \mathbb{N}} \in E^{\mathbb{N}}$ \textbf{converge vers la limite $ l \in E$ } si : 
+    \[
+        \forall \epsilon > 0, \exists n_\epsilon \in \mathbb{N} \forall n \geq n_\epsilon, d(u_n, l) < \epsilon \Leftrightarrow u_n \in B(l,\epsilon )
+    .\]
+    On note $ \lim_{n \to \infty} u_n = l $ ou $ u_n \to _{n \to +\infty }^d l$ 
+\end{defn}
+
+\begin{rem}[]
+    $ u_n \to _{n \to +\infty }^d \Leftrightarrow \lim_{n \to \infty} d(u_n, l) = 0  $ 
+\end{rem}
+
+\begin{prop}[]
+    Dans un espace métrique, si la limite d'une suite existe, elle est unique
+
+    \begin{proof}[Preuve: ]
+        Si $ l $ et $ l' $ sont limites de $ (x_n)_{n \in \mathbb{N}} \in E^{\mathbb{N}^*}$ 
+        \begin{align*}
+            \forall \epsilon > 0, &\exists n_\epsilon, \forall n \geq n_\epsilon, d(u_n, l) < \epsilon \\
+            \forall \epsilon > 0, &\exists n_\epsilon^\prime  \forall n \geq n_\epsilon^\prime , d(u_n, l^\prime ) < \epsilon \\
+                    &\forall n \geq \max (n_\epsilon , n_\epsilon ^\prime ), 0 \leq d(l,l') \leq d(l,x_n)+d(x_n,l')< 2 \epsilon 
+        \end{align*}
+        donc $ d(l,l')=0 $ et $ l=l' $ 
+    \end{proof}
+\end{prop}
+
+\begin{prop}[]
+    Soit $ A $ une partie de $ (E,d) $ 
+    \begin{enumerate}
+        \item $ x \in \bar{A} \Leftrightarrow$ il existe une suite d'élément $ (x_n)_{n \in \mathbb{N}} $  de $ A $ qui converge vers $ x $.
+        \item $ A $ est fermé $ \Leftrightarrow $ toute suite convergente d'éléments de $ A $ a sa limite dans $ A $.
+    \end{enumerate}
+    \begin{proof}[Preuve: ]
+        \begin{enumerate}
+            \item $ \Rightarrow $ | \begin{align*}
+                x \in \bar{A} &\Leftrightarrow \forall r>0, &B(x,r) \cap A \neq \varnothing \\
+                    &\Rightarrow \forall n \in \mathbb{N}, &B(x, \frac{1}{n}) \cap A \neq \varnothing \\
+                    & &\exists x_n \in A, d(x,x_n)<\frac{1}{n} \\ 
+                    \Leftrightarrow \lim_{n \to \infty} x_n = x
+            \end{align*}
+            $ \Leftarrow  $ | On suppose q'il existe $ (x_n)_{n \in \mathbb{N}} \in A^{\mathbb{N}}$ telle que $ x_n \to _{n \to +\infty }^d x$ 
+            \begin{align*}
+                \forall \epsilon > 0, \exists n_\epsilon \in \mathbb{N}, \forall n \geq n_\epsilon, &d(x_n,x) < \epsilon \\
+                    & x_n \in B(x,\epsilon ) \\
+                    & x_n \in B(x, \epsilon) \cap A \neq \varnothing \\
+                    & \Leftrightarrow x \in \bar{A}
+            \end{align*}
+            \item $ A $ fermé $ \Leftrightarrow \bar{A} = A$ et d'après 1) $ \bar{A} = \{\text{Limites de suites d'éléments de } A\} $ 
+        \end{enumerate}
+    \end{proof}
+\end{prop}
+
+\begin{defn}[]
+    .\\
+    \begin{itemize}
+        \item Le \textbf{diamètre} de la partie $ A $ de $ E $ est $ diam(A) = \sup \{d(x,y), x \in A, y \in A\} \in [0,+\infty]$ 
+        \item $ A $ est dit \textbf{borné} si $ diam(A)<+\infty $ 
+    \end{itemize}
+\end{defn}
+
+\begin{prop}[]
+    $ A $ borné $ \Leftrightarrow \exists x \in E, \exists r>0, A \subset B(x,r) $ 
+    \begin{proof}[Preuve: ]
+        Si $ x \in A, r > diam(A) $ : 
+        \[
+            \forall y \in A, d(y,x) \leq diam(A) < r \Leftrightarrow y \in B(x,r)
+        .\]
+    \end{proof}
+\end{prop}
+
+
+\section{Suite de Cauchy, espace complet}
+
+
+\begin{defn}[Suite de Cauchy]
+    $ (x_n)_{n \in \mathbb{N}} $ est une \textbf{suite de Cauchy} dans l'espace métrique $ (E,d) $ si 
+    \[
+        \forall \epsilon > 0, \exists n_\epsilon \in \mathbb{N}, \forall k,l \geq n_\epsilon, d(x_k, x_l) < E
+    .\]
+    \begin{note}[]
+        Les termes sont aussi proche qu'on veut les uns des autres au-delà d'un certain rang
+    \end{note}
+\end{defn}
+
+\begin{prop}[]
+    Toute suite convergente est de Cauchy
+    \begin{proof}[Preuve: ]
+        Si $ x_n \to _{n \to +\infty }^d x $ 
+        \begin{align*}
+            \forall \epsilon > 0, \exists n_{\epsilon /2} \in \mathbb{N}, \forall k \geq n_{\epsilon /2}, &d(x_k, x) < \frac{\epsilon }{2} \\
+                        \forall l \geq n_{\epsilon /2}, &d(x_l, x) < \frac{\epsilon }{2} \\
+                            & d(x_k, x_l) \leq d(x_k, x) + d(x,x_l) < \frac{\epsilon }{2} + \frac{\epsilon }{2} = \epsilon 
+        \end{align*}
+    \end{proof}
+\end{prop}
+
+\begin{rem}[]
+    Il existe des suite de Cauchy non convergentes
+    
+    \begin{exmp}[]
+        Sur $ \mathbb{Q} $ muni de la distance $ (x,y) \mapsto \left| x-y \right|  $. $ x_n = \sum_{j=0}^{n}\frac{1}{j!} $ on sait que $ \lim_{n \to \infty} \sum_{j=n}^{+\infty }\frac{1}{j!} = 0 $ c'est à dire : 
+        \[
+        \forall \epsilon > 0, \exists n_\epsilon \in \mathbb{N}, \forall n \geq n_\epsilon, \left| \sum_{j=0}^{+\infty }\frac{1}{j!} \right| < \epsilon 
+        .\]
+    Regardons pour $ x_n $ avec $ k \leq l $ 
+    \[
+        \forall k,l \geq n_\epsilon, \left| x_l - x_k \right| = \left| \sum_{j=k}^{l} \frac{1}{j!}\right| \leq \sum_{j=k}^{+\infty } \frac{1}{j!} \leq \epsilon 
+        .\]
+    \end{exmp}
+    Mais $ (x_n)_n $ n'a pas de limite dans $ \mathbb{Q} $ car $ \sum_{j=0}^{+\infty }\frac{1}{j!} = e^1 \not\in  \mathbb{Q}$. \\
+    \textbf{Intuitivement :} Une suite de Cauchy est une suite qui "devrait converger" si $ E $ avait "assez de points". 
+\end{rem}
+
+\begin{defn}[Espace complet]
+    L'espace métrique $ (E,d) $ est \textbf{complet} si dans $ E $ toute suite de Cauchy converge.
+    
+    Pour la distance usuelle $ (x,y) \mapsto \left| x-y \right| $ \begin{itemize}
+        \item $ \mathbb{R} $ est complet (admis).
+        \item $ \mathbb{Q} $ n'est pas complet et $ \bar{\mathbb{Q}} = \mathbb{R} $ 
+        \item $ ]0;1[ $ n'est pas complet. $ \{\frac{1}{n}, n \in \mathbb{N}^*\} $ n'est pas complet (car $ \lim_{n \to \infty} \frac{1}{n} = 0 $ ) 
+    \end{itemize}
+    Pour la distance euclidienne, $ \mathbb{R}^d $ est complet.
+\end{defn}
+
+\section{Compacité}
+
+\begin{defn}[sous-suite]
+    Une \textbf{sous-suite} ou \textbf{suite extraite} de la suite $ (x_n)_{n \in \mathbb{N}} $ est une suite obtenue ne gardant que certains des $ x_n $, pour une infinité d'indice $ n $, et en les renumérotant : 
+    \[
+        (x_{\varphi (n)})_{n \in \mathbb{N}} \text{ où } \phi : \mathbb{N} \to \mathbb{N} \text{ strictement croissante}
+    .\]
+    \begin{align*}
+        x_0, \not x_1, x_2, \not x_3, \not x_4, x_5, \dots \\
+        x_{\phi (0)} = x_0, x_{\phi (1)} = x_2, x_{\phi (3)} = x_5 \\
+        \phi (0) = 0, \phi (1) = 2, \phi (3)=5, \dots
+    \end{align*}
+\end{defn}
+
+\begin{prop}[]
+    Dans l'espace métrique $ (E,d) $, $ (x_n)_n $ converge vers $ l $ si et seulement si toute sous-suite de $ (x_n)_n $ converge vers $ l $ 
+
+    \begin{proof}[Preuve: ]
+        Si $ x_n \to _{n \to +\infty }^d l : \forall \epsilon, \exists n_\epsilon \in \mathbb{N}, \forall n \geq n_\epsilon, d(x_n, l) < \epsilon  $ \\
+        Si $ (x_{\phi (n)})_n$ extraite de $ (x_n)_n $ en prenant $ n_\epsilon ^\prime  $ tel que $ \phi (n_\epsilon ^\prime ) $ 
+        \begin{align*}
+            \forall \epsilon > 0, \exists n_\epsilon ^\prime \in \mathbb{N}, &\forall n \geq n_\epsilon ^\prime, d(x_{\phi (n)}, l ) < \epsilon \\
+                & \phi (n) \geq \phi (n_\epsilon ^\prime ) = n_\epsilon 
+        \end{align*}
+        Réciproquement : Si $ (x_n)_{n \in \mathbb{N}} $ ne converge pas vers $ l $ : 
+        \begin{align*}
+            \exists \epsilon > 0, \forall n_\epsilon \in \mathbb{N}, \exists n \geq  n_\epsilon d(x_n, l) < \epsilon 
+        \end{align*}
+        \[
+            I = \{j \in \mathbb{N}, d(x_j,l) \geq \epsilon \} \text{ est infini}
+        .\]
+        En renumérotant, $ (x_j)_{j \in I} $ on obtient une suite extraite de $ (x_n)_n $ qui ne converge pas vers $ l $ 
+    \end{proof}
+\end{prop}
+
+\underline{Nouveau cours du 22/11} \\
+
+\begin{defn}[Compacité]
+    \begin{itemize}
+        \item L'espace $ (E,d) $ est \textbf{compact} si toute suite de $ E $ admet (au moins) une sous-suite convergente.
+        \item $ A $ est une partie compacte de $ (E,d) $ si toute suite à valeurs dans $ A $ admet une sous-suite qui converge dans $ A $ (la limite doit être dans $ A $ )
+    \end{itemize}
+\end{defn}
+
+\begin{prop}[]
+    \begin{enumerate}
+        \item Toute partie compacte d'un espace métrique est fermée et bornée
+        \item Dans $ \mathbb{R} $ ou $ \mathbb{R}^d $ muni de la distance euclidienne, la réciproque est vrais : les parties fermés et bornés sont compactes
+    \end{enumerate}
+
+    \begin{proof}[Preuve: ]
+        \begin{enumerate}
+            \item Soit $ A $ compact dans $ (E, d) $. \begin{itemize}
+                \item Fermé ? $ A $ fermé $ \Leftrightarrow $ Toute suite convergence d'éléments de $ A $ a sa limite dans $ A \Leftrightarrow A = \bar{A}$ : $ \{\text{Limite de suites de } A^N\} \subset, \supset A $ \\
+                Si $ (x_n)_n \in A^{\mathbb{N}^*} $ converge vers $ l \in E : (x_n)_n$ a une sous-suite qui converge vers un $ a \in A $ (par compacité) et $ (x_n)_n $ converge vers $ l : l = a \in A$ 
+                
+                \item Borné ? Par l'absurde, si $ A $ n'était pas borné : $ diam(A) = + \infty  $ 
+                \[
+                    \forall n \in \mathbb{N}, \exists x_n, y_n \in A, d(x_n,y_n) \geq n
+                .\]
+                $ (x_n)_n $ a une suite extraite $ (x_{\phi (n)})_n $ qui converge vers $ l \in A $ ($ x_0, x_1, x_2, \not x_3, \not x_4, x_5, \dots \\ $ ))\\
+                $ (y_\phi (n))_n $ a une suite extraite $ (y_{\psi  (n)})_n $ qui converge vers $ l' \in A $ ( $ y_0, \not y_1, y_2, \not y_3, \not y_4, \not y_5, \dots \\ $ ) \\
+                
+                \begin{note}[]
+                    On veut garder des mêmes termes 
+                \end{note}
+                \begin{align*}
+                    \forall n \in \mathbb{N}, n \leq \psi (n) \leq d(x_{\psi (n)}, y_{\psi (n)}) & \leq d(x_{\psi (n)}, l) + d(l,l') + d(l', y_{\psi (n)}) \\ 
+                    & \to_{n \to +\infty } 0 + (d(l,l') < +\infty) + 0
+                \end{align*}
+                
+                Impossible 
+                \begin{note}[]
+                    Car on a à gauche tous les entiers et à droite un entier finis, on a trouver un majorant de tous les entiers, ça n'existe pas. 
+                \end{note}
+            \end{itemize}
+
+            \item Soit $ F $ borné sur $ \mathbb{R} $ : $ \exists a<b $  réel $ F \subset [a,b] $ Soit $ (x_n)_n \in F^{\mathbb{N}} $ \\
+            Un au moins des intervalles $ [a, \frac{a+b}{2}] $ et $ [\frac{a+b}{2}, b] $ contient les $ x_n $ pour une infinité d'indices $ n $, on le note $ J_1 $. \\
+            Une au moins des moitiés de $ J_1 $  contient les $ x_n $ pour une infinité de $ n $, on la note $ J_2 $\\
+            $ J_3 $ contient les $ x_n $ pour une infinité de $ n $ ect. \\
+            Chaque $ J_k $ est de longueur $ \frac{b-a}{2^k} $
+
+            On note \begin{align*}
+                & \varphi (1) = \inf \{n \in \mathbb{N}, x_n \in J_1\}
+                & \varphi (2) = \inf \{n \in \varphi (1), x_n \in J_2\}
+                & \varphi (3) = \inf \{n \in \varphi (2), x_n \in J_3\}
+            \end{align*}
+            $ (x_{\varphi (n)})_n $ est une sous-suite de $ (x_n)_n $ telle que  $ \forall n, x_{\varphi (n)} \in J_n $ et même $ \forall k \geq n, x_{\varphi (k)} \in J_n $ 
+            \[
+                \forall k,l \geq n \left| x_{\phi (k)} (\in J_n) - x_{\phi (l)} (\in J_n) \right| \leq \frac{b-a}{2^n}
+            .\]
+            $ (x_{\phi (n)})_n $ est une suite de Cauchy dans $ \mathbb{R} $ qui est complet donc $ (x_{\phi (n)}) $ converge. De plus si $ F $ fermé alors $ \lim_{n \to \infty} x_{\phi (n)} \in F $. \\
+            CCL ; Si $ F $ fermé borné de $ \mathbb{R} $, toute suite dans $ F $ a une sous-suite qui converge dans $ F $.            
+        \end{enumerate}
+    \end{proof}
+\end{prop}
+
+\begin{exmp}[de compacts de $\mathbb{R}$]
+    \[
+        [0,1], [a,b], \{0\}, [-3, -1] \cup [100,101], \{n \in \mathbb{Z}, \left| n \right| \leq 1000\}
+    .\]
+\end{exmp}
+\begin{exmp}[de non compacts de $ \mathbb{R} $ ]
+    \[
+        ]0,1], ]a,b[, \{\frac{1}{n}, n \in \mathbb{N}^*\}, \mathbb{Q} \cap [3,10] \text{ non fermé}
+    .\]
+    \[
+        \mathbb{N}, ]-\infty ; a], \mathbb{R} \text{ non bornés}
+    .\]
+\end{exmp}
+
+\section{Continuité}
+
+\begin{defn}[Continuité]
+    Soient $ (E_1, d_1), (E_2, d_2) $ deux espaces métriques. L'application $ f: E_1 \to E_2 $ est \textbf{continue en $ x_0 \in E_1 $} si 
+    \[
+        \forall \epsilon > 0, \exists \delta > 0, \forall x \in E_1, d_1(x, x_0) < \delta \Rightarrow d_2(f(x), f(x_0)) < \epsilon 
+    .\]
+    Elle est \textbf{continue sur $ E_1 $} si elle est continue en $ x_0 $ pour tout $ x_1 $ de $ E_1 $. On note $ f \in C^0(E_1, E_2) $.
+\end{defn}
+
+\begin{exmp}[]
+    \begin{itemize}
+        \item Plein de fonctions continues sont déjà connues pour $ E_1 = E_2 = \mathbb{R} $ muni de la distance usuelle. 
+        
+        \item La fonction "distance au point $ x_0 $" est $ C^0 (E, \mathbb{R}) $  
+        \begin{align*}
+            f : & E \to \mathbb{R} \\
+                & x \mapsto f(x) = d(x, x_0)
+        \end{align*}
+        car $ d_2(f(x), f(y)) = \left| f(x) - f(y) \right| = \left| d_1(x, x_0) - d_1(y,x_0) \right| \leq d(x,y) $ prendre $ \delta < E $ 
+
+        \item Sur $ \mathbb{R}^n $ muni de la distance euclidienne, les fonctions coordonnées sont continues $ C^0(\mathbb{R}^n, \mathbb{R}) $ :
+        \begin{align*}
+            & \mathbb{R}^n \to \mathbb{R}
+            & x \mapsto x_i
+        \end{align*}
+
+        \item L'addition et la multiplication sont continues de $ \mathbb{R}^2 $ vers $ \mathbb{R} $ pour la distance euclidienne. 
+    \end{itemize}
+\end{exmp}
+
+\begin{prop}[]
+    Les propriétés suivantes sont équivalentes : \begin{enumerate}
+        \item $ f $ est continue de $ (E_1,d_1) $ vers $ (E_2, d_2) $ 
+        \item Pour tout ouvert $ U_2 $ de $ E_2 $, $ f^{-1}(U_2) $ est un ouvert de $ E_1 $ 
+        \item Pour tout fermé $ F_2 $ de $ E_2 $, $ f^{-1} $ est un fermé de $ E_1 $ 
+        \item Pour toute suite $ (x_n)_n \in E_1^{\mathbb{N}^*} $ convergente : $ \lim_{n \to \infty} f(x_n) = f(\lim_{n \to \infty} x_n) $ 
+    \end{enumerate}
+
+    \begin{proof}[Preuve: ]
+        On veut montrer l'équivalence de tout : $ 1 \Rightarrow 2 \Rightarrow 3 \Rightarrow 4 \Rightarrow 1  $ comme ça on a une boucle. 
+        \begin{itemize}
+            \item $ 1 \Rightarrow 2 $ : Pour $ U_2 $ ouvert de $ E_2 $, montrons que $ f^{-1} (U_2) $ ouvert. \\
+            Soit $ x \in f^{-1}(U_2) $ existe-t-il $ r>0 $ tel que $ B(x,r) \subset f^{-1}(U_2) $ ?
+            \begin{align*}
+                x \in f^{-1}(U_2) \Leftrightarrow f(x) \in U_2 \Rightarrow\\
+                U_2 \text{ ouvert } \Rightarrow \exists \epsilon > 0, B(f(x), \epsilon ) \subset U_2 \Rightarrow\\
+                f \in C^0(E_1, E_2) \Rightarrow \exists \delta > 0, \forall y \in E_1, & d_1(x,y) < \delta \Rightarrow d_2(f(x), f(y)) < \epsilon \\
+                        & y \in B(x, \delta ) \Rightarrow f(y) \in B(f(x), \epsilon ) \subset U_2 \\
+                        & y \in B(x, \delta ) \Rightarrow y \in f^{-1}(U_2) \\
+                        & B(x, \delta ) \subset f^{-1}(U_2)
+            \end{align*}
+
+            \item $ 2 \Rightarrow 3 $ : Pour $ F_2 $ fermé dans $ E_2 $
+            \begin{align*}
+                f^{-1}(F_2) = \{x \in E_1, f(x) \in F_2\} &= E_1 \setminus \{x \in E_1, f(x) \not\in F_2 \} \\
+                &= E_1 \setminus \{x \in E_1, f(x) \in E_2 \setminus F_2 \} \\
+                &= E_1 \setminus f^{-1}(E_2 \setminus F_2)
+            \end{align*}
+            $ E_2 \setminus F_2 $ ouvert, $ f^{-1}(E_2 \setminus F_2) $ ouvert d'après 2, $ E_1 \setminus f^{-1}(E_2 \setminus F_2) $ est fermé
+
+            \item $ 3 \Rightarrow 4 $ : Si $ x_n \to ^{d_1} _{n \to +\infty } l \in E_1$. Si on n'avait pas $ f(x_n) \to ^{d_2} _{n \to +\infty } f(l) $ 
+            \begin{align*}
+                \exists \epsilon > 0, \forall n \in \mathbb{N}, \exists k \geq n, & d_2(f(x_k) , f(l)) \geq \epsilon \\
+                    & f(x_k) \not \in B(f(l), \epsilon )\\
+                    & x_k \in f^{-1}(E_2 \setminus B(f(l), \epsilon ))
+            \end{align*}
+            $ B(f(l), \epsilon ) $ ouvert, $ E_2 \setminus B(f(l), \epsilon ) $ fermée, $ f^{-1}(E_2 \setminus B(f(l), \epsilon )) $ fermée d'après 3, les $ x_k $ forment une suite de limite $ l $. \\
+            Donc 
+            \begin{align*}
+                & l \in f^{-1}(E_2 \setminus B(f(l), \epsilon )) \\
+                & f(l) \in E_2 \setminus B(f(l), \epsilon ) \\
+                & f(l) \not\in B(f(l), \epsilon) \text{ contradiction !}
+            \end{align*}
+
+            \item S'il y avait un $ x_0 \in E_1 $ en lequel $ f $ n'est pas continue 
+            \[
+                \exists x_0 \in E_1, \exists \epsilon > 0, \forall \delta > 0, \exists y \in E_1, d_1(x_0, y) < \delta \text{ et } d_2(f(x_0), f(y_n)) \geq \epsilon 
+            .\]
+            En prenant $ \delta = \frac{1}{n} $ 
+            \[
+                \exists y_n \in E, d(x_0, y_n) < \frac{1}{n} \text{ et } d_2(f(x_0) , f(y_n)) \geq \epsilon 
+            .\]
+            Ainsi 
+            \[
+                y_n \to ^{d_1} x_0 \text{ et } f(y_n) \to ^{d_2} f(x_0) \text{ contredirait 4 }
+            .\]           
+        \end{itemize}
+    \end{proof}
+\end{prop}
+
+\begin{thm}[L'image continue d'un compact est compacte]
+    Si $ f : E_1 \to E_2 $ continue et si $ A $ est une partie compacte de $ E_1 $, alors $ f(A) $ est une partie compacte de $ E_2 $ 
+
+    \begin{proof}[Preuve: ]
+        Si $ (y_n)_n $ suite dans $ f(A) = \{y \in E_2, \exists x \in E_1, f(x) = y \} $, $ \forall n \in \mathbb{N}, \exists x_n \in E_1, f(x_n) = y_n $. \\
+        $ A $ compact $ \Rightarrow (x_n)_n $ a une sous-suite $ (x_{\varphi (n)})_n $ qui converge \\
+        $ f $ continue, $ y_{\varphi (n)} = f(x_{\varphi (n)}) \to ^{d_2}_{n \to +\infty } f(\lim_{n \to \infty} x_n) \in f(A) $ 
+    \end{proof}
+\end{thm}
+
+\begin{cor}[]
+    Si $ f: E \to \mathbb{R} $ est continue et si $ E $ est compact alors $ f $ atteint ses borne sur $ E $ :
+    \begin{align*}
+        \exists x_+ , x_- \in E, & f(x_+) = \sup \{f(x), x \in E\} = \sup _E f\\
+            & f(x_-) = \inf \{f(x), x \in E\} = \inf _E f 
+    \end{align*}
+
+    \begin{proof}[Preuve: ]
+        $ f(E) $ est compact donc borné $ -\infty < \inf _E f \leq \sup _E f < +\infty  $ et fermé $ \sup _E f(E) \in f(E) $ idem pour inf. \\
+    \end{proof}
+    
+    \textbf{Conséquence} : Dans un compact, les problèmes d'optimisation pour les fonctions continues ont des solutions ! 
+\end{cor}
+
+\underline{Nouveau cours du 29/11} \\
+
+\section{Le Théorème du point fixe}
+
+\begin{defn}[Fonction Lipschiztienne]
+    $ f: E_1 \to E_2 $ est \textbf{lipschiztienne} s'il existe une constante $ K > 0 $ telle que 
+    \[
+        \forall x,y \in E_1, d_2(f(x), f(y)) \leq K d_1(x,y)
+    .\]
+    $ f $ est \textbf{contractante} si $ K < 1 $ 
+\end{defn}
+\begin{rem}[]
+    Lipschitzienne $ \Rightarrow  $ continue (avec $ \delta = \frac{\epsilon }{K} $ )
+\end{rem}
+
+\begin{thm}[Du point fixe]
+    Si $ (E,d) $ est un espace complet, toute application $ f : E \to E $ contractante admet un unique point fixe 
+    \[
+        \exists ! x \in E, f(x) = x
+    .\]
+\end{thm}
+
+\begin{proof}[Preuve: ]
+    \textbf{Unicité:} si $ x $ et $ y $ deux points fixes : $ d(x,y) = d(f(x), f(y)) \leq K d(x,y) \Rightarrow d(x,y) = 0 \Rightarrow x=y$ \\
+    \textbf{Existence:} On fixe $ x_0 \in E $ et on note $ x_1 = f(x_0), x_2 = f(x_1), x_3 = f(x_2), ... $ 
+    \[
+        d(x_n, x _{n+1} ) = d(f(u _{n-1}, f(x_n) )) \leq K d(x _{n-1} , x_n), \forall n
+    .\]
+    donc $ \forall n \in \mathbb{N} $ 
+    \[
+        d(x_n, x _{n+1} ) \leq K^n d(x_1,x_0)
+    .\]
+    \begin{align*}
+        d(x_n, x_k) & \leq d(x_n, x_{n+1}) + d(x _{n+1}, x _{n+2} + \dots + d(x_{k-1}, x_k) ) \text{ Par IT} \\
+            & \leq (K^n + k^{n+1} + \dots + K^{k-1}) d(x_1, x_0)\\
+            & \leq \frac{K^n -K^k}{1-K} d(x_1, x_0)
+    \end{align*}
+    Or $ \frac{K^n -K^k}{1-K} < \epsilon $ pour $ n,k \geq n_\epsilon  $ assez grand. \\
+    La distance entre deux points peut être majoré pour tout $ \epsilon $. Donc $ (x_n)_{n} $ est de Cauchy dans $ (E, d) $ qui est complet, donc elle a une limite $ l \in E $
+    \[
+        d(l, f(l)) \leq d(l, x_n)_{} + d(x_n, f(x_n)) + d(f(x_n), f(l)) \to_{n \to +\infty } 0 + 0 + 0 \Leftrightarrow d(l, f(l)) = 0 \Leftrightarrow l=f(l)
+    .\]
+    
+\end{proof}
+
+
+
+
+
+
+
+
+
+\end{document}

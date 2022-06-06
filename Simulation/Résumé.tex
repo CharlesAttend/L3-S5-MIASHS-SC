@@ -1,0 +1,100 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[french]{babel}
+
+\usepackage[default,scale=0.95]{opensans}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb} %math
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{systeme}
+\usepackage{bbm}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    % pdfpagemode=FullScreen,
+    }
+\urlstyle{same} %\href{url}{Text}
+
+\newtheorem{thm}{Théorème}[]
+
+
+\title{Tentative de résumé du cours de Simulation}
+\author{Charles Vin}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{La fonction quantile}
+Fonction quantile = inversion de la fonction de répartition
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics*[width=\textwidth]{fct_quantile.png}
+    \caption{Pour gerer les sauts des truc discret}
+\end{figure}
+
+Méthode :
+Je pense que y'a qu'en le faisant que j'arriverai il faut bien comprendre la formule et l'appliquer 
+\begin{align*}
+    F_x^-1 : &]0,1[ \longrightarrow \mathbb{R} \\ 
+            & \alpha \mapsto F_X^-1(\alpha ) = \inf \{t \in R, F_X(t) \geq \alpha \}
+\end{align*} 
+
+Graphiquement
+\begin{itemize}
+    \item Sur le graphique de la fonction de répartition, on place $ \alpha $ sur l'ordonnée.
+    \item On vas faire varier $ \alpha $ 
+    \item Avec $ \alpha \in [..., ...] $ sur quelle intervalle $ F_X \geq \alpha  $ 
+    \item Puis prendre l'$ \inf $, la borne inférieur de cette intervalle
+\end{itemize}
+
+On peut le faire analytiquement aussi quand $ F_X $ est continue strictement croissante (=bijective). Typiquement (pour loi $ \mathcal{E}xp $ )
+\begin{align*}
+    \forall \alpha \in ]0;1[, F_X^-1 &= \inf \{t \in R, F_X(t) \geq \alpha \} \\
+            & = \inf \{t \in R^+_*, F_X(t) \geq x\} \\
+            & = \inf \{t \in R^+_*, 1-e^{-\lambda t} \geq x\} \\
+            & = \inf \{t \in R^+_*, t \geq \frac{\ln (1-\alpha  )}{-\lambda } \}  = -\frac{\ln (1-\alpha )}{\lambda }
+\end{align*}
+
+\section{Méthode du rejet }
+$ f_X $ densité à simuler, $ c $ constante, $ g_X $ densité d'une va qu'on sait simuler.
+
+\begin{thm}[]
+    Soient $ f $ et $ g $ deux densité de probabilité, $ X $ de densité $ g $ , telles qu'il existe une constante $ c $ vérifiant :
+    \[
+        \forall x \in \mathbb{R}, f(x) \leq cg(x)
+    .\]
+    Si $ c*U_i*g(X_i) < f(X_i) $, X a pour densité $ f $ ($ U \sim Unif(]0,1[) $ ).\\
+    $ U_i, X_i $ tirage des lois
+\end{thm}
+Le nombre de tirage nécessaire pour atteindre la condition précédente suit une loi $ Géom(\frac{1}{c}) $ 
+
+Méthode pour les exos : 
+\begin{itemize}
+    \item J'pense dessiner la courbe c'est pas mal 
+    \item Voir qu'on peut majorer easy par une constante + une loi uniforme 
+    \item \textit{Exemple pour une densité avec $ max=\frac{1}{2} \Rightarrow  c*g = 2 * \frac{1}{4} \mathbbm{1}_{[0,4]} $ }
+    \item Pour simuler \begin{itemize}
+        \item On tire successivement V1, V2, V3,. . .indépendants tous de même loi que V , ce qui est facile en prenant Vi = ... où les Wi sont i.i.d. de loi uniforme sur ]0; 1[.
+        \item On tire aussi successivement U1, U2, U3,. . .de loi uniforme sur ]0; 1[, indépendants entre eux et indépendants des Vi.
+        \item On garde le premier Vi tel que
+            \[
+                c*f_V(V_i)*U_i \leq  f(V_i)
+            .\]
+    \end{itemize}
+    \item Puis simplifier la condition avec les fonctions trouvé (car la loi uniforme tombe toujours dans l'intervalle des indicatrice)
+    \item \textit{text}
+\end{itemize}
+
+\section{Simulation particulière de loi spécifiques}
+Anki
+
+\end{document}
